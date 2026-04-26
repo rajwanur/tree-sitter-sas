@@ -1,0 +1,327 @@
+================================================================================
+PROC SQL basic SELECT FROM
+================================================================================
+proc sql;
+  select name from sashelp.class;
+quit;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (sql_select_statement
+        (sql_select_list
+          (sql_expression
+            (identifier)))
+        (sql_from_clause
+          (sql_table_ref
+            (identifier)
+            (identifier)))))))
+
+================================================================================
+PROC SQL SELECT with WHERE
+================================================================================
+proc sql;
+  select name from students where age > 12;
+quit;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (sql_select_statement
+        (sql_select_list
+          (sql_expression
+            (identifier)))
+        (sql_from_clause
+          (sql_table_ref
+            (identifier)))
+        (sql_where_clause
+          (sql_expression
+            (binary_expression
+              left: (identifier)
+              right: (number))))))))
+
+================================================================================
+PROC SQL SELECT with JOIN
+================================================================================
+proc sql;
+  select name from students left join scores on id = sid;
+quit;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (sql_select_statement
+        (sql_select_list
+          (sql_expression
+            (identifier)))
+        (sql_from_clause
+          (sql_table_ref
+            (identifier)))
+        (sql_join_clause
+          (sql_table_ref
+            (identifier))
+          (binary_expression
+            left: (identifier)
+            right: (identifier)))))))
+
+================================================================================
+PROC SQL SELECT with GROUP BY and HAVING
+================================================================================
+proc sql;
+  select name from students group by name having score > 1;
+quit;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (sql_select_statement
+        (sql_select_list
+          (sql_expression
+            (identifier)))
+        (sql_from_clause
+          (sql_table_ref
+            (identifier)))
+        (sql_group_by_clause
+          (identifier))
+        (sql_having_clause
+          (sql_expression
+            (binary_expression
+              left: (identifier)
+              right: (number))))))))
+
+================================================================================
+PROC SQL SELECT with ORDER BY
+================================================================================
+proc sql;
+  select name from students order by name;
+quit;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (sql_select_statement
+        (sql_select_list
+          (sql_expression
+            (identifier)))
+        (sql_from_clause
+          (sql_table_ref
+            (identifier)))
+        (sql_order_by_clause
+          (identifier))))))
+
+================================================================================
+PROC SQL CREATE TABLE AS SELECT
+================================================================================
+proc sql;
+  create table output as select * from input;
+quit;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (sql_create_table
+        (identifier)
+        (sql_select_list
+          (sql_expression))
+        (sql_from_clause
+          (sql_table_ref
+            (identifier)))))))
+
+================================================================================
+PROC SQL CREATE VIEW
+================================================================================
+proc sql;
+  create view myview as select * from input;
+quit;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (sql_create_view
+        (identifier)
+        (sql_select_list
+          (sql_expression))
+        (sql_from_clause
+          (sql_table_ref
+            (identifier)))))))
+
+================================================================================
+PROC SQL INSERT INTO VALUES
+================================================================================
+proc sql;
+  insert into output values(1, 2);
+quit;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (sql_insert_into
+        (identifier)
+        (number)
+        (number)))))
+
+================================================================================
+PROC SQL subquery in FROM
+================================================================================
+proc sql;
+  select name from (select * from students) where age > 12;
+quit;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (sql_select_statement
+        (sql_select_list
+          (sql_expression
+            (identifier)))
+        (sql_from_clause
+          (sql_table_ref
+            (sql_select_list
+              (sql_expression))
+            (sql_from_clause
+              (sql_table_ref
+                (identifier)))))
+        (sql_where_clause
+          (sql_expression
+            (binary_expression
+              left: (identifier)
+              right: (number))))))))
+
+================================================================================
+PROC SQL multiple JOINs
+================================================================================
+proc sql;
+  select name from a join b on x = y join c on y = z;
+quit;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (sql_select_statement
+        (sql_select_list
+          (sql_expression
+            (identifier)))
+        (sql_from_clause
+          (sql_table_ref
+            (identifier)))
+        (sql_join_clause
+          (sql_table_ref
+            (identifier))
+          (binary_expression
+            left: (identifier)
+            right: (identifier)))
+        (sql_join_clause
+          (sql_table_ref
+            (identifier))
+          (binary_expression
+            left: (identifier)
+            right: (identifier)))))))
+
+================================================================================
+PROC SQL column alias with AS
+================================================================================
+proc sql;
+  select name as student_name from students;
+quit;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (sql_select_statement
+        (sql_select_list
+          (sql_expression
+            (identifier)
+            (identifier)))
+        (sql_from_clause
+          (sql_table_ref
+            (identifier)))))))
+
+================================================================================
+PROC SQL DROP TABLE
+================================================================================
+proc sql;
+  drop table oldtable;
+quit;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (sql_drop_statement
+        (identifier)))))
+
+================================================================================
+PROC SQL DISCONNECT
+================================================================================
+proc sql;
+  disconnect myconn;
+quit;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (sql_disconnect
+        (identifier)))))
+
+================================================================================
+PROC SQL RESET
+================================================================================
+proc sql;
+  reset outobs;
+quit;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (sql_reset
+        (identifier)))))
+
+================================================================================
+PROC SQL SELECT multiple columns
+================================================================================
+proc sql;
+  select name, age from students;
+quit;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (sql_select_statement
+        (sql_select_list
+          (sql_expression
+            (identifier))
+          (sql_expression
+            (identifier)))
+        (sql_from_clause
+          (sql_table_ref
+            (identifier)))))))
+

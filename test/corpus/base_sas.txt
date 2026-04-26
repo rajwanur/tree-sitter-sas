@@ -1,0 +1,372 @@
+================================================================================
+Simple data step with set and where
+================================================================================
+data a;
+  set b;
+  where x > 1;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (set_statement
+      (data_reference
+        (identifier)))
+    (where_statement
+      (binary_expression
+        left: (identifier)
+        right: (number)))))
+
+================================================================================
+Data step with library.dataset name
+================================================================================
+data work.out;
+  set work.in;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      library: (identifier)
+      dataset: (identifier))
+    (set_statement
+      (data_reference
+        (identifier)
+        (identifier)))))
+
+================================================================================
+Data _NULL_
+================================================================================
+data _NULL_;
+  x = 1;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name)
+    (assignment_statement
+      target: (identifier)
+      value: (number))))
+
+================================================================================
+Data step with DO block iterative
+================================================================================
+data a;
+  do i = 1 to 10;
+    x = i + 2;
+  end;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (do_block
+      (identifier)
+      (number)
+      (number)
+      (assignment_statement
+        target: (identifier)
+        value: (binary_expression
+          left: (identifier)
+          right: (number))))))
+
+================================================================================
+Data step with IF/THEN/ELSE
+================================================================================
+data a;
+  if x > 1 then y = 2;
+  else y = 3;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (if_statement
+      condition: (binary_expression
+        left: (identifier)
+        right: (number))
+      consequence: (assignment_statement
+        target: (identifier)
+        value: (number))
+      alternative: (assignment_statement
+        target: (identifier)
+        value: (number)))))
+
+================================================================================
+Data step with assignment statements
+================================================================================
+data a;
+  x = 1;
+  y = x + 2;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (number))
+    (assignment_statement
+      target: (identifier)
+      value: (binary_expression
+        left: (identifier)
+        right: (number)))))
+
+================================================================================
+Data step with KEEP and DROP
+================================================================================
+data a;
+  keep x y;
+  drop z;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (keep_statement
+      (identifier)
+      (identifier))
+    (drop_statement
+      (identifier))))
+
+================================================================================
+Data step with OUTPUT
+================================================================================
+data a;
+  output;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (output_statement)))
+
+================================================================================
+Data step with MERGE and BY
+================================================================================
+data a;
+  merge b c;
+  by id;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (merge_statement
+      (data_reference
+        (identifier))
+      (data_reference
+        (identifier)))
+    (by_statement
+      (identifier))))
+
+================================================================================
+Simple PROC step with generic body
+================================================================================
+proc print;
+  where x > 10;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (where_statement
+        (binary_expression
+          left: (identifier)
+          right: (number))))))
+
+================================================================================
+PROC step with QUIT
+================================================================================
+proc datasets;
+  delete old;
+quit;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (datasets_delete_statement
+        (identifier)))))
+
+================================================================================
+Multiple steps in one file
+================================================================================
+data a;
+  x = 1;
+run;
+proc print;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (number)))
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (bare_statement
+        (identifier)))))
+
+================================================================================
+LIBNAME statement
+================================================================================
+libname mylib '/tmp/data';
+--------------------------------------------------------------------------------
+(source_file
+  (global_statement
+    (libname_statement
+      name: (identifier)
+      path: (quoted_string
+        (single_quoted_string)))))
+
+================================================================================
+TITLE statement
+================================================================================
+title 'My Report';
+--------------------------------------------------------------------------------
+(source_file
+  (global_statement
+    (title_statement
+      (quoted_string
+        (single_quoted_string)))))
+
+================================================================================
+OPTIONS statement
+================================================================================
+options nonumber;
+--------------------------------------------------------------------------------
+(source_file
+  (global_statement
+    (options_statement
+      (identifier))))
+
+================================================================================
+Nested DO blocks
+================================================================================
+data a;
+  do i = 1 to 5;
+    do j = 1 to 3;
+      x = i + j;
+    end;
+  end;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (do_block
+      (identifier)
+      (number)
+      (number)
+      (do_block
+        (identifier)
+        (number)
+        (number)
+        (assignment_statement
+          target: (identifier)
+          value: (binary_expression
+            left: (identifier)
+            right: (identifier)))))))
+
+================================================================================
+SELECT/WHEN/OTHERWISE
+================================================================================
+data a;
+  select(x);
+    when(1) y = 10;
+    otherwise y = 0;
+  end;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (select_statement
+      (identifier)
+      (when_clause
+        (number)
+        (assignment_statement
+          target: (identifier)
+          value: (number)))
+      (otherwise_clause
+        (assignment_statement
+          target: (identifier)
+          value: (number))))))
+
+================================================================================
+CALL statement
+================================================================================
+data a;
+  call missing(x);
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (call_statement
+      (identifier)
+      (identifier))))
+
+================================================================================
+DO WHILE block
+================================================================================
+data a;
+  do while(x > 0);
+    x = x - 1;
+  end;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (do_block
+      (binary_expression
+        left: (identifier)
+        right: (number))
+      (assignment_statement
+        target: (identifier)
+        value: (binary_expression
+          left: (identifier)
+          right: (number))))))
+
+================================================================================
+DO UNTIL block
+================================================================================
+data a;
+  do until(x = 0);
+    x = x - 1;
+  end;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (do_block
+      (binary_expression
+        left: (identifier)
+        right: (number))
+      (assignment_statement
+        target: (identifier)
+        value: (binary_expression
+          left: (identifier)
+          right: (number))))))

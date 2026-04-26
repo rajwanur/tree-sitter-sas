@@ -1,0 +1,21 @@
+{
+  "grammars": [
+    {
+      "name": "sas",
+      "camelcase": "Sas",
+      "scope": "source.sas",
+      "path": ".",
+      "file-types": ["sas"]
+    }
+  ],
+  "metadata": {
+    "version": "0.1.0",
+    "license": "Apache-2.0",
+    "description": "SAS grammar for tree-sitter",
+    "authors": [
+      {
+        "name": "MIC Project"
+      }
+    ]
+  }
+}

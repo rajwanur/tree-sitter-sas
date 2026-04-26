@@ -1,0 +1,60 @@
+================================================================================
+PROC FREQ simple TABLES
+================================================================================
+proc freq data=mydata;
+  tables age;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (freq_tables_statement
+        (identifier)))))
+
+================================================================================
+PROC FREQ multiple TABLES
+================================================================================
+proc freq data=mydata;
+  tables age * sex;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (freq_tables_statement
+        (identifier)
+        (identifier)))))
+
+================================================================================
+PROC FREQ with WHERE
+================================================================================
+proc freq data=mydata;
+  where age > 10;
+  tables age;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (where_statement
+        (binary_expression
+          left: (identifier)
+          right: (number)))
+      (freq_tables_statement
+        (identifier)))))
+

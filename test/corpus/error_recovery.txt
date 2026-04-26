@@ -1,0 +1,68 @@
+================================================================================
+Missing semicolon after DATA statement
+================================================================================
+data a set b;
+  y = 2;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (ERROR
+    (identifier)))
+
+================================================================================
+Missing semicolon in assignment
+================================================================================
+data a;
+  x = 1
+  y = 2;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (bare_statement
+      (identifier)
+      (number)
+      (identifier)
+      (number))))
+
+================================================================================
+Unclosed DO block - missing END
+================================================================================
+data a;
+  do i = 1 to 10;
+    x = i;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (ERROR
+    (data_name
+      (identifier))
+    (identifier)
+    (number)
+    (number)
+    (assignment_statement
+      target: (identifier)
+      value: (identifier))
+    (bare_statement
+      (identifier))))
+
+================================================================================
+Unmatched parenthesis in expression
+================================================================================
+data a;
+  x = (1 + 2;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (parenthesized_expression
+        (binary_expression
+          left: (number)
+          right: (number))
+        (MISSING ")")))))

@@ -1,0 +1,35 @@
+{
+  "name": "tree-sitter-sas",
+  "version": "0.1.0",
+  "description": "SAS grammar for tree-sitter",
+  "main": "bindings/node.js",
+  "types": "bindings/node.d.ts",
+  "keywords": [
+    "parser",
+    "sas",
+    "tree-sitter"
+  ],
+  "license": "Apache-2.0",
+  "dependencies": {
+    "node-addon-api": "^8.0.0"
+  },
+  "peerDependencies": {
+    "tree-sitter": "^0.26.0"
+  },
+  "peerDependenciesMeta": {
+    "tree-sitter": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "tree-sitter-cli": "^0.26.0"
+  },
+  "tree-sitter": [
+    {
+      "scope": "source.sas",
+      "file-types": [
+        "sas"
+      ]
+    }
+  ]
+}

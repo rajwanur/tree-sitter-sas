@@ -1,0 +1,230 @@
+================================================================================
+CARDS block with simple data
+================================================================================
+data a;
+  input name $;
+  cards;
+John
+Jane
+;
+run;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (input_statement
+      (identifier)
+      (identifier))
+    (cards_statement)))
+
+================================================================================
+CARDS block with semicolons in data
+================================================================================
+data a;
+  input x;
+  cards;
+A;B
+;
+run;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (input_statement
+      (identifier))
+    (cards_statement)))
+
+================================================================================
+DATALINES block
+================================================================================
+data a;
+  input x;
+  datalines;
+1
+2
+3
+;
+run;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (input_statement
+      (identifier))
+    (cards_statement)))
+
+================================================================================
+CARDS4 block terminated by semicolons
+================================================================================
+data a;
+  input x;
+  cards4;
+Hello
+World
+;;;;
+run;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (input_statement
+      (identifier))
+    (cards4_statement)))
+
+================================================================================
+String with escaped single quote
+================================================================================
+data a;
+  x = 'don''t';
+run;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (quoted_string
+        (single_quoted_string)))))
+
+================================================================================
+String with escaped double quote
+================================================================================
+data a;
+  x = "he said ""hello""";
+run;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (quoted_string
+        (double_quoted_string)))))
+
+================================================================================
+Comment inside a string - not parsed as comment
+================================================================================
+data a;
+  x = 'a /* not a comment */ b';
+run;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (quoted_string
+        (single_quoted_string)))))
+
+================================================================================
+Semicolon inside a string
+================================================================================
+data a;
+  x = 'hello; world';
+run;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (quoted_string
+        (single_quoted_string)))))
+
+================================================================================
+Block comment containing semicolons
+================================================================================
+/* this is a comment; with semicolons; */
+data a;
+  x = 1;
+run;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (block_comment)
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (number))))
+
+================================================================================
+Mixed case DATA step
+================================================================================
+Data a;
+  Set b;
+  Where x > 0;
+Run;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (set_statement
+      (data_reference
+        (identifier)))
+    (where_statement
+      (binary_expression
+        left: (identifier)
+        right: (number)))))
+
+================================================================================
+Macro comment
+================================================================================
+%* this is a macro comment;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_comment))
+
+================================================================================
+Nested function calls in expression
+================================================================================
+data a;
+  x = round(mean(height, weight), 0.1);
+run;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (function_call
+        name: (identifier)
+        (function_call
+          name: (identifier)
+          (identifier)
+          (identifier))
+        (number)))))

@@ -1,0 +1,328 @@
+================================================================================
+Simple macro definition
+================================================================================
+%macro hello;
+  x = 1;
+%mend hello;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    name: (identifier)
+    (assignment_statement
+      target: (identifier)
+      value: (number))
+    name: (identifier)))
+
+================================================================================
+Macro with parameters
+================================================================================
+%macro add(a, b);
+  %let result = %eval(&a + &b);
+%mend add;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    name: (identifier)
+    params: (macro_parameters
+      (macro_parameter
+        name: (identifier))
+      (macro_parameter
+        name: (identifier)))
+    (macro_statement
+      (macro_let_statement
+        name: (identifier)
+        value: (macro_expression
+          (macro_function_call
+            (macro_expression
+              (macro_binary_expression
+                left: (macro_expression
+                  (macro_variable_reference
+                    name: (identifier)))
+                right: (macro_expression
+                  (macro_variable_reference
+                    name: (identifier)))))))))
+    name: (identifier)))
+
+================================================================================
+Macro with default parameter values
+================================================================================
+%macro test(x=1, y=abc);
+%mend;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    name: (identifier)
+    params: (macro_parameters
+      (macro_parameter
+        name: (identifier)
+        default: (macro_parameter_default
+          (number)))
+      (macro_parameter
+        name: (identifier)
+        default: (macro_parameter_default
+          (identifier))))))
+
+================================================================================
+%LET statement
+================================================================================
+%let name = value;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_let_statement
+    name: (identifier)
+    value: (macro_expression
+      (identifier))))
+
+================================================================================
+Macro variable reference in DATA step
+================================================================================
+data a;
+  x = &var;
+run;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (macro_variable_reference
+        name: (identifier)))))
+
+================================================================================
+%DO/%END block
+================================================================================
+%macro test;
+%do;
+  x = 1;
+%end;
+%mend;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    name: (identifier)
+    (macro_statement
+      (macro_do_block
+        (assignment_statement
+          target: (identifier)
+          value: (number))))))
+
+================================================================================
+%DO %WHILE block
+================================================================================
+%macro test;
+%do %while (1);
+  %let x = 1;
+%end;
+%mend;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    name: (identifier)
+    (macro_statement
+      (macro_do_block
+        (macro_expression
+          (number))
+        (macro_statement
+          (macro_let_statement
+            name: (identifier)
+            value: (macro_expression
+              (number))))))))
+
+================================================================================
+%DO iterative
+================================================================================
+%macro test;
+%do i = 1 to 5;
+  x = i;
+%end;
+%mend;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    name: (identifier)
+    (macro_statement
+      (macro_do_block
+        (identifier)
+        (macro_expression
+          (number))
+        (macro_expression
+          (number))
+        (assignment_statement
+          target: (identifier)
+          value: (identifier))))))
+
+================================================================================
+%IF/%THEN/%ELSE
+================================================================================
+%macro test;
+%if &x > 0 %then %do;
+  y = 1;
+%end;
+%else %do;
+  y = 0;
+%end;
+%mend;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    name: (identifier)
+    (macro_statement
+      (macro_if_statement
+        condition: (macro_expression
+          (macro_binary_expression
+            left: (macro_expression
+              (macro_variable_reference
+                name: (identifier)))
+            right: (macro_expression
+              (number))))
+        (assignment_statement
+          target: (identifier)
+          value: (number))
+        (assignment_statement
+          target: (identifier)
+          value: (number))))))
+
+================================================================================
+%GLOBAL statement
+================================================================================
+%global x y z;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_global_statement
+    (identifier)
+    (identifier)
+    (identifier)))
+
+================================================================================
+%LOCAL statement
+================================================================================
+%local a b;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_local_statement
+    (identifier)
+    (identifier)))
+
+================================================================================
+%SYSFUNC call
+================================================================================
+%let today = %sysfunc(today());
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_let_statement
+    name: (identifier)
+    value: (macro_expression
+      (macro_function_call
+        (macro_expression
+          (function_call
+            name: (identifier)))))))
+
+================================================================================
+%SCAN call
+================================================================================
+%let word = %scan(&line, 2, " ");
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_let_statement
+    name: (identifier)
+    value: (macro_expression
+      (macro_function_call
+        (macro_expression
+          (macro_variable_reference
+            name: (identifier)))
+        (macro_expression
+          (number))
+        (macro_expression
+          (quoted_string
+            (double_quoted_string)))))))
+
+================================================================================
+Nested macro definition
+================================================================================
+%macro outer;
+  %macro inner;
+    x = 1;
+  %mend inner;
+  y = 2;
+%mend outer;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    name: (identifier)
+    (macro_statement
+      (macro_definition
+        name: (identifier)
+        (assignment_statement
+          target: (identifier)
+          value: (number))
+        name: (identifier)))
+    (assignment_statement
+      target: (identifier)
+      value: (number))
+    name: (identifier)))
+
+================================================================================
+Macro variable reference in string
+================================================================================
+data a;
+  x = "Value is &var here";
+run;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (quoted_string
+        (double_quoted_string)))))
+
+================================================================================
+%EVAL in macro expression
+================================================================================
+%let result = %eval(1 + 2);
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_let_statement
+    name: (identifier)
+    value: (macro_expression
+      (macro_function_call
+        (macro_expression
+          (macro_binary_expression
+            left: (macro_expression
+              (number))
+            right: (macro_expression
+              (number))))))))

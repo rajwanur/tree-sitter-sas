@@ -1,0 +1,80 @@
+================================================================================
+PROC SORT simple BY
+================================================================================
+proc sort data=mydata;
+  by name;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (by_statement
+        (identifier)))))
+
+================================================================================
+PROC SORT with WHERE
+================================================================================
+proc sort data=mydata;
+  where age > 10;
+  by name;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (where_statement
+        (binary_expression
+          left: (identifier)
+          right: (number)))
+      (by_statement
+        (identifier)))))
+
+================================================================================
+PROC SORT with OUT option
+================================================================================
+proc sort data=mydata out=sorted;
+  by name;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier)
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (by_statement
+        (identifier)))))
+
+================================================================================
+PROC SORT with NODUPKEY option
+================================================================================
+proc sort data=mydata nodupkey;
+  by name;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (by_statement
+        (identifier)))))
+

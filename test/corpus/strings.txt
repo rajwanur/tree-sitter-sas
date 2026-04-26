@@ -1,0 +1,134 @@
+================================================================================
+Double quoted string in assignment
+================================================================================
+data a;
+  x = "hello world";
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (quoted_string
+        (double_quoted_string)))))
+
+================================================================================
+Single quoted string in assignment
+================================================================================
+data a;
+  x = 'hello world';
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (quoted_string
+        (single_quoted_string)))))
+
+================================================================================
+Double quoted string with escaped quotes
+================================================================================
+data a;
+  x = "he said ""hello""";
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (quoted_string
+        (double_quoted_string)))))
+
+================================================================================
+Single quoted string with escaped quotes
+================================================================================
+data a;
+  x = 'don''t';
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (quoted_string
+        (single_quoted_string)))))
+
+================================================================================
+String containing semicolons
+================================================================================
+data a;
+  x = "a;b;c";
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (quoted_string
+        (double_quoted_string)))))
+
+================================================================================
+Empty double quoted string
+================================================================================
+data a;
+  x = "";
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (quoted_string
+        (double_quoted_string)))))
+
+================================================================================
+Empty single quoted string
+================================================================================
+data a;
+  x = '';
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (quoted_string
+        (single_quoted_string)))))
+
+================================================================================
+String in title statement
+================================================================================
+title 'My Report';
+--------------------------------------------------------------------------------
+(source_file
+  (global_statement
+    (title_statement
+      (quoted_string
+        (single_quoted_string)))))
+
+================================================================================
+String in libname statement
+================================================================================
+libname mylib '/tmp/data';
+--------------------------------------------------------------------------------
+(source_file
+  (global_statement
+    (libname_statement
+      name: (identifier)
+      path: (quoted_string
+        (single_quoted_string)))))

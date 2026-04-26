@@ -1,0 +1,101 @@
+================================================================================
+PROC MEANS simple
+================================================================================
+proc means data=mydata;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (bare_statement
+        (identifier)))))
+
+================================================================================
+PROC MEANS with VAR
+================================================================================
+proc means data=mydata;
+  var height weight;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (tabulate_var_statement
+        (identifier)
+        (identifier)))))
+
+================================================================================
+PROC MEANS with CLASS and BY
+================================================================================
+proc means data=mydata;
+  class age;
+  by sex;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (means_class_statement
+        (identifier))
+      (by_statement
+        (identifier)))))
+
+================================================================================
+PROC MEANS with OUTPUT
+================================================================================
+proc means data=mydata;
+  var height;
+  output out=summary mean=avgheight;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (tabulate_var_statement
+        (identifier))
+      (freq_output_statement
+        (identifier)
+        (identifier)
+        (identifier)))))
+
+================================================================================
+PROC SUMMARY same as MEANS
+================================================================================
+proc summary data=mydata;
+  var height;
+  output out=summary;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (tabulate_var_statement
+        (identifier))
+      (means_output_statement
+        (identifier)))))
+

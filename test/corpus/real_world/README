@@ -1,0 +1,9 @@
+This directory contains real CRO clinical trials SAS code samples for grammar
+validation (decision D-03).
+
+Place .sas files here from clinical trials projects. Run the following command
+to validate the grammar against real-world code:
+
+  tree-sitter parse test/corpus/real_world/*.sas --quiet
+
+The goal is zero ERROR nodes on all valid SAS code.

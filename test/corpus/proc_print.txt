@@ -1,0 +1,59 @@
+================================================================================
+PROC PRINT simple
+================================================================================
+proc print data=mydata;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (bare_statement
+        (identifier)))))
+
+================================================================================
+PROC PRINT with VAR
+================================================================================
+proc print data=mydata;
+  var name age;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (tabulate_var_statement
+        (identifier)
+        (identifier)))))
+
+================================================================================
+PROC PRINT with WHERE and VAR
+================================================================================
+proc print data=mydata;
+  where age > 10;
+  var name;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (where_statement
+        (binary_expression
+          left: (identifier)
+          right: (number)))
+      (tabulate_var_statement
+        (identifier)))))
+

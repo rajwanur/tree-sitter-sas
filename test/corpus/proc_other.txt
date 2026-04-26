@@ -1,0 +1,295 @@
+================================================================================
+PROC TRANSPOSE
+================================================================================
+proc transpose data=wide out=tall;
+  var x y;
+  by id;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier)
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (tabulate_var_statement
+        (identifier)
+        (identifier))
+      (by_statement
+        (identifier)))))
+
+================================================================================
+PROC REPORT with COLUMN and DEFINE
+================================================================================
+proc report data=mydata;
+  column name age;
+  define name / display;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (report_column_statement
+        (identifier)
+        (identifier))
+      (report_define_statement
+        (identifier)
+        (identifier)))))
+
+================================================================================
+PROC TABULATE with CLASS and TABLE
+================================================================================
+proc tabulate data=mydata;
+  class region;
+  var sales;
+  table region, sales;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (means_class_statement
+        (identifier))
+      (tabulate_var_statement
+        (identifier))
+      (tabulate_table_statement
+        (identifier)
+        (identifier)))))
+
+================================================================================
+PROC CONTENTS
+================================================================================
+proc contents;
+  data mydata;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (contents_data_statement
+        (identifier)))))
+
+================================================================================
+PROC IMPORT
+================================================================================
+proc import datafile="test.csv" out=mydata dbms=csv replace;
+  getnames=yes;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (quoted_string
+        (double_quoted_string))
+      (identifier)
+      (identifier)
+      (identifier)
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (import_getnames_statement))))
+
+================================================================================
+PROC EXPORT
+================================================================================
+proc export data=mydata outfile="out.csv" dbms=csv replace;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier)
+      (identifier)
+      (quoted_string
+        (double_quoted_string))
+      (identifier)
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (bare_statement
+        (identifier)))))
+
+================================================================================
+PROC COMPARE
+================================================================================
+proc compare base=old compare=new;
+  var x y;
+  with a b;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier)
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (tabulate_var_statement
+        (identifier)
+        (identifier))
+      (compare_with_statement
+        (identifier)
+        (identifier)))))
+
+================================================================================
+PROC DATASETS
+================================================================================
+proc datasets lib=work;
+  delete old;
+  change new = latest;
+quit;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (datasets_delete_statement
+        (identifier))
+      (datasets_change_statement
+        (identifier)
+        (identifier)))))
+
+================================================================================
+PROC OPTIONS
+================================================================================
+proc options;
+  option linesize=80;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (options_option_statement
+        (identifier)
+        (number)))))
+
+================================================================================
+PROC APPEND
+================================================================================
+proc append base=master data=new force;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier)
+      (identifier)
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (bare_statement
+        (identifier)))))
+
+================================================================================
+PROC UNIVARIATE
+================================================================================
+proc univariate data=mydata;
+  var height;
+  histogram height;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (tabulate_var_statement
+        (identifier))
+      (sgplot_histogram_statement
+        (identifier)))))
+
+================================================================================
+PROC REG with MODEL
+================================================================================
+proc reg data=mydata;
+  model y = x;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (reg_model_statement
+        (identifier)
+        (identifier)))))
+
+================================================================================
+PROC GPLOT with PLOT
+================================================================================
+proc gplot data=mydata;
+  plot height * weight;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (reg_plot_statement
+        (binary_expression
+          left: (identifier)
+          right: (identifier))))))
+
+================================================================================
+PROC SGPLOT with SCATTER
+================================================================================
+proc sgplot data=mydata;
+  scatter x=height y=weight;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier)
+      (identifier))
+    body: (proc_body
+      (sgplot_scatter_statement
+        (identifier)
+        (identifier)))))
+

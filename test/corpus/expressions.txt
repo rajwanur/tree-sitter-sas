@@ -1,0 +1,197 @@
+================================================================================
+Simple arithmetic addition
+================================================================================
+data a; x = a + b; run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (binary_expression
+        left: (identifier)
+        right: (identifier)))))
+
+================================================================================
+Comparison operator
+================================================================================
+data a; x = a > b; run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (binary_expression
+        left: (identifier)
+        right: (identifier)))))
+
+================================================================================
+Logical AND
+================================================================================
+data a; x = a and b; run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (binary_expression
+        left: (identifier)
+        right: (identifier)))))
+
+================================================================================
+String concatenation
+================================================================================
+data a; x = a || b; run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (binary_expression
+        left: (identifier)
+        right: (identifier)))))
+
+================================================================================
+Function call
+================================================================================
+data a; x = sum(a, b); run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (function_call
+        name: (identifier)
+        (identifier)
+        (identifier)))))
+
+================================================================================
+Nested function calls
+================================================================================
+data a; x = sum(abs(a), b); run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (function_call
+        name: (identifier)
+        (function_call
+          name: (identifier)
+          (identifier))
+        (identifier)))))
+
+================================================================================
+Parenthesized expression
+================================================================================
+data a; x = (a + b); run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (parenthesized_expression
+        (binary_expression
+          left: (identifier)
+          right: (identifier))))))
+
+================================================================================
+Macro variable reference
+================================================================================
+data a; x = &var; run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (macro_variable_reference
+        name: (identifier)))))
+
+================================================================================
+Unary NOT expression
+================================================================================
+data a; x = not a; run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (unary_expression
+        operand: (identifier)))))
+
+================================================================================
+Complex expression with mixed operators
+================================================================================
+data a; x = a + b * c; run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (binary_expression
+        left: (identifier)
+        right: (binary_expression
+          left: (identifier)
+          right: (identifier))))))
+
+================================================================================
+Multiplication operator not confused with comment
+================================================================================
+data a;
+  x = i * 2;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (binary_expression
+        left: (identifier)
+        right: (number)))))
+
+================================================================================
+Number literal
+================================================================================
+data a; x = 42; run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (number))))
+
+================================================================================
+Number with decimal
+================================================================================
+data a; x = 3.14; run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (number))))
