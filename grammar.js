@@ -165,6 +165,7 @@ module.exports = grammar({
       $.macro_let_statement,
       $.macro_global_statement,
       $.macro_local_statement,
+      $.macro_call_statement,
       $.line_comment,
       $.macro_comment,
     ),
@@ -418,6 +419,19 @@ module.exports = grammar({
 
     macro_parameter_default: $ => $.expression,
 
+    // Macro call statement -- arbitrary macro invocation as a statement.
+    // Handles patterns like:
+    //   %mymacro;
+    //   %mymacro(param1, param2);
+    //   %x_util_gmlstart;
+    // This is distinct from macro_function_call which handles known built-in
+    // macro functions (%sysfunc, %scan, etc.) and returns a value.
+    macro_call_statement: $ => seq(
+      field('name', seq('%', $.identifier)),
+      optional(seq('(', repeat(seq($.macro_expression, optional(','))), ')')),
+      ';'
+    ),
+
     // Macro statement supertype -- used inside macro_definition bodies
     macro_statement: $ => choice(
       $.macro_definition,
@@ -427,6 +441,7 @@ module.exports = grammar({
       $.macro_global_statement,
       $.macro_local_statement,
       $.macro_function_call,
+      $.macro_call_statement,
     ),
 
     // %DO block with WHILE/UNTIL/iterative variants
@@ -462,13 +477,31 @@ module.exports = grammar({
     ),
 
     // %LET -- macro variable declaration
+    // The value in %let is freeform text until the semicolon. It can contain
+    // paths (with \, /), dotted names (lib.dataset), macro references (&var),
+    // macro functions (%upcase(...)), and arbitrary text. We use macro_text
+    // which is more permissive than macro_expression for this context.
     macro_let_statement: $ => seq(
       alias($._macro_let_keyword, '%let'),
       field('name', $.identifier),
       '=',
-      field('value', $.macro_expression),
+      field('value', $.macro_text),
       ';'
     ),
+
+    // Macro text -- permissive value for %let and similar contexts.
+    // Accepts a mix of macro expressions (for &var, %func() resolution)
+    // and raw text tokens (paths, dotted names, etc.) that appear in
+    // macro variable assignments.
+    macro_text: $ => repeat1(choice(
+      $.macro_expression,
+      $.macro_text_token,
+    )),
+
+    // Raw text token in macro context -- matches anything that isn't a
+    // semicolon, whitespace, or macro trigger (& or %). Handles paths
+    // (backslash, forward slash, dots, colons, hyphens, etc.).
+    macro_text_token: $ => /[\\\/.:_\-\w]+/,
 
     // %GLOBAL -- declare global macro variables
     macro_global_statement: $ => seq(
@@ -1209,7 +1242,10 @@ module.exports = grammar({
       ')',
     ),
 
-    macro_variable_reference: $ => seq('&', field('name', $.identifier)),
+    // The optional trailing '.' is a word delimiter in SAS: &var. tells SAS the
+    // macro variable name ends at the dot. Without it, &varx would be ambiguous
+    // when followed by 'x'. The dot is consumed as part of the reference.
+    macro_variable_reference: $ => seq('&', field('name', $.identifier), optional('.')),
 
     number: $ => /\d+(\.\d+)?/,
 
