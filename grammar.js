@@ -515,18 +515,22 @@ module.exports = grammar({
     ),
 
     // Macro text -- permissive value for %let and similar contexts.
-    // Accepts a mix of macro expressions (for &var, %func() resolution)
-    // and raw text tokens (paths, dotted names, etc.) that appear in
-    // macro variable assignments.
-    macro_text: $ => repeat1(choice(
-      $.macro_expression,
+    // %let values are freeform text until the semicolon. We parse them
+    // as alternating segments of raw text and structured macro constructs
+    // (variable references, function calls, quoted strings).
+    // Raw text segments match everything except semicolons, & and % triggers,
+    // and quote characters (which start separate alternatives).
+    macro_text: $ => prec.right(repeat1(choice(
+      $.macro_variable_reference,
+      $.macro_function_call,
+      $.quoted_string,
       $.macro_text_token,
-    )),
+    ))),
 
-    // Raw text token in macro context -- matches anything that isn't a
-    // semicolon, whitespace, or macro trigger (& or %). Handles paths
-    // (backslash, forward slash, dots, colons, hyphens, etc.).
-    macro_text_token: $ => /[\\\/.:_\-\w]+/,
+    // Raw text token in macro context -- matches runs of characters that
+    // aren't semicolons, macro triggers (&), or quote characters. This
+    // handles spaces, identifiers, numbers, operators, paths, etc.
+    macro_text_token: $ => /[^;"'&]+/,
 
     // %GLOBAL -- declare global macro variables
     macro_global_statement: $ => seq(

@@ -2121,11 +2121,19 @@
       "required": true,
       "types": [
         {
-          "type": "macro_expression",
+          "type": "macro_function_call",
           "named": true
         },
         {
           "type": "macro_text_token",
+          "named": true
+        },
+        {
+          "type": "macro_variable_reference",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
           "named": true
         }
       ]

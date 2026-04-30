@@ -1651,24 +1651,36 @@
       ]
     },
     "macro_text": {
-      "type": "REPEAT1",
+      "type": "PREC_RIGHT",
+      "value": 0,
       "content": {
-        "type": "CHOICE",
-        "members": [
-          {
-            "type": "SYMBOL",
-            "name": "macro_expression"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "macro_text_token"
-          }
-        ]
+        "type": "REPEAT1",
+        "content": {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "macro_variable_reference"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "macro_function_call"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "quoted_string"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "macro_text_token"
+            }
+          ]
+        }
       }
     },
     "macro_text_token": {
       "type": "PATTERN",
-      "value": "[\\\\\\/.:_\\-\\w]+"
+      "value": "[^;\"'&]+"
     },
     "macro_global_statement": {
       "type": "SEQ",
