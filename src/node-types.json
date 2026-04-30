@@ -2082,10 +2082,6 @@
       "required": true,
       "types": [
         {
-          "type": "macro_call_statement",
-          "named": true
-        },
-        {
           "type": "macro_definition",
           "named": true
         },

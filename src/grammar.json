@@ -1232,10 +1232,6 @@
         {
           "type": "SYMBOL",
           "name": "macro_function_call"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "macro_call_statement"
         }
       ]
     },

@@ -455,6 +455,10 @@ module.exports = grammar({
     ),
 
     // Macro statement supertype -- used inside macro_definition bodies
+    // Note: macro_call_statement is NOT included here because it causes massive
+    // GLR state explosion (~160K extra parser.c lines). It remains in _top_level_item
+    // so %mymacro; works at the top level, but inside macro bodies, user macro calls
+    // are handled by macro_function_call for built-in macros and bare_statement fallback.
     macro_statement: $ => choice(
       $.macro_definition,
       $.macro_do_block,
@@ -463,7 +467,6 @@ module.exports = grammar({
       $.macro_global_statement,
       $.macro_local_statement,
       $.macro_function_call,
-      $.macro_call_statement,
     ),
 
     // %DO block with WHILE/UNTIL/iterative variants
