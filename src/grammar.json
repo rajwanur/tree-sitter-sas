@@ -46,6 +46,14 @@
         },
         {
           "type": "SYMBOL",
+          "name": "run_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "quit_statement"
+        },
+        {
+          "type": "SYMBOL",
           "name": "line_comment"
         },
         {
@@ -286,12 +294,20 @@
           "value": ";"
         },
         {
-          "type": "FIELD",
-          "name": "body",
-          "content": {
-            "type": "SYMBOL",
-            "name": "proc_body"
-          }
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "FIELD",
+              "name": "body",
+              "content": {
+                "type": "SYMBOL",
+                "name": "proc_body"
+              }
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         },
         {
           "type": "CHOICE",
@@ -892,10 +908,62 @@
           },
           {
             "type": "SYMBOL",
+            "name": "line_comment"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "macro_comment"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "logistic_class_statement"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "logistic_model_statement"
+          },
+          {
+            "type": "SYMBOL",
             "name": "bare_statement"
           }
         ]
       }
+    },
+    "run_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_run_keyword"
+          },
+          "named": false,
+          "value": "run"
+        },
+        {
+          "type": "STRING",
+          "value": ";"
+        }
+      ]
+    },
+    "quit_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_quit_keyword"
+          },
+          "named": false,
+          "value": "quit"
+        },
+        {
+          "type": "STRING",
+          "value": ";"
+        }
+      ]
     },
     "macro_definition": {
       "type": "SEQ",
@@ -1258,10 +1326,10 @@
                       "type": "ALIAS",
                       "content": {
                         "type": "SYMBOL",
-                        "name": "_to_keyword"
+                        "name": "_macro_to_keyword"
                       },
                       "named": false,
-                      "value": "to"
+                      "value": "%to"
                     },
                     {
                       "type": "SYMBOL",
@@ -1757,6 +1825,10 @@
         {
           "type": "SYMBOL",
           "name": "quoted_string"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "missing_value"
         },
         {
           "type": "SYMBOL",
@@ -7283,6 +7355,171 @@
         }
       ]
     },
+    "logistic_class_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "class"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "identifier"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "("
+                },
+                {
+                  "type": "REPEAT1",
+                  "content": {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "SEQ",
+                        "members": [
+                          {
+                            "type": "SYMBOL",
+                            "name": "identifier"
+                          },
+                          {
+                            "type": "STRING",
+                            "value": "="
+                          },
+                          {
+                            "type": "CHOICE",
+                            "members": [
+                              {
+                                "type": "SYMBOL",
+                                "name": "identifier"
+                              },
+                              {
+                                "type": "SYMBOL",
+                                "name": "quoted_string"
+                              }
+                            ]
+                          }
+                        ]
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "identifier"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "STRING",
+                  "value": ")"
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": ";"
+        }
+      ]
+    },
+    "logistic_model_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "model"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "identifier"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "("
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "identifier"
+                },
+                {
+                  "type": "STRING",
+                  "value": "="
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "quoted_string"
+                },
+                {
+                  "type": "STRING",
+                  "value": ")"
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "REPEAT1",
+          "content": {
+            "type": "SYMBOL",
+            "name": "identifier"
+          }
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "/"
+                  },
+                  {
+                    "type": "REPEAT1",
+                    "content": {
+                      "type": "SYMBOL",
+                      "name": "identifier"
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "STRING",
+                "value": ";"
+              }
+            ]
+          }
+        },
+        {
+          "type": "STRING",
+          "value": ";"
+        }
+      ]
+    },
     "reg_model_statement": {
       "type": "SEQ",
       "members": [
@@ -8588,6 +8825,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "dotted_identifier"
+        },
+        {
+          "type": "SYMBOL",
           "name": "identifier"
         },
         {
@@ -8596,7 +8837,36 @@
         },
         {
           "type": "SYMBOL",
+          "name": "missing_value"
+        },
+        {
+          "type": "SYMBOL",
           "name": "number"
+        }
+      ]
+    },
+    "dotted_identifier": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "base",
+          "content": {
+            "type": "SYMBOL",
+            "name": "identifier"
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "."
+        },
+        {
+          "type": "FIELD",
+          "name": "member",
+          "content": {
+            "type": "SYMBOL",
+            "name": "identifier"
+          }
         }
       ]
     },
@@ -9167,6 +9437,13 @@
       "type": "PATTERN",
       "value": "\\d+(\\.\\d+)?"
     },
+    "missing_value": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "\\.[a-zA-Z]?"
+      }
+    },
     "global_statement": {
       "type": "CHOICE",
       "members": [
@@ -9541,6 +9818,13 @@
         ]
       }
     },
+    "separator_comment": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "#+"
+      }
+    },
     "quoted_string": {
       "type": "CHOICE",
       "members": [
@@ -9641,6 +9925,10 @@
     "_to_keyword": {
       "type": "PATTERN",
       "value": "[tT][oO]"
+    },
+    "_macro_to_keyword": {
+      "type": "PATTERN",
+      "value": "%[tT][oO]"
     },
     "_by_keyword": {
       "type": "PATTERN",
@@ -10011,6 +10299,10 @@
     {
       "type": "SYMBOL",
       "name": "block_comment"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "separator_comment"
     }
   ],
   "conflicts": [
@@ -10035,6 +10327,9 @@
     ],
     [
       "proc_body"
+    ],
+    [
+      "proc_step"
     ],
     [
       "tabulate_table_statement",
@@ -10092,6 +10387,16 @@
       "means_class_statement",
       "tabulate_class_statement",
       "univariate_class_statement"
+    ],
+    [
+      "means_class_statement",
+      "tabulate_class_statement",
+      "univariate_class_statement",
+      "logistic_class_statement"
+    ],
+    [
+      "logistic_model_statement",
+      "reg_model_statement"
     ],
     [
       "means_freq_statement",
@@ -10210,6 +10515,9 @@
     [
       "macro_expression",
       "function_call"
+    ],
+    [
+      "macro_definition"
     ]
   ],
   "precedences": [],

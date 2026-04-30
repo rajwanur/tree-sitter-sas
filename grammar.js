@@ -18,6 +18,7 @@ module.exports = grammar({
   extras: $ => [
     /\s/,
     $.block_comment,
+    $.separator_comment,
   ],
 
   // External scanner tokens -- custom C scanner in src/scanner.c.
@@ -48,10 +49,11 @@ module.exports = grammar({
     [$.array_statement],
     // proc_body: repeat1(choice(...)) cannot tell whether an identifier
     // starts a new statement inside the proc body or is a new step outside.
+    // Also, run/quit can match as bare_statement or as the step terminator.
     [$.proc_body],
-    // proc_body contains $.statement (via $.where_statement, $.by_statement) which
-    // conflicts with $.statement used directly in the proc_body choice.
-    // (Removed -- tree-sitter reports unnecessary)
+    // proc_step: optional proc_body creates ambiguity -- parser cannot tell if next
+    // token starts a proc_body statement or is a top-level item after an empty proc.
+    [$.proc_step],
     // tabulate_table_statement contains $.expression which conflicts with standalone
     // $.expression when parsing "table ident1 ident2 ..." sequences.
     [$.tabulate_table_statement, $.expression],
@@ -59,8 +61,6 @@ module.exports = grammar({
     // Multiple PROC-specific *_id_statement rules start with 'id' + identifier.
     // All are in proc_body's choice(), creating lookahead conflicts.
     [$.means_id_statement, $.print_id_statement, $.transpose_id_statement, $.compare_id_statement, $.univariate_id_statement, $.reg_id_statement],
-    // sql_reset: repeat of ident/string creates boundary ambiguity (removed -- tree-sitter reports unnecessary)
-    // transpose_id_statement pair conflict (removed -- tree-sitter reports unnecessary)
     // Multiple *_output_statement rules start with 'output' and consume identifiers.
     [$.means_output_statement, $.freq_output_statement, $.univariate_output_statement, $.reg_output_statement],
     // freq_test_statement: repeat1($.identifier) vs $.expression ambiguity
@@ -81,6 +81,9 @@ module.exports = grammar({
     [$.expression],
     // Multiple *_class_statement rules all match 'class' + identifiers
     [$.means_class_statement, $.tabulate_class_statement, $.univariate_class_statement],
+    [$.means_class_statement, $.tabulate_class_statement, $.univariate_class_statement, $.logistic_class_statement],
+    // logistic_model_statement vs reg_model_statement: both match "model identifier = ..."
+    [$.logistic_model_statement, $.reg_model_statement],
     // Multiple *_freq_statement rules match 'freq' + identifier
     [$.means_freq_statement, $.univariate_freq_statement],
     // Multiple *_weight_statement rules match 'weight' + identifier
@@ -92,7 +95,6 @@ module.exports = grammar({
     // output_statement pair conflicts not covered by the larger group
     [$.freq_output_statement, $.univariate_output_statement, $.reg_output_statement],
     // Multiple *_var_statement rules all match 'var' + identifiers
-    // (Removed 7-way conflict -- tree-sitter reports unnecessary)
     [$.tabulate_var_statement, $.print_var_statement, $.transpose_var_statement, $.compare_var_statement, $.univariate_var_statement, $.reg_var_statement],
     // datasets_delete_statement vs reg_delete_statement: both match 'delete' + identifiers
     [$.datasets_delete_statement, $.reg_delete_statement],
@@ -139,6 +141,9 @@ module.exports = grammar({
     // macro_expression includes $.function_call which can conflict with macro_expression
     // when identifier( appears (could be function_call or identifier followed by parens).
     [$.macro_expression, $.function_call],
+    // macro_definition vs macro_call_statement: both start with %keyword at top level.
+    // The %macro keyword regex should win but GLR explores both paths.
+    [$.macro_definition],
   ],
 
   // Top-level rules exposed as node types for polymorphic dispatch.
@@ -166,6 +171,9 @@ module.exports = grammar({
       $.macro_global_statement,
       $.macro_local_statement,
       $.macro_call_statement,
+      // Standalone run;/quit; outside any step context (SAS allows orphan terminators).
+      $.run_statement,
+      $.quit_statement,
       $.line_comment,
       $.macro_comment,
     ),
@@ -211,12 +219,16 @@ module.exports = grammar({
     // PROC step (PARSE-01, PARSE-03, PARSE-06, PARSE-07, PARSE-08)
     // ========================================================================
 
+    // proc_body is optional (via optional()) so that PROCs with no body statements
+    // (e.g., "proc contents data=x; run;") don't have run; consumed as a
+    // bare_statement. When proc_body IS present, it uses repeat1() internally
+    // to satisfy tree-sitter's prohibition on empty-string-matching rules.
     proc_step: $ => seq(
       alias($._proc_keyword, 'proc'),
       field('name', $.proc_name),
       optional(field('options', $.proc_options)),
       ';',
-      field('body', $.proc_body),
+      optional(field('body', $.proc_body)),
       optional(choice(
         seq(alias($._run_keyword, 'run'), ';'),
         seq(alias($._quit_keyword, 'quit'), ';')
@@ -235,9 +247,6 @@ module.exports = grammar({
     // so they produce distinct node types in the parse tree. The proc_body repeat1(choice(...))
     // pattern means any PROC body can contain any mix of these statements plus shared statements
     // (by_statement, where_statement, macro_statement) and the bare_statement fallback.
-    // This avoids the GLR explosion that wrapper body types (proc_sql_body, etc.) would cause,
-    // since all wrappers would match the same content. Instead, the unique named types ARE the
-    // individual statement rules, giving downstream consumers distinct node types to target.
     proc_body: $ => repeat1(choice(
       // PROC SQL statements (PARSE-07 -- enables SQL injection via unique node types)
       // sql_select_statement includes FROM/WHERE/JOIN/GROUP BY/HAVING/ORDER BY as sub-clauses
@@ -387,9 +396,22 @@ module.exports = grammar({
       $.where_statement,
       // Macro statements inside PROC bodies
       $.macro_statement,
+      // Comments inside PROC bodies
+      $.line_comment,
+      $.macro_comment,
+      // PROC LOGISTIC statements
+      $.logistic_class_statement,
+      $.logistic_model_statement,
       // Generic fallback for unrecognized PROC sub-statements
       $.bare_statement,
     )),
+
+    // ========================================================================
+    // Standalone step terminators (orphan run;/quit; outside any step)
+    // ========================================================================
+
+    run_statement: $ => seq(alias($._run_keyword, 'run'), ';'),
+    quit_statement: $ => seq(alias($._quit_keyword, 'quit'), ';'),
 
     // ========================================================================
     // Macro language (PARSE-01, PARSE-03, PARSE-06) -- D-02: full macro support
@@ -450,7 +472,7 @@ module.exports = grammar({
       optional(choice(
         seq('%while', '(', $.macro_expression, ')', ';'),
         seq('%until', '(', $.macro_expression, ')', ';'),
-        seq($.identifier, '=', $.macro_expression, alias($._to_keyword, 'to'), $.macro_expression, ';'),
+        seq($.identifier, "=", $.macro_expression, alias($._macro_to_keyword, "%to"), $.macro_expression, ";"),
         ';'
       )),
       repeat(choice($.statement, $.macro_statement)),
@@ -527,6 +549,8 @@ module.exports = grammar({
       seq('(', $.macro_expression, ')'),
       $.identifier,
       $.quoted_string,
+      // SAS numeric missing value (. or .a-.z)
+      $.missing_value,
       $.number,
     ),
 
@@ -1131,6 +1155,19 @@ module.exports = grammar({
     univariate_inset_statement: $ => seq('inset', repeat1(choice($.identifier, $.quoted_string)), ';'),
 
     // ========================================================================
+    // PROC LOGISTIC statements
+    // ========================================================================
+
+    logistic_class_statement: $ => seq("class", $.identifier, optional(seq("(", repeat1(choice(
+      seq($.identifier, "=", choice($.identifier, $.quoted_string)),
+      $.identifier,
+    )), ")")), ";"),
+    logistic_model_statement: $ => seq("model", $.identifier, optional(seq("(", $.identifier, "=", $.quoted_string, ")")), "=", repeat1($.identifier), repeat(choice(
+      seq("/", repeat1($.identifier)),
+      ";"
+    )), ";"),
+
+    // ========================================================================
     // PROC REG statements
     // ========================================================================
 
@@ -1191,9 +1228,24 @@ module.exports = grammar({
       $.parenthesized_expression,
       $.function_call,
       $.macro_variable_reference,
+      // Dotted identifier: first.varname, last.varname, lib.dataset etc.
+      // SAS uses this pattern extensively for BY-group indicators and
+      // qualified variable/dataset references in expressions.
+      $.dotted_identifier,
       $.identifier,
       $.quoted_string,
+      // SAS numeric missing value (. or .a-.z)
+      $.missing_value,
       $.number,
+    ),
+
+    // Dotted identifier -- two identifiers joined by a dot.
+    // Used for SAS BY-group indicators (first.USUBJID, last.LBTEST),
+    // qualified references (lib.dataset), and other dotted-name patterns.
+    dotted_identifier: $ => seq(
+      field('base', $.identifier),
+      '.',
+      field('member', $.identifier),
     ),
 
     // Operator precedence (higher number = tighter binding):
@@ -1248,6 +1300,10 @@ module.exports = grammar({
     macro_variable_reference: $ => seq('&', field('name', $.identifier), optional('.')),
 
     number: $ => /\d+(\.\d+)?/,
+
+    // SAS numeric missing value: bare dot (.) or dot-letter (.A through .Z).
+    // Used in comparisons like "if var2 = . then ..." to test for missing values.
+    missing_value: $ => token(/\.[a-zA-Z]?/),
 
     // ========================================================================
     // Global statements -- top-level, outside DATA/PROC steps
@@ -1315,6 +1371,10 @@ module.exports = grammar({
     // Like line comment but starts with %*.
     macro_comment: $ => token(seq('%*', /[^;]*/, ';')),
 
+
+    // Separator comment: lines of # characters used as visual separators.
+    // Not standard SAS but common in practice. Skipped via extras.
+    separator_comment: $ => token(/#+/),
     // ========================================================================
     // Strings
     // ========================================================================
@@ -1348,6 +1408,7 @@ module.exports = grammar({
     _while_keyword: $ => /[wW][hH][iI][lL][eE]/,
     _until_keyword: $ => /[uU][nN][tT][iI][lL]/,
     _to_keyword: $ => /[tT][oO]/,
+    _macro_to_keyword: $ => /%[tT][oO]/,
     _by_keyword: $ => /[bB][yY]/,
     _return_keyword: $ => /[rR][eE][tT][uU][rR][nN]/,
     _goto_keyword: $ => /[gG][oO][tT][oO]/,

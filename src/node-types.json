@@ -8,6 +8,10 @@
         "named": true
       },
       {
+        "type": "dotted_identifier",
+        "named": true
+      },
+      {
         "type": "function_call",
         "named": true
       },
@@ -17,6 +21,10 @@
       },
       {
         "type": "macro_variable_reference",
+        "named": true
+      },
+      {
+        "type": "missing_value",
         "named": true
       },
       {
@@ -857,6 +865,32 @@
     }
   },
   {
+    "type": "dotted_identifier",
+    "named": true,
+    "fields": {
+      "base": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "member": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "drop_statement",
     "named": true,
     "fields": {},
@@ -1534,6 +1568,44 @@
     }
   },
   {
+    "type": "logistic_class_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "logistic_model_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "macro_binary_expression",
     "named": true,
     "fields": {
@@ -1768,6 +1840,10 @@
         },
         {
           "type": "macro_variable_reference",
+          "named": true
+        },
+        {
+          "type": "missing_value",
           "named": true
         },
         {
@@ -2611,6 +2687,22 @@
           "named": true
         },
         {
+          "type": "line_comment",
+          "named": true
+        },
+        {
+          "type": "logistic_class_statement",
+          "named": true
+        },
+        {
+          "type": "logistic_model_statement",
+          "named": true
+        },
+        {
+          "type": "macro_comment",
+          "named": true
+        },
+        {
           "type": "macro_statement",
           "named": true
         },
@@ -2949,7 +3041,7 @@
     "fields": {
       "body": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "proc_body",
@@ -2993,6 +3085,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "quit_statement",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "quoted_string",
@@ -3286,6 +3383,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "run_statement",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "select_statement",
@@ -3597,6 +3699,14 @@
         },
         {
           "type": "proc_step",
+          "named": true
+        },
+        {
+          "type": "quit_statement",
+          "named": true
+        },
+        {
+          "type": "run_statement",
           "named": true
         }
       ]
@@ -4551,6 +4661,10 @@
     "named": false
   },
   {
+    "type": "%to",
+    "named": false
+  },
+  {
     "type": "%unquote",
     "named": false
   },
@@ -5060,6 +5174,10 @@
     "named": false
   },
   {
+    "type": "missing_value",
+    "named": true
+  },
+  {
     "type": "model",
     "named": false
   },
@@ -5250,6 +5368,11 @@
   {
     "type": "select",
     "named": false
+  },
+  {
+    "type": "separator_comment",
+    "named": true,
+    "extra": true
   },
   {
     "type": "series",
