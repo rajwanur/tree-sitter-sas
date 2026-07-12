@@ -5,13 +5,15 @@ proc sort data=mydata;
   by name;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier)))
     body: (proc_body
       (by_statement
         (identifier)))))
@@ -24,13 +26,15 @@ proc sort data=mydata;
   by name;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier)))
     body: (proc_body
       (where_statement
         (binary_expression
@@ -46,15 +50,18 @@ proc sort data=mydata out=sorted;
   by name;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier)
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier)))
     body: (proc_body
       (by_statement
         (identifier)))))
@@ -66,15 +73,16 @@ proc sort data=mydata nodupkey;
   by name;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier)
+      (proc_option
+        (proc_option_key)
+        (identifier))
       (identifier))
     body: (proc_body
       (by_statement
         (identifier)))))
-

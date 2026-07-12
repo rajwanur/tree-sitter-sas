@@ -6,15 +6,18 @@ proc transpose data=wide out=tall;
   by id;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier)
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier)))
     body: (proc_body
       (tabulate_var_statement
         (identifier)
@@ -30,13 +33,15 @@ proc report data=mydata;
   define name / display;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier)))
     body: (proc_body
       (report_column_statement
         (identifier)
@@ -54,13 +59,15 @@ proc tabulate data=mydata;
   table region, sales;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier)))
     body: (proc_body
       (means_class_statement
         (identifier))
@@ -77,6 +84,7 @@ proc contents;
   data mydata;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
@@ -92,21 +100,27 @@ proc import datafile="test.csv" out=mydata dbms=csv replace;
   getnames=yes;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (quoted_string
-        (double_quoted_string))
-      (identifier)
-      (identifier)
-      (identifier)
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key)
+        (quoted_string
+          (double_quoted_string)))
+      (proc_option
+        (proc_option_key)
+        (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier))
+      (proc_option_flag))
     body: (proc_body
-      (import_getnames_statement))))
+      (bare_statement
+        (identifier)
+        (identifier)))))
 
 ================================================================================
 PROC EXPORT
@@ -114,22 +128,23 @@ PROC EXPORT
 proc export data=mydata outfile="out.csv" dbms=csv replace;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier)
-      (identifier)
-      (quoted_string
-        (double_quoted_string))
-      (identifier)
-      (identifier)
-      (identifier))
-    body: (proc_body
-      (bare_statement
-        (identifier)))))
+      (proc_option
+        (proc_option_key)
+        (identifier))
+      (proc_option
+        (proc_option_key)
+        (quoted_string
+          (double_quoted_string)))
+      (proc_option
+        (proc_option_key)
+        (identifier))
+      (proc_option_flag))))
 
 ================================================================================
 PROC COMPARE
@@ -139,15 +154,18 @@ proc compare base=old compare=new;
   with a b;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier)
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier)))
     body: (proc_body
       (tabulate_var_statement
         (identifier)
@@ -164,13 +182,16 @@ proc datasets lib=work;
   change new = latest;
 quit;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key
+          (identifier))
+        (identifier)))
     body: (proc_body
       (datasets_delete_statement
         (identifier))
@@ -185,6 +206,7 @@ proc options;
   option linesize=80;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
@@ -200,19 +222,19 @@ PROC APPEND
 proc append base=master data=new force;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier)
-      (identifier)
-      (identifier)
-      (identifier))
-    body: (proc_body
-      (bare_statement
-        (identifier)))))
+      (proc_option
+        (proc_option_key)
+        (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier))
+      (identifier))))
 
 ================================================================================
 PROC UNIVARIATE
@@ -222,13 +244,15 @@ proc univariate data=mydata;
   histogram height;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier)))
     body: (proc_body
       (tabulate_var_statement
         (identifier))
@@ -242,15 +266,17 @@ proc reg data=mydata;
   model y = x;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier)))
     body: (proc_body
-      (reg_model_statement
+      (logistic_model_statement
         (identifier)
         (identifier)))))
 
@@ -261,13 +287,15 @@ proc gplot data=mydata;
   plot height * weight;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier)))
     body: (proc_body
       (reg_plot_statement
         (binary_expression
@@ -281,15 +309,16 @@ proc sgplot data=mydata;
   scatter x=height y=weight;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier)))
     body: (proc_body
       (sgplot_scatter_statement
         (identifier)
         (identifier)))))
-

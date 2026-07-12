@@ -5,13 +5,15 @@ proc freq data=mydata;
   tables age;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier)))
     body: (proc_body
       (freq_tables_statement
         (identifier)))))
@@ -23,13 +25,15 @@ proc freq data=mydata;
   tables age * sex;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier)))
     body: (proc_body
       (freq_tables_statement
         (identifier)
@@ -43,13 +47,15 @@ proc freq data=mydata;
   tables age;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier)))
     body: (proc_body
       (where_statement
         (binary_expression
@@ -57,4 +63,3 @@ run;
           right: (number)))
       (freq_tables_statement
         (identifier)))))
-

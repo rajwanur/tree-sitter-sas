@@ -4,15 +4,14 @@ PROC MEANS simple
 proc means data=mydata;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier))
-    body: (proc_body
-      (bare_statement
+      (proc_option
+        (proc_option_key)
         (identifier)))))
 
 ================================================================================
@@ -22,13 +21,15 @@ proc means data=mydata;
   var height weight;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier)))
     body: (proc_body
       (tabulate_var_statement
         (identifier)
@@ -42,13 +43,15 @@ proc means data=mydata;
   by sex;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier)))
     body: (proc_body
       (means_class_statement
         (identifier))
@@ -63,13 +66,15 @@ proc means data=mydata;
   output out=summary mean=avgheight;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier)))
     body: (proc_body
       (tabulate_var_statement
         (identifier))
@@ -86,16 +91,17 @@ proc summary data=mydata;
   output out=summary;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier)))
     body: (proc_body
       (tabulate_var_statement
         (identifier))
       (means_output_statement
         (identifier)))))
-

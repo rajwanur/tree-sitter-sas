@@ -47,6 +47,10 @@ module.exports = grammar({
     // array_statement: after the bracket clause, repeat1($.identifier) before ';'
     // is ambiguous with the next statement starting with an identifier.
     [$.array_statement],
+    // array_element vs function_call: "name(...)" is ambiguous -- could be an
+    // array reference name(i) or a function call name(args). SAS uses the same
+    // syntax for both, so GLR explores both interpretations.
+    [$.array_element, $.function_call],
     // proc_body: repeat1(choice(...)) cannot tell whether an identifier
     // starts a new statement inside the proc body or is a new step outside.
     // Also, run/quit can match as bare_statement or as the step terminator.
@@ -67,8 +71,6 @@ module.exports = grammar({
     [$.freq_test_statement, $.expression],
     // contents_flag_statement vs compare_flag_statement: both match 'noprint' etc.
     [$.contents_flag_statement, $.compare_flag_statement],
-    // import_replace_statement vs export_replace_statement: both match 'replace ;'
-    [$.import_replace_statement, $.export_replace_statement],
     // univariate_histogram_statement vs sgplot_histogram_statement: both start with 'histogram'
     [$.univariate_histogram_statement, $.sgplot_histogram_statement],
     // reg_plot_statement: repeat1 of expression/quoted_string vs standalone expression
@@ -111,14 +113,10 @@ module.exports = grammar({
     // sgplot_refline_statement: repeat of expression creates boundary ambiguity
     [$.sgplot_refline_statement, $.expression],
     // Multiple *_out_statement rules match 'out' '=' identifier
-    [$.contents_out_statement, $.import_out_statement, $.compare_out_statement],
+    [$.contents_out_statement, $.compare_out_statement],
     // report_define_statement: repeat of ident/string/expression creates boundary ambiguity
     [$.report_define_statement, $.expression],
     [$.report_define_statement, $.expression, $.function_call],
-    // export_data_statement vs append_data_statement: both match 'data' '=' identifier
-    [$.export_data_statement, $.append_data_statement],
-    // import_dbms_statement vs export_dbms_statement: both match 'dbms' '=' identifier
-    [$.import_dbms_statement, $.export_dbms_statement],
     // compare_base_statement vs append_base_statement: both match 'base' '=' identifier
     [$.compare_base_statement, $.append_base_statement],
     // gplot_plot_statement: repeat1 of expr*expr creates boundary ambiguity
@@ -237,10 +235,70 @@ module.exports = grammar({
 
     proc_name: $ => $.identifier,
 
+    // PROC options appear on the header line before the terminating ';'.
+    // Real SAS bundles all options in one statement, e.g.:
+    //   proc import datafile="x.csv" out=work.x dbms=csv replace;
+    // The option KEY is recognized as a case-insensitive keyword (so it highlights
+    // and is distinct from a bare identifier), while unknown keys (e.g. 'data' in
+    // "proc contents data=x", 'noprint') still match via the $.identifier fallback.
+    // A bare keyword with no '= value' (e.g. 'replace') matches the flag form below.
     proc_options: $ => repeat1(choice(
-      seq($.identifier, '=', $.expression),
+      $.proc_option,
+      $.proc_option_flag,
       $.identifier,
     )),
+
+    // key = value  (e.g. datafile="...", dbms=csv, out=prostate)
+    // Also supports complex PROC options with a parenthesized argument group:
+    //   plots(stepaxis=normb unpack)=all
+    //   outest(type=beta)
+    proc_option: $ => seq(
+      $.proc_option_key,
+      optional($.proc_option_args),
+      '=',
+      $.expression,
+    ),
+
+    // Parenthesized argument group for complex PROC options.
+    // Contents are freeform: key=value pairs, bare keywords, identifiers.
+    proc_option_args: $ => seq(
+      '(',
+      repeat1(choice(
+        seq($.identifier, '=', $.expression),
+        $.identifier,
+        $.number,
+        $.quoted_string,
+      )),
+      ')',
+    ),
+
+    // A PROC option keyword with no value, e.g. 'replace' in PROC IMPORT.
+    proc_option_flag: $ => alias(
+      choice(
+        $._replace_keyword,
+        $._label_keyword,
+      ),
+      'proc_option_flag',
+    ),
+
+    // Option key: known IMPORT/EXPORT keywords (aliased so they appear as
+    // anonymous keyword nodes for highlighting) OR a generic identifier.
+    proc_option_key: $ => choice(
+      alias($._datafile_keyword, 'datafile'),
+      alias($._out_keyword, 'out'),
+      alias($._dbms_keyword, 'dbms'),
+      alias($._datarow_keyword, 'datarow'),
+      alias($._getnames_keyword, 'getnames'),
+      alias($._sheet_keyword, 'sheet'),
+      alias($._range_keyword, 'range'),
+      alias($._guessingrows_keyword, 'guessingrows'),
+      alias($._outfile_keyword, 'outfile'),
+      alias($._outest_keyword, 'outest'),
+      alias($._data_keyword, 'data'),
+      alias($._base_keyword, 'base'),
+      alias($._compare_keyword, 'compare'),
+      $.identifier,
+    ),
 
     // PROC body: flat dispatch with all PROC-specific statement rules as unique named types.
     // Each PROC's statements are prefixed (e.g., sql_select_statement, means_var_statement)
@@ -301,22 +359,8 @@ module.exports = grammar({
       $.contents_data_statement,
       $.contents_out_statement,
       $.contents_flag_statement,
-      // PROC IMPORT statements
-      $.import_datafile_statement,
-      $.import_out_statement,
-      $.import_dbms_statement,
-      $.import_replace_statement,
-      $.import_datarow_statement,
-      $.import_getnames_statement,
-      $.import_sheet_statement,
-      $.import_range_statement,
-      $.import_guessingrows_statement,
-      // PROC EXPORT statements
-      $.export_data_statement,
-      $.export_outfile_statement,
-      $.export_dbms_statement,
-      $.export_replace_statement,
-      $.export_label_statement,
+      // NOTE: PROC IMPORT/EXPORT options are handled entirely by proc_options
+      // on the header line (real SAS bundles all options behind one ';').
       // PROC COMPARE statements
       $.compare_base_statement,
       $.compare_compare_statement,
@@ -450,7 +494,15 @@ module.exports = grammar({
     // macro functions (%sysfunc, %scan, etc.) and returns a value.
     macro_call_statement: $ => seq(
       field('name', seq('%', $.identifier)),
-      optional(seq('(', repeat(seq($.macro_expression, optional(','))), ')')),
+      optional(choice(
+        // Parenthesized args: %mymacro(a, b)
+        seq('(', repeat(seq($.macro_expression, optional(','))), ')'),
+        // Bare-text args: %put &nvars;  %put "hello";  %put The value is &x;
+        // SAS macro statements like %put, %abort, %goto accept freeform text.
+        // macro_text is flat/non-recursive (macro_text_token = /[^;"'&]+/),
+        // avoiding a conflict with the parenthesized-args form above.
+        $.macro_text,
+      )),
       ';'
     ),
 
@@ -528,9 +580,11 @@ module.exports = grammar({
     ))),
 
     // Raw text token in macro context -- matches runs of characters that
-    // aren't semicolons, macro triggers (&), or quote characters. This
-    // handles spaces, identifiers, numbers, operators, paths, etc.
-    macro_text_token: $ => /[^;"'&]+/,
+    // aren't semicolons, macro triggers (& and %), or quote characters. This
+    // handles spaces, identifiers, numbers, operators, paths, etc. Excluding %
+    // ensures %sysfunc(...), %scan(...), etc. are recognized as macro_function_call
+    // nodes rather than being swallowed as raw text.
+    macro_text_token: $ => /[^;"'&%]+/,
 
     // %GLOBAL -- declare global macro variables
     macro_global_statement: $ => seq(
@@ -681,9 +735,15 @@ module.exports = grammar({
     ),
 
     // Assignment -- target = value;
+    // Target can be a plain identifier, a dotted name (lib.dataset), or an
+    // array element with a subscript: _v[id], _x{i}. We use [] and {} for
+    // subscript brackets to avoid conflict with function_call's () syntax.
     assignment_statement: $ => seq(
       field('target', $.identifier),
-      optional(seq('.', $.identifier)),
+      optional(choice(
+        seq('.', $.identifier),
+        seq(choice('[', '{'), $.expression, choice(']', '}')),
+      )),
       '=',
       field('value', $.expression),
       ';'
@@ -706,9 +766,11 @@ module.exports = grammar({
     drop_statement: $ => seq(alias($._drop_keyword, 'drop'), repeat1($.identifier), ';'),
 
     // RETAIN -- retain variables across iterations
+    // Variables may be macro variable references (&depvar) in addition to plain
+    // identifiers, since a macro may expand to a variable list.
     retain_statement: $ => seq(
       alias($._retain_keyword, 'retain'),
-      repeat1(seq($.identifier, optional($.expression))),
+      repeat1(seq(choice($.identifier, $.macro_variable_reference), optional($.expression))),
       ';'
     ),
 
@@ -750,17 +812,22 @@ module.exports = grammar({
       ';'
     ),
 
-    // ARRAY -- array declaration
+    // ARRAY -- declares an array of variables.
+    // SAS allows [], {}, and () for array dimensions, but we restrict to
+    // [] and {} to avoid conflict with the () initializer list and function_call.
+    // The dimension can be a number, identifier, macro variable reference
+    // (&nvars), or `*` (implicit dimension). An optional initializer list
+    // may follow in parens, e.g. `array _v{&nvars} &covars (&nvars *0);`
     array_statement: $ => seq(
       alias($._array_keyword, 'array'),
       $.identifier,
       optional(seq(
-        '[',
-        repeat(seq($.identifier, optional(seq('=', $.expression)))),
-        ']',
-        optional($.identifier),
+        choice('[', '{'),
+        repeat1(choice($.identifier, $.macro_variable_reference, $.number, '*')),
+        choice(']', '}'),
       )),
-      repeat1($.identifier),
+      repeat1(choice($.identifier, $.macro_variable_reference)),
+      optional(seq('(', repeat(choice($.identifier, $.macro_variable_reference, $.number, '*')), ')')),
       ';'
     ),
 
@@ -835,7 +902,7 @@ module.exports = grammar({
     // Only consumes raw tokens, not $.expression, to avoid ambiguity with statement dispatch.
     bare_statement: $ => seq(
       $.identifier,
-      repeat(choice($.identifier, $.quoted_string, $.number, '(', ')', '=', ',', '.', '&', $.identifier)),
+      repeat(choice($.identifier, $.quoted_string, $.number, '(', ')', '=', ',', '.', '&')),
       ';'
     ),
 
@@ -991,7 +1058,7 @@ module.exports = grammar({
     // PROC MEANS / SUMMARY statements
     // ========================================================================
 
-    means_var_statement: $ => seq(alias($._var_keyword, 'var'), repeat1($.identifier), ';'),
+    means_var_statement: $ => seq(alias($._var_keyword, 'var'), repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     means_class_statement: $ => seq('class', repeat1($.identifier), ';'),
     means_freq_statement: $ => seq('freq', $.identifier, ';'),
     means_weight_statement: $ => seq('weight', $.identifier, ';'),
@@ -1027,7 +1094,7 @@ module.exports = grammar({
 
     tabulate_class_statement: $ => seq('class', repeat1($.identifier), ';'),
     tabulate_classlev_statement: $ => seq('classlev', repeat1($.identifier), ';'),
-    tabulate_var_statement: $ => seq('var', repeat1($.identifier), ';'),
+    tabulate_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     tabulate_table_statement: $ => seq('table', repeat1(seq(choice($.identifier, seq($.identifier, '*', $.identifier), seq('(', repeat1($.identifier), ')'), $.quoted_string, $.expression), optional(','))), ';'),
     tabulate_keylabel_statement: $ => seq('keylabel', repeat1(seq($.identifier, '=', $.quoted_string)), ';'),
     tabulate_format_statement: $ => seq('format', repeat1(seq($.identifier, $.identifier)), ';'),
@@ -1036,7 +1103,7 @@ module.exports = grammar({
     // PROC PRINT statements
     // ========================================================================
 
-    print_var_statement: $ => seq('var', repeat1($.identifier), ';'),
+    print_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     print_id_statement: $ => seq('id', repeat1($.identifier), ';'),
     print_sum_statement: $ => seq('sum', repeat1($.identifier), ';'),
     print_pageby_statement: $ => seq('pageby', $.identifier, ';'),
@@ -1045,7 +1112,7 @@ module.exports = grammar({
     // PROC TRANSPOSE statements
     // ========================================================================
 
-    transpose_var_statement: $ => seq('var', repeat1($.identifier), ';'),
+    transpose_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     transpose_id_statement: $ => seq('id', $.identifier, ';'),
     transpose_idlabel_statement: $ => seq('idlabel', $.identifier, ';'),
     transpose_copy_statement: $ => seq('copy', repeat1($.identifier), ';'),
@@ -1063,29 +1130,10 @@ module.exports = grammar({
       seq('short', ';'),
     ),
 
-    // ========================================================================
-    // PROC IMPORT statements
-    // ========================================================================
-
-    import_datafile_statement: $ => seq('datafile', '=', $.quoted_string, ';'),
-    import_out_statement: $ => seq('out', '=', $.identifier, ';'),
-    import_dbms_statement: $ => seq('dbms', '=', $.identifier, ';'),
-    import_replace_statement: $ => seq('replace', ';'),
-    import_datarow_statement: $ => seq('datarow', '=', $.number, ';'),
-    import_getnames_statement: $ => seq('getnames', '=', choice('yes', 'no', 'YES', 'NO'), ';'),
-    import_sheet_statement: $ => seq('sheet', '=', $.quoted_string, ';'),
-    import_range_statement: $ => seq('range', '=', $.quoted_string, ';'),
-    import_guessingrows_statement: $ => seq('guessingrows', '=', $.number, ';'),
-
-    // ========================================================================
-    // PROC EXPORT statements
-    // ========================================================================
-
-    export_data_statement: $ => seq('data', '=', $.identifier, ';'),
-    export_outfile_statement: $ => seq('outfile', '=', $.quoted_string, ';'),
-    export_dbms_statement: $ => seq('dbms', '=', $.identifier, ';'),
-    export_replace_statement: $ => seq('replace', ';'),
-    export_label_statement: $ => seq('label', ';'),
+    // NOTE: PROC IMPORT/EXPORT option statements were removed.
+    // Real SAS writes all IMPORT/EXPORT options on the header line behind a
+    // single ';', so they are parsed by proc_options/proc_option_key, not as
+    // separate body statements. See proc_options above.
 
     // ========================================================================
     // PROC COMPARE statements
@@ -1104,7 +1152,7 @@ module.exports = grammar({
       seq('listall', ';'),
     ),
     compare_id_statement: $ => seq('id', repeat1($.identifier), ';'),
-    compare_var_statement: $ => seq('var', repeat1($.identifier), ';'),
+    compare_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     compare_with_statement: $ => seq('with', repeat1($.identifier), ';'),
 
     // ========================================================================
@@ -1150,7 +1198,7 @@ module.exports = grammar({
     // PROC UNIVARIATE statements
     // ========================================================================
 
-    univariate_var_statement: $ => seq('var', repeat1($.identifier), ';'),
+    univariate_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     univariate_class_statement: $ => seq('class', repeat1($.identifier), ';'),
     univariate_freq_statement: $ => seq('freq', $.identifier, ';'),
     univariate_weight_statement: $ => seq('weight', $.identifier, ';'),
@@ -1165,12 +1213,28 @@ module.exports = grammar({
     // PROC LOGISTIC statements
     // ========================================================================
 
+    // Model option: key=value with optional parenthesized args.
+    // e.g. selection=lasso(stop=none), event='1', stop=none
+    model_option: $ => seq(
+      $.identifier, '=',
+      $.identifier,
+      optional(seq('(', repeat1(choice(
+        seq($.identifier, '=', choice($.identifier, $.number, $.quoted_string)),
+        $.identifier,
+        $.number,
+      )), ')')),
+    ),
+
     logistic_class_statement: $ => seq("class", $.identifier, optional(seq("(", repeat1(choice(
       seq($.identifier, "=", choice($.identifier, $.quoted_string)),
       $.identifier,
     )), ")")), ";"),
-    logistic_model_statement: $ => seq("model", $.identifier, optional(seq("(", $.identifier, "=", $.quoted_string, ")")), "=", repeat1($.identifier), repeat(choice(
-      seq("/", repeat1($.identifier)),
+    logistic_model_statement: $ => seq("model", choice($.identifier, $.macro_variable_reference), optional(seq("(", $.identifier, "=", $.quoted_string, ")")), "=", repeat1(choice($.identifier, $.macro_variable_reference)), repeat(choice(
+      seq("/", repeat1(choice(
+        $.model_option,
+        $.identifier,
+        $.macro_variable_reference,
+      ))),
       ";"
     )), ";"),
 
@@ -1178,11 +1242,15 @@ module.exports = grammar({
     // PROC REG statements
     // ========================================================================
 
-    reg_model_statement: $ => seq('model', $.identifier, '=', repeat1($.identifier), repeat(choice(
-      seq('/', repeat1($.identifier)),
+    reg_model_statement: $ => seq('model', choice($.identifier, $.macro_variable_reference), '=', repeat1(choice($.identifier, $.macro_variable_reference)), repeat(choice(
+      seq('/', repeat1(choice(
+        $.model_option,
+        $.identifier,
+        $.macro_variable_reference,
+      ))),
       ';'
     )), ';'),
-    reg_var_statement: $ => seq('var', repeat1($.identifier), ';'),
+    reg_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     reg_weight_statement: $ => seq('weight', $.identifier, ';'),
     reg_id_statement: $ => seq('id', $.identifier, ';'),
     reg_plot_statement: $ => seq('plot', repeat1(choice($.expression, $.quoted_string)), ';'),
@@ -1235,9 +1303,11 @@ module.exports = grammar({
       $.parenthesized_expression,
       $.function_call,
       $.macro_variable_reference,
+      // Array element: arr[i], _v{id}, x(j) -- common in DATA step expressions.
+      $.array_element,
       // Dotted identifier: first.varname, last.varname, lib.dataset etc.
       // SAS uses this pattern extensively for BY-group indicators and
-      // qualified variable/dataset references in expressions.
+      // qualified references (lib.dataset) in expressions.
       $.dotted_identifier,
       $.identifier,
       $.quoted_string,
@@ -1245,6 +1315,17 @@ module.exports = grammar({
       $.missing_value,
       $.number,
     ),
+
+    // Array element access: name[expr], name{expr}.
+    // SAS accepts [], {}, and () for array subscripting, but () is also the
+    // function-call syntax. We restrict array_element to [] and {} to avoid
+    // a pervasive conflict with function_call; x(j) parses as a function_call.
+    array_element: $ => prec(1, seq(
+      field('array', $.identifier),
+      choice('[', '{'),
+      field('index', $.expression),
+      choice(']', '}'),
+    )),
 
     // Dotted identifier -- two identifiers joined by a dot.
     // Used for SAS BY-group indicators (first.USUBJID, last.LBTEST),
@@ -1322,6 +1403,7 @@ module.exports = grammar({
       $.options_statement,
       $.title_statement,
       $.footnote_statement,
+      $.ods_statement,
       $.x_statement,
     ),
 
@@ -1493,6 +1575,23 @@ module.exports = grammar({
     _having_keyword: $ => /[hH][aA][vV][iI][nN][gG]/,
     _table_keyword: $ => /[tT][aA][bB][lL][eE]/,
     _var_keyword: $ => /[vV][aA][rR]/,
+
+    // --- PROC IMPORT / EXPORT option keywords (case-insensitive) ---
+    // These keys appear on the PROC header line, e.g.:
+    //   proc import datafile="x.csv" out=work.x dbms=csv replace;
+    _datafile_keyword: $ => /[dD][aA][tT][aA][fF][iI][lL][eE]/,
+    _outfile_keyword: $ => /[oO][uU][tT][fF][iI][lL][eE]/,
+    _out_keyword: $ => /[oO][uU][tT]/,
+    _dbms_keyword: $ => /[dD][bB][mM][sS]/,
+    _replace_keyword: $ => /[rR][eE][pP][lL][aA][cC][eE]/,
+    _datarow_keyword: $ => /[dD][aA][tT][aA][rR][oO][wW]/,
+    _getnames_keyword: $ => /[gG][eE][tT][nN][aA][mM][eE][sS]/,
+    _sheet_keyword: $ => /[sS][hH][eE][eE][tT]/,
+    _range_keyword: $ => /[rR][aA][nN][gG][eE]/,
+    _guessingrows_keyword: $ => /[gG][uU][eE][sS][sS][iI][nN][gG][rR][oO][wW][sS]/,
+    _base_keyword: $ => /[bB][aA][sS][eE]/,
+    _compare_keyword: $ => /[cC][oO][mM][pP][aA][rR][eE]/,
+    _outest_keyword: $ => /[oO][uU][tT][eE][sS][tT]/,
 
     // --- Operators and punctuation ---
     _semicolon: $ => ';',

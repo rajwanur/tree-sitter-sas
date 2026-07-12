@@ -36,16 +36,16 @@ Macro with parameters
       (macro_let_statement
         name: (identifier)
         value: (macro_text
-          (macro_expression
-            (macro_function_call
-              (macro_expression
-                (macro_binary_expression
-                  left: (macro_expression
-                    (macro_variable_reference
-                      name: (identifier)))
-                  right: (macro_expression
-                    (macro_variable_reference
-                      name: (identifier))))))))))
+          (macro_text_token)
+          (macro_function_call
+            (macro_expression
+              (macro_binary_expression
+                left: (macro_expression
+                  (macro_variable_reference
+                    name: (identifier)))
+                right: (macro_expression
+                  (macro_variable_reference
+                    name: (identifier)))))))))
     name: (identifier)))
 
 ================================================================================
@@ -160,10 +160,10 @@ run;
     name: (identifier)
     (macro_statement
       (macro_do_block
-        (identifier)
-        (macro_expression
-          (number))
-        (macro_expression
+        (bare_statement
+          (identifier)
+          (number)
+          (identifier)
           (number))
         (assignment_statement
           target: (identifier)
@@ -238,11 +238,11 @@ run;
   (macro_let_statement
     name: (identifier)
     value: (macro_text
-      (macro_expression
-        (macro_function_call
-          (macro_expression
-            (function_call
-              name: (identifier))))))))
+      (macro_text_token)
+      (macro_function_call
+        (macro_expression
+          (function_call
+            name: (identifier)))))))
 
 ================================================================================
 %SCAN call
@@ -255,16 +255,16 @@ run;
   (macro_let_statement
     name: (identifier)
     value: (macro_text
-      (macro_expression
-        (macro_function_call
-          (macro_expression
-            (macro_variable_reference
-              name: (identifier)))
-          (macro_expression
-            (number))
-          (macro_expression
-            (quoted_string
-              (double_quoted_string))))))))
+      (macro_text_token)
+      (macro_function_call
+        (macro_expression
+          (macro_variable_reference
+            name: (identifier)))
+        (macro_expression
+          (number))
+        (macro_expression
+          (quoted_string
+            (double_quoted_string)))))))
 
 ================================================================================
 Nested macro definition
@@ -322,11 +322,11 @@ run;
   (macro_let_statement
     name: (identifier)
     value: (macro_text
-      (macro_expression
-        (macro_function_call
-          (macro_expression
-            (macro_binary_expression
-              left: (macro_expression
-                (number))
-              right: (macro_expression
-                (number)))))))))
+      (macro_text_token)
+      (macro_function_call
+        (macro_expression
+          (macro_binary_expression
+            left: (macro_expression
+              (number))
+            right: (macro_expression
+              (number))))))))

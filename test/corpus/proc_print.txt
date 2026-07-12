@@ -4,15 +4,14 @@ PROC PRINT simple
 proc print data=mydata;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier))
-    body: (proc_body
-      (bare_statement
+      (proc_option
+        (proc_option_key)
         (identifier)))))
 
 ================================================================================
@@ -22,13 +21,15 @@ proc print data=mydata;
   var name age;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier)))
     body: (proc_body
       (tabulate_var_statement
         (identifier)
@@ -42,13 +43,15 @@ proc print data=mydata;
   var name;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
     name: (proc_name
       (identifier))
     options: (proc_options
-      (identifier)
-      (identifier))
+      (proc_option
+        (proc_option_key)
+        (identifier)))
     body: (proc_body
       (where_statement
         (binary_expression
@@ -56,4 +59,3 @@ run;
           right: (number)))
       (tabulate_var_statement
         (identifier)))))
-
