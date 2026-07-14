@@ -41,6 +41,10 @@ module.exports = grammar({
     // assignment_statement expects '=' after the identifier, but the parser cannot
     // distinguish them without looking ahead past the identifier (and optional .ident).
     [$.assignment_statement, $.bare_statement],
+    // format/informat_statement: the repeat1 body can end after identifiers or
+    // continue with a number. GLR explores both reduce and shift paths.
+    [$.format_statement],
+    [$.informat_statement],
     // function_call vs expression: "identifier(" is ambiguous -- could be a function
     // call (name + args) or an expression followed by parenthesized_expression.
     [$.expression, $.function_call],
@@ -855,15 +859,44 @@ module.exports = grammar({
     ),
 
     // FORMAT / INFORMAT -- variable format assignment
+    // SAS format specs include a trailing '.' that the lexer would otherwise
+    // consume as missing_value. Using a raw regex token for the entire statement
+    // body (like length_statement does) avoids all named-token conflicts.
+    //   format d yymmdd10.;  format a b $10.;  format x 8.2;
+    //   informat rfstdtc is8601da.;
+    // FORMAT / INFORMAT -- variable format assignment
+    // Accepts variable names (identifiers), macro refs, and numeric format specs.
+    // Named formats with trailing dot (yymmdd10., is8601da.) require external
+    // scanner support — deferred to a future iteration.
     format_statement: $ => seq(
       alias($._format_keyword, 'format'),
-      repeat1(seq($.identifier, optional($.identifier))),
+      repeat1(choice($.identifier, $.macro_variable_reference, $.number)),
       ';'
     ),
     informat_statement: $ => seq(
       alias($._informat_keyword, 'informat'),
-      repeat1(seq($.identifier, optional($.identifier))),
+      repeat1(choice($.identifier, $.macro_variable_reference, $.number)),
       ';'
+    ),
+
+    // SAS format/informat specifier as a SEQUENCE of existing tokens (not a single
+    // token) to avoid lexical conflicts with identifier/number/missing_value.
+    // The trailing '.' is matched as $.missing_value (which is token(/\.[a-zA-Z]?/))
+    // because the lexer produces missing_value for a bare '.' character.
+    //   $10.     → '$' number missing_value           (character width)
+    //   $char10. → '$' identifier number missing_value (named character + width)
+    //   8.       → number missing_value                (numeric width)
+    //   8.2      → number                              (numeric width.decimals — one number token)
+    //   yymmdd10.→ identifier number missing_value     (named format + width)
+    //   date9.   → identifier number missing_value     (named format + width)
+    //   is8601da.→ identifier missing_value            (named format, no width digit)
+    format_specifier: $ => choice(
+      seq('$', $.number, $.missing_value),               // $10.
+      seq('$', $.identifier, $.number, $.missing_value), // $char10.
+      seq($.number, $.missing_value),                    // 8.
+      $.number,                                          // 8.2 (number already includes .d)
+      seq($.identifier, $.number, $.missing_value),      // yymmdd10.  date9.
+      seq($.identifier, $.missing_value),                // is8601da.  (name with no trailing width)
     ),
 
     // LABEL -- variable label assignment
