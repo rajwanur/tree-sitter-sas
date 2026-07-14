@@ -1592,26 +1592,32 @@ module.exports = grammar({
       $.x_statement,
     ),
 
+    // LIBNAME -- library reference assignment with optional path and options.
+    //   libname mylib "c:/temp";
+    //   libname raw "%sysfunc(pathname(work))" access=readonly;
+    //   libname mylib clear;
     libname_statement: $ => seq(
       alias($._libname_keyword, 'libname'),
-      field('name', $.identifier),
-      choice(
-        seq(field('path', $.quoted_string), optional(seq(field('engine', $.identifier), repeat($.identifier)))),
-        'clear',
-        'list',
-      ),
+      repeat(choice(
+        seq($.identifier, '=', $.expression),
+        $.quoted_string,
+        $.macro_variable_reference,
+        $.identifier,
+      )),
       ';'
     ),
 
+    // FILENAME -- external file reference with optional path and options.
+    //   filename dump "%sysfunc(pathname(work))/dump.txt" lrecl=200;
+    //   filename myref "c:/temp/data.txt";
     filename_statement: $ => seq(
       alias($._filename_keyword, 'filename'),
-      field('name', $.identifier),
-      choice(
+      repeat(choice(
+        seq($.identifier, '=', $.expression),
         $.quoted_string,
-        seq($.identifier, repeat(choice($.identifier, $.quoted_string))),
-        'clear',
-        'list',
-      ),
+        $.macro_variable_reference,
+        $.identifier,
+      )),
       ';'
     ),
 
