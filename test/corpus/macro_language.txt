@@ -63,11 +63,13 @@ Macro with default parameter values
       (macro_parameter
         name: (identifier)
         default: (macro_parameter_default
-          (number)))
+          (macro_param_text
+            (macro_param_text_token))))
       (macro_parameter
         name: (identifier)
         default: (macro_parameter_default
-          (identifier))))))
+          (macro_param_text
+            (macro_param_text_token)))))))
 
 ================================================================================
 %LET statement

@@ -142,6 +142,13 @@ module.exports = grammar({
     // macro_definition vs macro_call_statement: both start with %keyword at top level.
     // The %macro keyword regex should win but GLR explores both paths.
     [$.macro_definition],
+    // macro_variable_reference trailing dot: `&var.` consumes an optional '.' as the
+    // SAS macro-name terminator. This conflicts when macro_variable_reference appears
+    // in dotted contexts (G-01/G-02): `adam.&ds` and `&x.y = 1` want the '.' to bind
+    // to the enclosing dotted rule, while bare `&var.` wants it consumed. GLR explores
+    // both and the path that forms a complete parse wins. Local to one optional token,
+    // so no parser-size blow-up (unlike the open-ended macro_text tail excluded above).
+    [$.macro_variable_reference],
   ],
 
   // Top-level rules exposed as node types for polymorphic dispatch.
@@ -169,6 +176,7 @@ module.exports = grammar({
       $.macro_global_statement,
       $.macro_local_statement,
       $.macro_call_statement,
+      $.macro_put_statement,
       // Standalone run;/quit; outside any step context (SAS allows orphan terminators).
       $.run_statement,
       $.quit_statement,
@@ -198,9 +206,15 @@ module.exports = grammar({
       ';'
     ),
 
+    // A dataset name can be an identifier, a macro variable reference
+    // (&outdata, &out.), or a qualified library.dataset name where either
+    // part may itself be a macro variable reference (adam.&ds, &lib.&ds).
+    // macro_variable_reference already consumes an optional trailing dot,
+    // so &out. and adam.&ds coexist without double-dot ambiguity.
     data_name: $ => choice(
       $.identifier,
-      seq(field('library', $.identifier), '.', field('dataset', $.identifier)),
+      $.macro_variable_reference,
+      seq(field('library', $.identifier), '.', field('dataset', choice($.identifier, $.macro_variable_reference))),
       seq('_NULL_', optional(seq('.', $.identifier))),
     ),
 
@@ -446,6 +460,8 @@ module.exports = grammar({
       // PROC LOGISTIC statements
       $.logistic_class_statement,
       $.logistic_model_statement,
+      // PROC FORMAT statements (G-08)
+      $.format_value_statement,
       // Generic fallback for unrecognized PROC sub-statements
       $.bare_statement,
     )),
@@ -466,7 +482,7 @@ module.exports = grammar({
       field('name', $.identifier),
       optional(field('params', $.macro_parameters)),
       ';',
-      repeat(choice($.statement, $.macro_statement)),
+      repeat(choice($.data_step, $.proc_step, $.statement, $.macro_statement)),
       alias($._mend_keyword, '%mend'),
       optional(field('name', $.identifier)),
       ';'
@@ -483,34 +499,60 @@ module.exports = grammar({
       optional(seq('=', field('default', $.macro_parameter_default))),
     ),
 
-    macro_parameter_default: $ => $.expression,
+    // Macro parameter default value. Real SAS defaults are freeform text bounded
+    // by the next ',' (parameter separator) or ')' (end of param list), e.g.:
+    //   contvars = AGE AGEGR1N HEIGHT   (space-separated identifier list)
+    //   where    = %str()               (empty-string macro function)
+    //   decimals = 1                    (number)
+    // We use macro_param_text -- a permissive form like macro_text but whose raw
+    // token excludes ',' and ')' so a default stops at the next parameter
+    // separator rather than swallowing it (G-06).
+    macro_parameter_default: $ => $.macro_param_text,
 
-    // Macro call statement -- arbitrary macro invocation as a statement.
+    // Macro call statement -- arbitrary user macro invocation as a statement.
     // Handles patterns like:
     //   %mymacro;
     //   %mymacro(param1, param2);
     //   %x_util_gmlstart;
     // This is distinct from macro_function_call which handles known built-in
     // macro functions (%sysfunc, %scan, etc.) and returns a value.
+    //
+    // NOTE: the freeform-text tail (`%put &nvars;` etc.) used to live here via
+    // $.macro_text. That open-ended repeat1 tail, when reachable inside a
+    // recursive macro body, caused massive GLR state explosion (~160K extra
+    // parser.c lines). The freeform-text need is now served by the dedicated,
+    // keyword-prefixed macro_put_statement below, and this rule is restricted
+    // to bounded forms: `%name` or `%name(...)`. This makes it safe to include
+    // in macro_statement (in-body calls) without explosion.
     macro_call_statement: $ => seq(
       field('name', seq('%', $.identifier)),
-      optional(choice(
-        // Parenthesized args: %mymacro(a, b)
-        seq('(', repeat(seq($.macro_expression, optional(','))), ')'),
-        // Bare-text args: %put &nvars;  %put "hello";  %put The value is &x;
-        // SAS macro statements like %put, %abort, %goto accept freeform text.
-        // macro_text is flat/non-recursive (macro_text_token = /[^;"'&]+/),
-        // avoiding a conflict with the parenthesized-args form above.
-        $.macro_text,
-      )),
+      choice(
+        // With parenthesized args: %mymacro(a, b). The trailing ';' is optional
+        // because SAS treats it as a null statement -- %mymacro(a, b) is a
+        // complete call ending at the closing ')'.
+        seq('(', repeat(seq($.macro_expression, optional(','))), ')', optional(';')),
+        // Without args: %mymacro; -- ';' is required to avoid swallowing
+        // following tokens (no ')' to bound the call).
+        ';'
+      ),
+    ),
+
+    // %PUT -- dedicated rule for `%put <freeform text>;`.
+    // %put is a fixed keyword, so there is no GLR ambiguity with other macro
+    // statements at the `%` position: the tokenizer matches the %put keyword
+    // token (longer than bare `%`) deterministically. The freeform body reuses
+    // macro_text (the same permissive form %let uses). This is the safe home
+    // for the freeform-text tail that previously lived on macro_call_statement.
+    macro_put_statement: $ => seq(
+      alias($._macro_put_keyword, '%put'),
+      optional($.macro_text),
       ';'
     ),
 
-    // Macro statement supertype -- used inside macro_definition bodies
-    // Note: macro_call_statement is NOT included here because it causes massive
-    // GLR state explosion (~160K extra parser.c lines). It remains in _top_level_item
-    // so %mymacro; works at the top level, but inside macro bodies, user macro calls
-    // are handled by macro_function_call for built-in macros and bare_statement fallback.
+    // Macro statement supertype -- used inside macro_definition bodies.
+    // Now includes macro_call_statement (bounded form) and macro_put_statement
+    // so that user macro calls and %put statements work inside macro bodies.
+    // (Previously excluded to avoid explosion; see note on macro_call_statement.)
     macro_statement: $ => choice(
       $.macro_definition,
       $.macro_do_block,
@@ -519,6 +561,8 @@ module.exports = grammar({
       $.macro_global_statement,
       $.macro_local_statement,
       $.macro_function_call,
+      $.macro_call_statement,
+      $.macro_put_statement,
     ),
 
     // %DO block with WHILE/UNTIL/iterative variants
@@ -530,7 +574,7 @@ module.exports = grammar({
         seq($.identifier, "=", $.macro_expression, alias($._macro_to_keyword, "%to"), $.macro_expression, ";"),
         ';'
       )),
-      repeat(choice($.statement, $.macro_statement)),
+      repeat(choice($.data_step, $.proc_step, $.statement, $.macro_statement)),
       alias($._macro_end_keyword, '%end'),
       ';'
     ),
@@ -541,13 +585,13 @@ module.exports = grammar({
       field('condition', $.macro_expression),
       alias($._macro_then_keyword, '%then'),
       choice(
-        seq('%do', ';', repeat(choice($.statement, $.macro_statement)), alias($._macro_end_keyword, '%end'), ';',
+        seq('%do', ';', repeat(choice($.data_step, $.proc_step, $.statement, $.macro_statement)), alias($._macro_end_keyword, '%end'), ';',
           optional(seq(alias($._macro_else_keyword, '%else'), choice(
-            seq('%do', ';', repeat(choice($.statement, $.macro_statement)), alias($._macro_end_keyword, '%end'), ';'),
+            seq('%do', ';', repeat(choice($.data_step, $.proc_step, $.statement, $.macro_statement)), alias($._macro_end_keyword, '%end'), ';'),
             $.statement,
           )))),
         seq($.statement, optional(seq(alias($._macro_else_keyword, '%else'), choice(
-          seq('%do', ';', repeat(choice($.statement, $.macro_statement)), alias($._macro_end_keyword, '%end'), ';'),
+          seq('%do', ';', repeat(choice($.data_step, $.proc_step, $.statement, $.macro_statement)), alias($._macro_end_keyword, '%end'), ';'),
           $.statement,
         ))))
       )
@@ -558,11 +602,12 @@ module.exports = grammar({
     // paths (with \, /), dotted names (lib.dataset), macro references (&var),
     // macro functions (%upcase(...)), and arbitrary text. We use macro_text
     // which is more permissive than macro_expression for this context.
+    // The value is OPTIONAL: SAS allows %let x =; (empty value, G-17).
     macro_let_statement: $ => seq(
       alias($._macro_let_keyword, '%let'),
       field('name', $.identifier),
       '=',
-      field('value', $.macro_text),
+      optional(field('value', $.macro_text)),
       ';'
     ),
 
@@ -585,6 +630,21 @@ module.exports = grammar({
     // ensures %sysfunc(...), %scan(...), etc. are recognized as macro_function_call
     // nodes rather than being swallowed as raw text.
     macro_text_token: $ => /[^;"'&%]+/,
+
+    // Macro parameter default text -- like macro_text but bounded by the macro-
+    // parameter delimiters ',' and ')'. The raw token excludes both (plus the
+    // usual ;"'&% set) so a default value stops at the next parameter separator.
+    // This lets space-separated lists (contvars = AGE AGEGR1N HEIGHT) and macro
+    // functions (where = %str()) parse as a single default without swallowing the
+    // following ',' (G-06).
+    macro_param_text: $ => prec.right(repeat1(choice(
+      $.macro_variable_reference,
+      $.macro_function_call,
+      $.quoted_string,
+      $.macro_param_text_token,
+    ))),
+
+    macro_param_text_token: $ => /[^;"'&%,)]+/,
 
     // %GLOBAL -- declare global macro variables
     macro_global_statement: $ => seq(
@@ -693,15 +753,21 @@ module.exports = grammar({
     // Individual statement rules
     // ========================================================================
 
-    // SET / MERGE / UPDATE / MODIFY -- data reference reading statements
-    set_statement: $ => seq(alias($._set_keyword, 'set'), repeat1($.data_reference), ';'),
+    // SET / MERGE / UPDATE / MODIFY -- data reference reading statements.
+    // SET additionally allows %do loops interleaved with data references, since
+    // macros commonly build the set list dynamically:
+    //   set %do i=1 %to &n; work.ds&i %end; ;
+    // (G-14)
+    set_statement: $ => seq(alias($._set_keyword, 'set'), repeat1(choice($.data_reference, $.macro_do_block)), ';'),
     merge_statement: $ => seq(alias($._merge_keyword, 'merge'), repeat1($.data_reference), ';'),
     update_statement: $ => seq(alias($._update_keyword, 'update'), repeat1($.data_reference), ';'),
     modify_statement: $ => seq(alias($._modify_keyword, 'modify'), repeat1($.data_reference), ';'),
 
+    // Either part of a data reference may be a macro variable reference,
+    // e.g. set &indata; or set adam.&ds; (macro-written DATA steps).
     data_reference: $ => seq(
-      $.identifier,
-      optional(seq('.', $.identifier)),
+      choice($.identifier, $.macro_variable_reference),
+      optional(seq('.', choice($.identifier, $.macro_variable_reference))),
       optional($.data_set_option),
     ),
 
@@ -735,11 +801,12 @@ module.exports = grammar({
     ),
 
     // Assignment -- target = value;
-    // Target can be a plain identifier, a dotted name (lib.dataset), or an
+    // Target can be a plain identifier, a macro variable reference (&flagvar
+    // for macro-generated column names), a dotted name (lib.dataset), or an
     // array element with a subscript: _v[id], _x{i}. We use [] and {} for
     // subscript brackets to avoid conflict with function_call's () syntax.
     assignment_statement: $ => seq(
-      field('target', $.identifier),
+      field('target', choice($.identifier, $.macro_variable_reference)),
       optional(choice(
         seq('.', $.identifier),
         seq(choice('[', '{'), $.expression, choice(']', '}')),
@@ -762,8 +829,10 @@ module.exports = grammar({
     put_statement: $ => seq(alias($._put_keyword, 'put'), $.expression, ';'),
 
     // KEEP / DROP -- variable selection
-    keep_statement: $ => seq(alias($._keep_keyword, 'keep'), repeat1($.identifier), ';'),
-    drop_statement: $ => seq(alias($._drop_keyword, 'drop'), repeat1($.identifier), ';'),
+    // Variable lists may be macro variable references (&varlist), since a macro
+    // may expand to a space-separated variable list (G-04).
+    keep_statement: $ => seq(alias($._keep_keyword, 'keep'), repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    drop_statement: $ => seq(alias($._drop_keyword, 'drop'), repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
 
     // RETAIN -- retain variables across iterations
     // Variables may be macro variable references (&depvar) in addition to plain
@@ -775,9 +844,11 @@ module.exports = grammar({
     ),
 
     // LENGTH -- variable length declaration
+    // The declared name may be a macro variable reference (&flagvar $1),
+    // common in macros that generate column names (G-04).
     length_statement: $ => seq(
       alias($._length_keyword, 'length'),
-      repeat1(seq($.identifier, '$', repeat1(/./))),
+      repeat1(seq(choice($.identifier, $.macro_variable_reference), '$', repeat1(/./))),
       ';'
     ),
 
@@ -794,9 +865,11 @@ module.exports = grammar({
     ),
 
     // LABEL -- variable label assignment
+    // The variable name may be a macro variable reference (&flagvar),
+    // common in macros that generate column names (G-04).
     label_statement: $ => seq(
       alias($._label_keyword, 'label'),
-      repeat1(seq($.identifier, '=', $.quoted_string)),
+      repeat1(seq(choice($.identifier, $.macro_variable_reference), '=', $.quoted_string)),
       ';'
     ),
 
@@ -832,7 +905,8 @@ module.exports = grammar({
     ),
 
     // BY -- grouping variable
-    by_statement: $ => seq(alias($._by_keyword, 'by'), repeat1($.identifier), ';'),
+    // Variable lists may be macro variable references (G-04).
+    by_statement: $ => seq(alias($._by_keyword, 'by'), repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
 
     // CALL -- subroutine call
     call_statement: $ => seq(
@@ -891,10 +965,34 @@ module.exports = grammar({
     ),
 
     // ODS -- Output Delivery System
+    // ODS statements are freeform: ods rtf file="x.rtf" style=rtf; ods rtf close;
+    // Accept key=value pairs, identifiers, and quoted strings (G-11c).
     ods_statement: $ => seq(
       alias($._ods_keyword, 'ods'),
       $.identifier,
-      repeat1($.expression),
+      repeat1(choice(
+        $.identifier,
+        $.quoted_string,
+        $.macro_variable_reference,
+        seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number)),
+      )),
+      ';'
+    ),
+
+    // PROC FORMAT -- value/invalue/picture format definitions (G-08).
+    // Syntax: value name range=range... e.g.
+    //   value agefmt low-17='<18' 18-64='18-64' 65-high='>=65';
+    //   value $sexfmt 'F'='Female' 'M'='Male';
+    // The body is a series of range=value pairs terminated by ';'.
+    format_value_statement: $ => seq(
+      choice('value', 'invalue', 'picture'),
+      $.identifier,
+      repeat1(choice(
+        seq($.quoted_string, '=', $.quoted_string),
+        seq($.number, '-', choice($.number, $.identifier), '=', $.quoted_string),
+        seq($.identifier, '-', choice($.number, $.identifier), '=', $.quoted_string),
+        seq($.identifier, '=', $.quoted_string),
+      )),
       ';'
     ),
 
@@ -920,6 +1018,7 @@ module.exports = grammar({
 
     _sql_select_query: $ => seq(
       alias($._select_keyword, 'select'),
+      optional('distinct'),
       $.sql_select_list,
       optional($.sql_from_clause),
       optional($.sql_where_clause),
@@ -943,12 +1042,16 @@ module.exports = grammar({
     sql_where_clause: $ => seq(
       alias($._where_keyword, 'where'),
       $.sql_expression,
+      // Macro-generated suffix: `where x=1 &extracond` -- &extracond expands to
+      // additional WHERE text. Accept trailing macro_variable_reference fragments
+      // that represent macro-substituted conditions (G-11b).
+      repeat($.macro_variable_reference),
     ),
 
     sql_group_by_clause: $ => seq(
       'group',
       alias($._by_keyword, 'by'),
-      repeat1(seq($.expression, optional(','))),
+      repeat1(seq(optional('calculated'), $.expression, optional(','))),
     ),
 
     sql_having_clause: $ => seq(
@@ -959,7 +1062,7 @@ module.exports = grammar({
     sql_order_by_clause: $ => seq(
       'order',
       alias($._by_keyword, 'by'),
-      repeat1(seq($.expression, optional(choice('asc', 'desc', 'ASC', 'DESC')))),
+      repeat1(seq(optional('calculated'), $.expression, optional(choice('asc', 'desc', 'ASC', 'DESC')))),
     ),
 
     sql_join_clause: $ => seq(
@@ -976,9 +1079,10 @@ module.exports = grammar({
     ),
 
     sql_table_ref: $ => choice(
+      $.macro_variable_reference,
       seq(
         $.identifier,
-        optional(seq('.', $.identifier)),
+        optional(seq('.', choice($.identifier, $.macro_variable_reference))),
         optional(seq(alias($._as_keyword, 'as'), $.identifier))
       ),
       seq(
@@ -1059,30 +1163,66 @@ module.exports = grammar({
     // ========================================================================
 
     means_var_statement: $ => seq(alias($._var_keyword, 'var'), repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
-    means_class_statement: $ => seq('class', repeat1($.identifier), ';'),
-    means_freq_statement: $ => seq('freq', $.identifier, ';'),
-    means_weight_statement: $ => seq('weight', $.identifier, ';'),
-    means_id_statement: $ => seq('id', repeat1($.identifier), ';'),
-    means_output_statement: $ => seq('output', optional(seq('out', '=', $.identifier)), repeat(choice(seq($.identifier, '=', $.identifier), $.identifier)), ';'),
-    means_types_statement: $ => seq('types', repeat1($.identifier), ';'),
+    means_class_statement: $ => seq('class', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    means_freq_statement: $ => seq('freq', choice($.identifier, $.macro_variable_reference), ';'),
+    means_weight_statement: $ => seq('weight', choice($.identifier, $.macro_variable_reference), ';'),
+    means_id_statement: $ => seq('id', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    // OUTPUT (MEANS) -- out=dataset and statistic-keyword=varname pairs.
+    // Supports: out=work._cont_&i (dotted/macro dataset), n= mean= std= (bare
+    // keyword= with no value, meaning "name the stat automatically"), and an
+    // optional /options group (e.g. / autoname) (G-13).
+    means_output_statement: $ => seq(
+      'output',
+      optional(seq('out', '=', choice($.identifier, $.macro_variable_reference, seq($.identifier, '.', choice($.identifier, $.macro_variable_reference))))),
+      repeat(choice(
+        seq($.identifier, '=', $.identifier),
+        seq($.identifier, '=', $.macro_variable_reference),
+        seq($.identifier, '='),    // bare keyword= (auto-naming): n= mean= std=
+        $.identifier,
+      )),
+      optional(seq('/', repeat1($.identifier))),
+      ';'
+    ),
+    means_types_statement: $ => seq('types', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     means_ways_statement: $ => seq('ways', repeat1($.number), ';'),
 
     // ========================================================================
     // PROC FREQ statements
     // ========================================================================
 
-    freq_tables_statement: $ => seq('tables', repeat1(seq($.identifier, repeat(choice('*', '(')), optional($.identifier))), ';'),
-    freq_exact_statement: $ => seq('exact', repeat1($.identifier), ';'),
-    freq_weight_statement: $ => seq('weight', $.identifier, ';'),
-    freq_test_statement: $ => seq('test', repeat1($.identifier), ';'),
+    // TABLES (FREQ) -- cross-tab spec. Supports * crossovers and /options
+    // e.g. tables &trtvar * &var / out=work.x outcum sparse; (G-13b).
+    // The /options group is permissive (key=value, parens, etc.) like
+    // bare_statement since FREQ options are complex: out=work.x(drop=percent).
+    freq_tables_statement: $ => seq('tables', repeat1(seq(choice($.identifier, $.macro_variable_reference), repeat(choice('*', '(')), optional(choice($.identifier, $.macro_variable_reference)))), optional(seq('/', repeat1(choice($.identifier, $.quoted_string, $.number, $.macro_variable_reference, '(', ')', '=', ',', '.')))), ';'),
+    freq_exact_statement: $ => seq('exact', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    freq_weight_statement: $ => seq('weight', choice($.identifier, $.macro_variable_reference), ';'),
+    freq_test_statement: $ => seq('test', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     freq_output_statement: $ => seq('output', optional(seq('out', '=', $.identifier)), repeat(choice($.identifier, seq($.identifier, '=', $.identifier))), ';'),
 
     // ========================================================================
     // PROC REPORT statements
     // ========================================================================
 
-    report_column_statement: $ => seq('column', repeat1(choice($.identifier, seq('(', repeat1($.identifier), ')'))), ';'),
-    report_define_statement: $ => seq('define', $.identifier, '/', repeat(choice($.identifier, $.quoted_string, $.expression)), ';'),
+    // COLUMN -- column list. Supports grouped columns: column PARAM ("Group" COL1 COL2);
+    // The parenthesized group may contain a quoted heading string plus identifiers (G-16).
+    report_column_statement: $ => seq('column', repeat1(choice(
+      $.identifier,
+      $.macro_variable_reference,
+      seq('(', repeat1(choice($.identifier, $.quoted_string)), ')'),
+    )), ';'),
+    // DEFINE -- column attributes. Supports display/analysis keywords and
+    // style(...)=[...] option groups: define PARAM / display "Label" style(column)=[width=2in].
+    // Uses raw tokens for paren/bracket groups (like bare_statement) to avoid
+    // conflict with function_call (G-16).
+    report_define_statement: $ => seq('define', choice($.identifier, $.macro_variable_reference), '/', repeat1(choice(
+      $.identifier,
+      $.quoted_string,
+      $.number,
+      '=',
+      seq('(', repeat(choice($.identifier, $.number, '=', ',')), ')'),
+      seq('[', repeat(choice($.identifier, $.number, '=', ',')), ']'),
+    )), ';'),
     report_compute_statement: $ => seq('compute', $.identifier, optional(choice('before', 'after')), ';', repeat($.statement), 'endcomp', ';'),
     report_break_statement: $ => seq('break', choice('before', 'after'), $.identifier, '/', repeat1($.identifier), ';'),
     report_rbreak_statement: $ => seq('rbreak', choice('before', 'after'), '/', repeat1($.identifier), ';'),
@@ -1092,7 +1232,7 @@ module.exports = grammar({
     // PROC TABULATE statements
     // ========================================================================
 
-    tabulate_class_statement: $ => seq('class', repeat1($.identifier), ';'),
+    tabulate_class_statement: $ => seq('class', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     tabulate_classlev_statement: $ => seq('classlev', repeat1($.identifier), ';'),
     tabulate_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     tabulate_table_statement: $ => seq('table', repeat1(seq(choice($.identifier, seq($.identifier, '*', $.identifier), seq('(', repeat1($.identifier), ')'), $.quoted_string, $.expression), optional(','))), ';'),
@@ -1104,18 +1244,18 @@ module.exports = grammar({
     // ========================================================================
 
     print_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
-    print_id_statement: $ => seq('id', repeat1($.identifier), ';'),
-    print_sum_statement: $ => seq('sum', repeat1($.identifier), ';'),
-    print_pageby_statement: $ => seq('pageby', $.identifier, ';'),
+    print_id_statement: $ => seq('id', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    print_sum_statement: $ => seq('sum', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    print_pageby_statement: $ => seq('pageby', choice($.identifier, $.macro_variable_reference), ';'),
 
     // ========================================================================
     // PROC TRANSPOSE statements
     // ========================================================================
 
     transpose_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
-    transpose_id_statement: $ => seq('id', $.identifier, ';'),
-    transpose_idlabel_statement: $ => seq('idlabel', $.identifier, ';'),
-    transpose_copy_statement: $ => seq('copy', repeat1($.identifier), ';'),
+    transpose_id_statement: $ => seq('id', choice($.identifier, $.macro_variable_reference), ';'),
+    transpose_idlabel_statement: $ => seq('idlabel', choice($.identifier, $.macro_variable_reference), ';'),
+    transpose_copy_statement: $ => seq('copy', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
 
     // ========================================================================
     // PROC CONTENTS statements
@@ -1151,9 +1291,9 @@ module.exports = grammar({
       seq('noprint', ';'),
       seq('listall', ';'),
     ),
-    compare_id_statement: $ => seq('id', repeat1($.identifier), ';'),
+    compare_id_statement: $ => seq('id', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     compare_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
-    compare_with_statement: $ => seq('with', repeat1($.identifier), ';'),
+    compare_with_statement: $ => seq('with', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
 
     // ========================================================================
     // PROC DATASETS statements
@@ -1166,7 +1306,7 @@ module.exports = grammar({
       seq('select', repeat1($.identifier), ';'),
       seq('exclude', repeat1($.identifier), ';'),
     ))),
-    datasets_delete_statement: $ => seq('delete', repeat1($.identifier), ';'),
+    datasets_delete_statement: $ => seq('delete', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     datasets_change_statement: $ => seq('change', $.identifier, '=', $.identifier, ';'),
     datasets_repair_statement: $ => seq('repair', $.identifier, ';'),
     datasets_save_statement: $ => seq('save', repeat1($.identifier), ';'),
@@ -1199,13 +1339,13 @@ module.exports = grammar({
     // ========================================================================
 
     univariate_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
-    univariate_class_statement: $ => seq('class', repeat1($.identifier), ';'),
-    univariate_freq_statement: $ => seq('freq', $.identifier, ';'),
-    univariate_weight_statement: $ => seq('weight', $.identifier, ';'),
-    univariate_id_statement: $ => seq('id', repeat1($.identifier), ';'),
-    univariate_histogram_statement: $ => seq('histogram', repeat1($.identifier), ';'),
-    univariate_probplot_statement: $ => seq('probplot', repeat1($.identifier), ';'),
-    univariate_qqplot_statement: $ => seq('qqplot', repeat1($.identifier), ';'),
+    univariate_class_statement: $ => seq('class', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    univariate_freq_statement: $ => seq('freq', choice($.identifier, $.macro_variable_reference), ';'),
+    univariate_weight_statement: $ => seq('weight', choice($.identifier, $.macro_variable_reference), ';'),
+    univariate_id_statement: $ => seq('id', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    univariate_histogram_statement: $ => seq('histogram', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    univariate_probplot_statement: $ => seq('probplot', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    univariate_qqplot_statement: $ => seq('qqplot', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     univariate_output_statement: $ => seq('output', optional(seq('out', '=', $.identifier)), repeat(choice($.identifier, seq($.identifier, '=', $.identifier))), ';'),
     univariate_inset_statement: $ => seq('inset', repeat1(choice($.identifier, $.quoted_string)), ';'),
 
@@ -1225,7 +1365,7 @@ module.exports = grammar({
       )), ')')),
     ),
 
-    logistic_class_statement: $ => seq("class", $.identifier, optional(seq("(", repeat1(choice(
+    logistic_class_statement: $ => seq("class", choice($.identifier, $.macro_variable_reference), optional(seq("(", repeat1(choice(
       seq($.identifier, "=", choice($.identifier, $.quoted_string)),
       $.identifier,
     )), ")")), ";"),
@@ -1251,12 +1391,12 @@ module.exports = grammar({
       ';'
     )), ';'),
     reg_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
-    reg_weight_statement: $ => seq('weight', $.identifier, ';'),
-    reg_id_statement: $ => seq('id', $.identifier, ';'),
+    reg_weight_statement: $ => seq('weight', choice($.identifier, $.macro_variable_reference), ';'),
+    reg_id_statement: $ => seq('id', choice($.identifier, $.macro_variable_reference), ';'),
     reg_plot_statement: $ => seq('plot', repeat1(choice($.expression, $.quoted_string)), ';'),
     reg_output_statement: $ => seq('output', optional(seq('out', '=', $.identifier)), repeat(choice($.identifier, seq($.identifier, '=', $.identifier))), ';'),
     reg_add_statement: $ => seq('add', repeat1($.identifier), ';'),
-    reg_delete_statement: $ => seq('delete', repeat1($.identifier), ';'),
+    reg_delete_statement: $ => seq('delete', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     reg_restrict_statement: $ => seq('restrict', $.expression, ';'),
     reg_test_statement: $ => seq('test', $.expression, ';'),
 
@@ -1327,13 +1467,14 @@ module.exports = grammar({
       choice(']', '}'),
     )),
 
-    // Dotted identifier -- two identifiers joined by a dot.
+    // Dotted identifier -- two identifiers (or macro refs) joined by a dot.
     // Used for SAS BY-group indicators (first.USUBJID, last.LBTEST),
-    // qualified references (lib.dataset), and other dotted-name patterns.
+    // qualified references (lib.dataset, work.&contds), and other dotted-name
+    // patterns. Either side may be a macro variable reference (G-11d).
     dotted_identifier: $ => seq(
-      field('base', $.identifier),
+      field('base', choice($.identifier, $.macro_variable_reference)),
       '.',
-      field('member', $.identifier),
+      field('member', choice($.identifier, $.macro_variable_reference)),
     ),
 
     // Operator precedence (higher number = tighter binding):
@@ -1533,8 +1674,9 @@ module.exports = grammar({
     _libname_keyword: $ => /[lL][iI][bB][nN][aA][mM][eE]/,
     _filename_keyword: $ => /[fF][iI][lL][eE][nN][aA][mM][eE]/,
     _options_keyword: $ => /[oO][pP][tT][iI][oO][nN][sS]/,
-    _title_keyword: $ => /[tT][iI][tT][lL][eE]/,
-    _footnote_keyword: $ => /[fF][oO][oO][tT][nN][oO][tT][eE]/,
+    // title1..title10 and footnote1..footnote10 (G-05).
+    _title_keyword: $ => /[tT][iI][tT][lL][eE][0-9]*/,
+    _footnote_keyword: $ => /[fF][oO][oO][tT][nN][oO][tT][eE][0-9]*/,
     _ods_keyword: $ => /[oO][dD][sS]/,
     _include_keyword: $ => /%[iI][nN][cC][lL][uU][dD][eE]/,
     _global_keyword: $ => /%[gG][lL][oO][bB][aA][lL]/,
@@ -1550,6 +1692,7 @@ module.exports = grammar({
     _macro_then_keyword: $ => /%[tT][hH][eE][nN]/,
     _macro_else_keyword: $ => /%[eE][lL][sS][eE]/,
     _macro_let_keyword: $ => /%[lL][eE][tT]/,
+    _macro_put_keyword: $ => /%[pP][uU][tT]/,
     _macro_call_keyword: $ => /%[mM][aA][cC][rR][oO][cC][aA][lL][lL]/,
     _macro_sysfunc_keyword: $ => /%[sS][yY][sS][fF][uU][nN][cC]/,
     _macro_scan_keyword: $ => /%[sS][cC][aA][nN]/,

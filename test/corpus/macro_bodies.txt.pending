@@ -1,0 +1,396 @@
+================================================================================
+%put inside a macro body (G-03 Phase 1)
+================================================================================
+%macro outer;
+  %put hello world;
+%mend outer;
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    (identifier)
+    (macro_statement
+      (macro_put_statement
+        (macro_text
+          (macro_text_token))))
+    (identifier)))
+
+================================================================================
+User macro call inside a macro body (G-03 Phase 1)
+================================================================================
+%macro helper(a, b);
+  %local x;
+%mend helper;
+
+%macro caller;
+  %helper(1, 2);
+%mend caller;
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    (identifier)
+    (macro_parameters
+      (macro_parameter
+        (identifier))
+      (macro_parameter
+        (identifier)))
+    (macro_statement
+      (macro_local_statement
+        (identifier)))
+    (identifier))
+  (macro_definition
+    (identifier)
+    (macro_statement
+      (macro_call_statement
+        (identifier)
+        (macro_expression
+          (number))
+        (macro_expression
+          (number))))
+    (identifier)))
+
+================================================================================
+Nested macro definition + call (G-03 Phase 1)
+================================================================================
+%macro outer(indata=);
+  %macro inner(flag);
+    %put flag is &flag;
+  %mend inner;
+
+  %inner(Y);
+%mend outer;
+--------------------------------------------------------------------------------
+
+
+
+================================================================================
+%put at the top level (G-03 Phase 1 -- regression guard)
+================================================================================
+%let nvars = 3;
+%put &nvars;
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_let_statement
+    (identifier)
+    (macro_text
+      (macro_text_token)))
+  (macro_put_statement
+    (macro_text
+      (macro_text_token)
+      (macro_variable_reference
+        (identifier)))))
+
+================================================================================
+Macro variable as DATA step dataset name (G-01 Phase 2)
+================================================================================
+%macro m(outdata);
+  data &outdata;
+    set &indata;
+  run;
+%mend m;
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    (identifier)
+    (macro_parameters
+      (macro_parameter
+        (identifier)))
+    (data_step
+      (data_name
+        (macro_variable_reference
+          (identifier)))
+      (set_statement
+        (data_reference
+          (macro_variable_reference
+            (identifier)))))
+    (identifier)))
+
+================================================================================
+Macro variable as SET target with library prefix (G-01 Phase 2)
+================================================================================
+%macro m2;
+  data work.x;
+    set adam.&ds;
+  run;
+%mend m2;
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    (identifier)
+    (data_step
+      (data_name
+        (identifier)
+        (identifier))
+      (set_statement
+        (data_reference
+          (identifier)
+          (macro_variable_reference
+            (identifier)))))
+    (identifier)))
+
+================================================================================
+Macro variable as assignment target (G-02 Phase 2)
+================================================================================
+%macro derive(flagvar);
+  data out;
+    set in;
+    if x = 1 then &flagvar = 'Y';
+    else &flagvar = 'N';
+  run;
+%mend derive;
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    (identifier)
+    (macro_parameters
+      (macro_parameter
+        (identifier)))
+    (data_step
+      (data_name
+        (identifier))
+      (set_statement
+        (data_reference
+          (identifier)))
+      (if_statement
+        (binary_expression
+          (identifier)
+          (number))
+        (assignment_statement
+          (macro_variable_reference
+            (identifier))
+          (quoted_string
+            (single_quoted_string)))
+        (assignment_statement
+          (macro_variable_reference
+            (identifier))
+          (quoted_string
+            (single_quoted_string)))))
+    (identifier)))
+
+================================================================================
+Macro variable dataset name with trailing dot (G-10 Phase 2)
+================================================================================
+%macro m3;
+  data &outdata.;
+    x = 1;
+  run;
+%mend m3;
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    (identifier)
+    (data_step
+      (data_name
+        (macro_variable_reference
+          (identifier)))
+      (assignment_statement
+        (identifier)
+        (number)))
+    (identifier)))
+
+================================================================================
+KEEP / DROP with macro variable references (G-04 Phase 3)
+================================================================================
+%macro m4(vars);
+  data out;
+    set in;
+    keep USUBJID &vars;
+    drop &junk;
+  run;
+%mend m4;
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    (identifier)
+    (macro_parameters
+      (macro_parameter
+        (identifier)))
+    (data_step
+      (data_name
+        (identifier))
+      (set_statement
+        (data_reference
+          (identifier)))
+      (keep_statement
+        (identifier)
+        (macro_variable_reference
+          (identifier)))
+      (drop_statement
+        (macro_variable_reference
+          (identifier))))
+    (identifier)))
+
+================================================================================
+BY with macro variable reference (G-04 Phase 3)
+================================================================================
+proc sort data=adsl;
+  by &trtvar;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_name
+      (identifier))
+    (proc_options
+      (proc_option
+        (proc_option_key)
+        (identifier)))
+    (proc_body
+      (by_statement
+        (macro_variable_reference
+          (identifier))))))
+
+================================================================================
+LENGTH with macro variable name (G-04 Phase 3)
+================================================================================
+%macro derive(flagvar);
+  data out;
+    set in;
+    length &flagvar $1;
+  run;
+%mend derive;
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    (identifier)
+    (macro_parameters
+      (macro_parameter
+        (identifier)))
+    (data_step
+      (data_name
+        (identifier))
+      (set_statement
+        (data_reference
+          (identifier)))
+      (length_statement
+        (macro_variable_reference
+          (identifier))))
+    (identifier)))
+
+================================================================================
+PROC MEANS CLASS with macro variable reference (G-04 Phase 3)
+================================================================================
+proc means data=adsl;
+  class &trtvar;
+  var age;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_name
+      (identifier))
+    (proc_options
+      (proc_option
+        (proc_option_key)
+        (identifier)))
+    (proc_body
+      (means_class_statement
+        (macro_variable_reference
+          (identifier)))
+      (tabulate_var_statement
+        (identifier)))))
+
+================================================================================
+Keyword parameters with space-list and %str() defaults (G-06 Phase 4)
+================================================================================
+%macro gen(
+    indata    = adam.adsl,
+    contvars  = AGE AGEGR1N HEIGHT WT BLBMI,
+    where     = %str(),
+    decimals  = 1,
+    debug     = N
+);
+  %put &indata;
+%mend gen;
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    (identifier)
+    (macro_parameters
+      (macro_parameter
+        (identifier)
+        (macro_parameter_default
+          (macro_param_text
+            (macro_param_text_token))))
+      (macro_parameter
+        (identifier)
+        (macro_parameter_default
+          (macro_param_text
+            (macro_param_text_token))))
+      (macro_parameter
+        (identifier)
+        (macro_parameter_default
+          (macro_param_text
+            (macro_param_text_token)
+            (macro_function_call))))
+      (macro_parameter
+        (identifier)
+        (macro_parameter_default
+          (macro_param_text
+            (macro_param_text_token))))
+      (macro_parameter
+        (identifier)
+        (macro_parameter_default
+          (macro_param_text
+            (macro_param_text_token)))))
+    (macro_statement
+      (macro_put_statement
+        (macro_text
+          (macro_text_token)
+          (macro_variable_reference
+            (identifier)))))
+    (identifier)))
+
+================================================================================
+Positional + keyword params with default (G-06 Phase 4)
+================================================================================
+%macro m2(a, b, c=x y z, d=%str());
+  %put &a &b &c &d;
+%mend m2;
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    (identifier)
+    (macro_parameters
+      (macro_parameter
+        (identifier))
+      (macro_parameter
+        (identifier))
+      (macro_parameter
+        (identifier)
+        (macro_parameter_default
+          (macro_param_text
+            (macro_param_text_token))))
+      (macro_parameter
+        (identifier)
+        (macro_parameter_default
+          (macro_param_text
+            (macro_function_call)))))
+    (macro_statement
+      (macro_put_statement
+        (macro_text
+          (macro_text_token)
+          (macro_variable_reference
+            (identifier))
+          (macro_text_token)
+          (macro_variable_reference
+            (identifier))
+          (macro_text_token)
+          (macro_variable_reference
+            (identifier))
+          (macro_text_token)
+          (macro_variable_reference
+            (identifier)))))
+    (identifier)))
