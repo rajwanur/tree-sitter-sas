@@ -442,6 +442,8 @@ module.exports = grammar({
       $.sgplot_density_statement,
       $.sgplot_boxplot_statement,
       $.sgplot_reg_statement,
+      $.sgplot_band_statement,
+      $.sgplot_needle_statement,
       $.sgplot_refline_statement,
       $.sgplot_xaxis_statement,
       $.sgplot_yaxis_statement,
@@ -970,11 +972,18 @@ module.exports = grammar({
     ods_statement: $ => seq(
       alias($._ods_keyword, 'ods'),
       $.identifier,
-      repeat1(choice(
+      repeat(choice(
         $.identifier,
         $.quoted_string,
         $.macro_variable_reference,
-        seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number)),
+        $.number,
+        '/',
+        '(',
+        ')',
+        '=',
+        ',',
+        '.',
+        '&',
       )),
       ';'
     ),
@@ -1173,7 +1182,7 @@ module.exports = grammar({
     // optional /options group (e.g. / autoname) (G-13).
     means_output_statement: $ => seq(
       'output',
-      optional(seq('out', '=', choice($.identifier, $.macro_variable_reference, seq($.identifier, '.', choice($.identifier, $.macro_variable_reference))))),
+      optional(seq('out', '=', $.data_reference)),
       repeat(choice(
         seq($.identifier, '=', $.identifier),
         seq($.identifier, '=', $.macro_variable_reference),
@@ -1198,7 +1207,7 @@ module.exports = grammar({
     freq_exact_statement: $ => seq('exact', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     freq_weight_statement: $ => seq('weight', choice($.identifier, $.macro_variable_reference), ';'),
     freq_test_statement: $ => seq('test', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
-    freq_output_statement: $ => seq('output', optional(seq('out', '=', $.identifier)), repeat(choice($.identifier, seq($.identifier, '=', $.identifier))), ';'),
+    freq_output_statement: $ => seq('output', optional(seq('out', '=', $.data_reference)), repeat(choice($.identifier, seq($.identifier, '=', $.identifier))), ';'),
 
     // ========================================================================
     // PROC REPORT statements
@@ -1346,7 +1355,7 @@ module.exports = grammar({
     univariate_histogram_statement: $ => seq('histogram', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     univariate_probplot_statement: $ => seq('probplot', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     univariate_qqplot_statement: $ => seq('qqplot', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
-    univariate_output_statement: $ => seq('output', optional(seq('out', '=', $.identifier)), repeat(choice($.identifier, seq($.identifier, '=', $.identifier))), ';'),
+    univariate_output_statement: $ => seq('output', optional(seq('out', '=', $.data_reference)), repeat(choice($.identifier, seq($.identifier, '=', $.identifier))), ';'),
     univariate_inset_statement: $ => seq('inset', repeat1(choice($.identifier, $.quoted_string)), ';'),
 
     // ========================================================================
@@ -1394,7 +1403,7 @@ module.exports = grammar({
     reg_weight_statement: $ => seq('weight', choice($.identifier, $.macro_variable_reference), ';'),
     reg_id_statement: $ => seq('id', choice($.identifier, $.macro_variable_reference), ';'),
     reg_plot_statement: $ => seq('plot', repeat1(choice($.expression, $.quoted_string)), ';'),
-    reg_output_statement: $ => seq('output', optional(seq('out', '=', $.identifier)), repeat(choice($.identifier, seq($.identifier, '=', $.identifier))), ';'),
+    reg_output_statement: $ => seq('output', optional(seq('out', '=', $.data_reference)), repeat(choice($.identifier, seq($.identifier, '=', $.identifier))), ';'),
     reg_add_statement: $ => seq('add', repeat1($.identifier), ';'),
     reg_delete_statement: $ => seq('delete', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     reg_restrict_statement: $ => seq('restrict', $.expression, ';'),
@@ -1417,19 +1426,21 @@ module.exports = grammar({
     // PROC SGPLOT statements
     // ========================================================================
 
-    sgplot_scatter_statement: $ => seq('scatter', 'x', '=', $.identifier, 'y', '=', $.identifier, repeat(choice(seq($.identifier, '=', $.expression), $.identifier)), ';'),
-    sgplot_series_statement: $ => seq('series', 'x', '=', $.identifier, 'y', '=', $.identifier, repeat(choice(seq($.identifier, '=', $.expression), $.identifier)), ';'),
-    sgplot_vbar_statement: $ => seq('vbar', $.identifier, repeat(choice(seq($.identifier, '=', $.expression), $.identifier)), ';'),
-    sgplot_hbar_statement: $ => seq('hbar', $.identifier, repeat(choice(seq($.identifier, '=', $.expression), $.identifier)), ';'),
-    sgplot_histogram_statement: $ => seq('histogram', $.identifier, repeat(choice(seq($.identifier, '=', $.expression), $.identifier)), ';'),
-    sgplot_density_statement: $ => seq('density', $.identifier, repeat(choice(seq($.identifier, '=', $.expression), $.identifier)), ';'),
-    sgplot_boxplot_statement: $ => seq('boxplot', 'y', '=', $.identifier, repeat(choice(seq($.identifier, '=', $.expression), $.identifier)), ';'),
-    sgplot_reg_statement: $ => seq('reg', 'x', '=', $.identifier, 'y', '=', $.identifier, repeat(choice(seq($.identifier, '=', $.expression), $.identifier)), ';'),
-    sgplot_refline_statement: $ => seq('refline', repeat1($.expression), repeat(choice(seq($.identifier, '=', $.expression), $.identifier)), ';'),
-    sgplot_xaxis_statement: $ => seq('xaxis', repeat(choice(seq($.identifier, '=', $.expression), $.identifier)), ';'),
-    sgplot_yaxis_statement: $ => seq('yaxis', repeat(choice(seq($.identifier, '=', $.expression), $.identifier)), ';'),
-    sgplot_keylegend_statement: $ => seq('keylegend', optional($.identifier), repeat(choice(seq($.identifier, '=', $.expression), $.identifier)), ';'),
-    sgplot_inset_statement: $ => seq('inset', repeat1(choice($.identifier, $.quoted_string)), repeat(choice(seq($.identifier, '=', $.expression), $.identifier)), ';'),
+    sgplot_scatter_statement: $ => seq('scatter', 'x', '=', $.identifier, 'y', '=', $.identifier, repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
+    sgplot_series_statement: $ => seq('series', 'x', '=', $.identifier, 'y', '=', $.identifier, repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
+    sgplot_vbar_statement: $ => seq('vbar', $.identifier, repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
+    sgplot_hbar_statement: $ => seq('hbar', $.identifier, repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
+    sgplot_histogram_statement: $ => seq('histogram', $.identifier, repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
+    sgplot_density_statement: $ => seq('density', $.identifier, repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
+    sgplot_boxplot_statement: $ => seq('boxplot', 'y', '=', $.identifier, repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
+    sgplot_reg_statement: $ => seq('reg', 'x', '=', $.identifier, 'y', '=', $.identifier, repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
+    sgplot_band_statement: $ => seq('band', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
+    sgplot_needle_statement: $ => seq('needle', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
+    sgplot_refline_statement: $ => seq('refline', repeat1($.expression), repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
+    sgplot_xaxis_statement: $ => seq('xaxis', repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
+    sgplot_yaxis_statement: $ => seq('yaxis', repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
+    sgplot_keylegend_statement: $ => seq('keylegend', optional($.identifier), repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
+    sgplot_inset_statement: $ => seq('inset', repeat1(choice($.identifier, $.quoted_string)), repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
     sgplot_title_statement: $ => seq('title', $.expression, ';'),
     sgplot_footnote_statement: $ => seq('footnote', $.expression, ';'),
 
