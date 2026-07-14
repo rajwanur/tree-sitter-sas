@@ -503,6 +503,9 @@ module.exports = grammar({
 
     macro_parameter: $ => seq(
       field('name', $.identifier),
+      // Keyword parameter: =value or positional (no =).
+      // Empty default (subtitle=) is not supported due to GLR reduce/shift
+      // conflict -- the parser matches identifier as positional before seeing =.
       optional(seq('=', field('default', $.macro_parameter_default))),
     ),
 
