@@ -217,8 +217,9 @@ module.exports = grammar({
     // so &out. and adam.&ds coexist without double-dot ambiguity.
     data_name: $ => choice(
       $.identifier,
+      $.name_literal,
       $.macro_variable_reference,
-      seq(field('library', $.identifier), '.', field('dataset', choice($.identifier, $.macro_variable_reference))),
+      seq(field('library', choice($.identifier, $.name_literal)), '.', field('dataset', choice($.identifier, $.name_literal, $.macro_variable_reference))),
       seq('_NULL_', optional(seq('.', $.identifier))),
     ),
 
@@ -1495,6 +1496,8 @@ module.exports = grammar({
       $.dotted_identifier,
       $.identifier,
       $.quoted_string,
+      // SAS name literal (VALIDVARNAME=ANY): 'my var'n
+      $.name_literal,
       // SAS numeric missing value (. or .a-.z)
       $.missing_value,
       $.number,
@@ -1672,6 +1675,19 @@ module.exports = grammar({
 
     // Double-quoted string with escaped quotes via doubling: "he said ""hi"""
     double_quoted_string: $ => token(seq('"', /([^"]|"")*/, '"')),
+
+    // SAS name literal (VALIDVARNAME=ANY): 'my var'n or "my var"n
+    // A quoted string immediately followed by 'n'. Used as a variable/dataset
+    // name when the name contains spaces or special characters.
+    // prec(1) ensures it wins over quoted_string (longer match wins anyway,
+    // but explicit precedence is clearer).
+    name_literal: $ => token(prec(1, seq(
+      choice(
+        seq("'", /([^']|'')*/, "'"),
+        seq('"', /([^"]|"")*/, '"')
+      ),
+      'n'
+    ))),
 
     // ========================================================================
     // Keywords -- case-insensitive patterns via character-class regex

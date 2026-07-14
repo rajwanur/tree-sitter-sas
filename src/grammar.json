@@ -156,6 +156,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "name_literal"
+        },
+        {
+          "type": "SYMBOL",
           "name": "macro_variable_reference"
         },
         {
@@ -165,8 +169,17 @@
               "type": "FIELD",
               "name": "library",
               "content": {
-                "type": "SYMBOL",
-                "name": "identifier"
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "identifier"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "name_literal"
+                  }
+                ]
               }
             },
             {
@@ -182,6 +195,10 @@
                   {
                     "type": "SYMBOL",
                     "name": "identifier"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "name_literal"
                   },
                   {
                     "type": "SYMBOL",
@@ -11423,6 +11440,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "name_literal"
+        },
+        {
+          "type": "SYMBOL",
           "name": "missing_value"
         },
         {
@@ -12497,6 +12518,61 @@
             "value": "\""
           }
         ]
+      }
+    },
+    "name_literal": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": 1,
+        "content": {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "'"
+                    },
+                    {
+                      "type": "PATTERN",
+                      "value": "([^']|'')*"
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "'"
+                    }
+                  ]
+                },
+                {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "\""
+                    },
+                    {
+                      "type": "PATTERN",
+                      "value": "([^\"]|\"\")*"
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "\""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "STRING",
+              "value": "n"
+            }
+          ]
+        }
       }
     },
     "_data_keyword": {
