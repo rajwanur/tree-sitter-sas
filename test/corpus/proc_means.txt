@@ -79,7 +79,8 @@ run;
       (tabulate_var_statement
         (identifier))
       (freq_output_statement
-        (identifier)
+        (data_reference
+          (identifier))
         (identifier)
         (identifier)))))
 
@@ -104,4 +105,5 @@ run;
       (tabulate_var_statement
         (identifier))
       (means_output_statement
-        (identifier)))))
+        (data_reference
+          (identifier))))))
