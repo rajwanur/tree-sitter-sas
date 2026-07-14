@@ -1640,7 +1640,10 @@ module.exports = grammar({
     // ========================================================================
 
     // Block comment: /* ... */
-    // Can span multiple lines; can contain semicolons.
+    // Non-nested C-style comment. SAS supports nested block comments but
+    // tree-sitter's lexer (which handles extras tokens internally, not via
+    // external scanners or recursive rules) cannot express nesting. This is a
+    // known limitation. Workaround: avoid literal /* */ text inside comments.
     block_comment: $ => token(seq('/*', /[^*]*\*+([^/*][^*]*\*+)*/, '/')),
 
     // Line comment: * ... ;

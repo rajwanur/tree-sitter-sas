@@ -1,16 +1,13 @@
-// External scanner for CARDS/DATALINES freeform data blocks.
+// External scanner for CARDS/DATALINES freeform data blocks and nested block comments.
 //
 // CARDS/DATALINES blocks contain freeform data (not SAS code) between
 // the keyword+semicolon and a terminating delimiter:
 //   - CARDS/DATALINES: terminated by a bare semicolon on its own line
 //   - CARDS4/DATALINES4: terminated by ;;;; on its own line
 //
-// The content is arbitrary text -- it cannot be parsed as SAS code.
-// This scanner handles both token types defined in grammar.js externals.
-//
-// The _cards_block token includes all data lines AND the terminating
-// delimiter line (the bare ; or ;;;;). This way the grammar rule
-// cards_statement = 'cards' ';' _cards_block consumes everything.
+// Block comments: SAS supports NESTED /* ... */ comments, unlike C.
+//   /* outer /* inner */ still outer */  → one comment
+// The scanner counts nesting depth to find the true closing */.
 
 #include "tree_sitter/parser.h"
 #include "tree_sitter/alloc.h"
