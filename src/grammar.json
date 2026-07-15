@@ -3663,11 +3663,15 @@
               },
               {
                 "type": "SYMBOL",
+                "name": "name_literal"
+              },
+              {
+                "type": "SYMBOL",
                 "name": "macro_variable_reference"
               },
               {
                 "type": "SYMBOL",
-                "name": "number"
+                "name": "format_specifier"
               }
             ]
           }
@@ -3701,11 +3705,15 @@
               },
               {
                 "type": "SYMBOL",
+                "name": "name_literal"
+              },
+              {
+                "type": "SYMBOL",
                 "name": "macro_variable_reference"
               },
               {
                 "type": "SYMBOL",
-                "name": "number"
+                "name": "format_specifier"
               }
             ]
           }
@@ -13177,6 +13185,10 @@
     ],
     [
       "informat_statement"
+    ],
+    [
+      "format_statement",
+      "format_specifier"
     ],
     [
       "expression",

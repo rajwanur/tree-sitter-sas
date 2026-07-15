@@ -45,6 +45,11 @@ module.exports = grammar({
     // continue with a number. GLR explores both reduce and shift paths.
     [$.format_statement],
     [$.informat_statement],
+    // format_specifier (identifier number missing_value) vs the repeat1 body
+    // (identifier) followed by a bare number/identifier: both can consume
+    // "identifier number". GLR resolves once the trailing '.' (missing_value)
+    // is or isn't seen.
+    [$.format_statement, $.format_specifier],
     // function_call vs expression: "identifier(" is ambiguous -- could be a function
     // call (name + args) or an expression followed by parenthesized_expression.
     [$.expression, $.function_call],
@@ -910,23 +915,20 @@ module.exports = grammar({
     ),
 
     // FORMAT / INFORMAT -- variable format assignment
-    // SAS format specs include a trailing '.' that the lexer would otherwise
-    // consume as missing_value. Using a raw regex token for the entire statement
-    // body (like length_statement does) avoids all named-token conflicts.
-    //   format d yymmdd10.;  format a b $10.;  format x 8.2;
+    // Accepts variable names (identifiers, name literals for VALIDVARNAME=ANY,
+    // macro refs) and format specifiers. Named formats with a trailing dot
+    // (yymmdd10., is8601da., $10., 8.2) are modeled by format_specifier, which
+    // sequences the trailing '.' as $.missing_value to avoid lexical conflicts.
+    //   format d yymmdd10.;   format a b $10.;   format x 8.2;
     //   informat rfstdtc is8601da.;
-    // FORMAT / INFORMAT -- variable format assignment
-    // Accepts variable names (identifiers), macro refs, and numeric format specs.
-    // Named formats with trailing dot (yymmdd10., is8601da.) require external
-    // scanner support — deferred to a future iteration.
     format_statement: $ => seq(
       alias($._format_keyword, 'format'),
-      repeat1(choice($.identifier, $.macro_variable_reference, $.number)),
+      repeat1(choice($.identifier, $.name_literal, $.macro_variable_reference, $.format_specifier)),
       ';'
     ),
     informat_statement: $ => seq(
       alias($._informat_keyword, 'informat'),
-      repeat1(choice($.identifier, $.macro_variable_reference, $.number)),
+      repeat1(choice($.identifier, $.name_literal, $.macro_variable_reference, $.format_specifier)),
       ';'
     ),
 

@@ -438,3 +438,60 @@ run;
     (length_statement
       name: (identifier)
       (number))))
+
+================================================================================
+FORMAT with named format
+================================================================================
+data work.d;
+  format rfstdtc yymmdd10.;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      library: (identifier)
+      dataset: (identifier))
+    (format_statement
+      (identifier)
+      (format_specifier
+        (identifier)
+        (missing_value)))))
+
+================================================================================
+INFORMAT with named format
+================================================================================
+data work.d;
+  informat x is8601da.;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      library: (identifier)
+      dataset: (identifier))
+    (informat_statement
+      (identifier)
+      (format_specifier
+        (identifier)
+        (missing_value)))))
+
+================================================================================
+FORMAT with character width format
+================================================================================
+data work.d;
+  format a $10.;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      library: (identifier)
+      dataset: (identifier))
+    (format_statement
+      (identifier)
+      (format_specifier
+        (number)
+        (missing_value)))))
