@@ -16,7 +16,6 @@ run;
     name: (data_name
       (identifier))
     (input_statement
-      (identifier)
       (identifier))
     (cards_statement)))
 

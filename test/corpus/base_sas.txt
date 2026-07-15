@@ -495,3 +495,95 @@ run;
       (format_specifier
         (number)
         (missing_value)))))
+
+================================================================================
+INPUT with bare variable names
+================================================================================
+data work.d;
+  input x y z;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      library: (identifier)
+      dataset: (identifier))
+    (input_statement
+      (identifier)
+      (identifier)
+      (identifier))))
+
+================================================================================
+INPUT with character indicator (name $)
+================================================================================
+data work.d;
+  input k $ v $;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      library: (identifier)
+      dataset: (identifier))
+    (input_statement
+      (identifier)
+      (identifier))))
+
+================================================================================
+INPUT with character width format (name $format.)
+================================================================================
+data work.d;
+  input trt01p $20.;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      library: (identifier)
+      dataset: (identifier))
+    (input_statement
+      (identifier)
+      (format_specifier
+        (number)
+        (missing_value)))))
+
+================================================================================
+INPUT with named character format (name $charN.)
+================================================================================
+data work.d;
+  input line $char40.;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      library: (identifier)
+      dataset: (identifier))
+    (input_statement
+      (identifier)
+      (format_specifier
+        (identifier)
+        (missing_value)))))
+
+================================================================================
+INPUT with informative modifier (name :format.)
+================================================================================
+data work.d;
+  input rfstdtc :yymmdd10.;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      library: (identifier)
+      dataset: (identifier))
+    (input_statement
+      (identifier)
+      (format_specifier
+        (identifier)
+        (missing_value)))))

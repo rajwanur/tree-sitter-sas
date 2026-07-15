@@ -1543,7 +1543,19 @@
       "required": true,
       "types": [
         {
+          "type": "format_specifier",
+          "named": true
+        },
+        {
           "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "macro_variable_reference",
+          "named": true
+        },
+        {
+          "type": "name_literal",
           "named": true
         }
       ]
@@ -5339,6 +5351,10 @@
   },
   {
     "type": "/",
+    "named": false
+  },
+  {
+    "type": ":",
     "named": false
   },
   {

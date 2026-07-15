@@ -50,6 +50,20 @@ module.exports = grammar({
     // "identifier number". GLR resolves once the trailing '.' (missing_value)
     // is or isn't seen.
     [$.format_statement, $.format_specifier],
+    // format_specifier internal: "identifier $ number missing_value" can be read
+    // as (identifier)($ number missing_value) or (identifier $ number
+    // missing_value) — the optional '$' in format_specifier arms creates this
+    // self-conflict when reached via input_statement's repeat body. GLR resolves
+    // by the trailing identifier (next spec) (Task 3b, Phase 0).
+    [$.format_specifier],
+    // input_statement: same family of conflicts as format_statement above. The
+    // repeat body alternates bare identifiers / "name $" / "name format." /
+    // "name :format." forms, so "name $fmt." can be read either as (name $) +
+    // bare-spec or as (name format_specifier) where format_specifier owns the
+    // leading '$'. GLR explores both and the path forming a complete tree wins
+    // (Task 3b, Phase 0). Without this, "name $char40." ERRORs because the
+    // parser commits to the "name $" arm and cannot recover the format.
+    [$.input_statement, $.format_specifier],
     // function_call vs expression: "identifier(" is ambiguous -- could be a function
     // call (name + args) or an expression followed by parenthesized_expression.
     [$.expression, $.function_call],
@@ -875,8 +889,39 @@ module.exports = grammar({
     // DELETE -- remove current observation (DATA step) or dataset (PROC DATASETS)
     delete_statement: $ => seq(alias($._delete_keyword, 'delete'), repeat($.identifier), ';'),
 
-    // INPUT -- read data lines
-    input_statement: $ => seq(alias($._input_keyword, 'input'), repeat1($.identifier), ';'),
+    // INPUT -- read data lines (list / formatted / informative-modifier styles)
+    // Each spec is one of:
+    //   - bare variable name (identifier / name literal for VALIDVARNAME=ANY /
+    //     macro reference for macro-generated var lists, G-04)
+    //   - name $                  (character, no width)
+    //   - name $format.            ($char40., $20.)  or  name format. (yymmdd10.)
+    //   - name :[$]format.         (:yymmdd10. informative modifier)
+    // Format specs reuse $.format_specifier (Task 5, Phase 0) which models the
+    // trailing '.' as $.missing_value to avoid lexical conflicts. Column input
+    // (name $ start-end) and pointer controls (@n, @@, #) are NOT supported —
+    // YAGNI: no s-test line needs them.
+    input_statement: $ => seq(
+      alias($._input_keyword, 'input'),
+      repeat1(choice(
+        // bare variable name
+        choice($.identifier, $.name_literal, $.macro_variable_reference),
+        // name $              (character, no width) — bare '$' NOT part of a format
+        seq(choice($.identifier, $.name_literal, $.macro_variable_reference), '$'),
+        // name $format.  or  name format.   (formatted). The optional('$' ) is
+        // consumed HERE (not inside format_specifier) because the lexer emits
+        // "$char40" as ONE identifier token, so format_specifier's own '$' arms
+        // (which expect '$' identifier number) cannot match "$char40.". The
+        // trailing "char40." then matches format_specifier's (identifier
+        // missing_value) arm. For "$20." the '$' is consumed here and "20."
+        // matches (number missing_value). For "yymmdd10." no '$' and it matches
+        // (identifier number missing_value). GLR explores the '$'-shift vs
+        // '$'-reduce paths; see the conflicts: declarations below.
+        seq(choice($.identifier, $.name_literal, $.macro_variable_reference), optional('$'), $.format_specifier),
+        // name :format.  or  name :$format.  (informative modifier)
+        seq(choice($.identifier, $.name_literal, $.macro_variable_reference), ':', optional('$'), $.format_specifier),
+      )),
+      ';'
+    ),
 
     // PUT -- write to log
     put_statement: $ => seq(alias($._put_keyword, 'put'), $.expression, ';'),
