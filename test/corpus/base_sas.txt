@@ -589,6 +589,24 @@ run;
         (missing_value)))))
 
 ================================================================================
+INPUT with bare named format (variable then standalone format)
+================================================================================
+data d;
+  input x yymmdd10.;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (input_statement
+      (identifier)
+      (format_specifier
+        (identifier)
+        (missing_value)))))
+
+================================================================================
 SET with rename=() dataset option
 ================================================================================
 data work.out;

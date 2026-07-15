@@ -341,7 +341,8 @@ quit;
       (sql_select_statement
         (sql_select_list
           (sql_expression
-            (identifier))
+            (sql_qualified_star
+              (identifier)))
           (sql_expression
             (identifier))
           (sql_expression
@@ -349,4 +350,29 @@ quit;
         (sql_from_clause
           (sql_table_ref
             (identifier)
+            (identifier)))))))
+
+================================================================================
+PROC SQL mixed select list: a.* qualified-star, b.x qualified-column, c plain
+================================================================================
+proc sql;
+  select a.*, b.x, c from t;
+quit;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (sql_select_statement
+        (sql_select_list
+          (sql_expression
+            (sql_qualified_star
+              (identifier)))
+          (sql_qualified_column
+            base: (identifier))
+          (sql_expression
+            (identifier)))
+        (sql_from_clause
+          (sql_table_ref
             (identifier)))))))

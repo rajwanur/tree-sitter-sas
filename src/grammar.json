@@ -3580,6 +3580,15 @@
                     "name": "format_specifier"
                   }
                 ]
+              },
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_input_bare_format"
+                },
+                "named": true,
+                "value": "format_specifier"
               }
             ]
           }
@@ -3931,6 +3940,58 @@
             }
           ]
         },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "number"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "missing_value"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "number"
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "identifier"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "number"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "missing_value"
+            }
+          ]
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "identifier"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "missing_value"
+            }
+          ]
+        }
+      ]
+    },
+    "_input_bare_format": {
+      "type": "CHOICE",
+      "members": [
         {
           "type": "SEQ",
           "members": [
@@ -5138,7 +5199,7 @@
         "members": [
           {
             "type": "SYMBOL",
-            "name": "sql_expression"
+            "name": "sql_select_item"
           },
           {
             "type": "CHOICE",
@@ -5180,6 +5241,19 @@
           }
         ]
       }
+    },
+    "sql_select_item": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "sql_qualified_column"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "sql_expression"
+        }
+      ]
     },
     "sql_from_clause": {
       "type": "SEQ",
@@ -5978,9 +6052,92 @@
         }
       ]
     },
+    "sql_qualified_star": {
+      "type": "PREC",
+      "value": 1,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "identifier"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "macro_variable_reference"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "dotted_identifier"
+              }
+            ]
+          },
+          {
+            "type": "IMMEDIATE_TOKEN",
+            "content": {
+              "type": "PATTERN",
+              "value": "\\.\\*"
+            }
+          }
+        ]
+      }
+    },
+    "sql_qualified_column": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "base",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "identifier"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "macro_variable_reference"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "dotted_identifier"
+              }
+            ]
+          }
+        },
+        {
+          "type": "FIELD",
+          "name": "member",
+          "content": {
+            "type": "IMMEDIATE_TOKEN",
+            "content": {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "."
+                },
+                {
+                  "type": "PATTERN",
+                  "value": "[a-zA-Z_][a-zA-Z0-9_]*"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
     "sql_expression": {
       "type": "CHOICE",
       "members": [
+        {
+          "type": "SYMBOL",
+          "name": "sql_qualified_star"
+        },
         {
           "type": "SYMBOL",
           "name": "expression"
@@ -5988,40 +6145,6 @@
         {
           "type": "STRING",
           "value": "*"
-        },
-        {
-          "type": "PREC",
-          "value": 1,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "SYMBOL",
-                    "name": "identifier"
-                  },
-                  {
-                    "type": "SYMBOL",
-                    "name": "macro_variable_reference"
-                  },
-                  {
-                    "type": "SYMBOL",
-                    "name": "dotted_identifier"
-                  }
-                ]
-              },
-              {
-                "type": "STRING",
-                "value": "."
-              },
-              {
-                "type": "STRING",
-                "value": "*"
-              }
-            ]
-          }
         },
         {
           "type": "SEQ",
@@ -13061,12 +13184,6 @@
       "bare_statement"
     ],
     [
-      "format_statement"
-    ],
-    [
-      "informat_statement"
-    ],
-    [
       "format_statement",
       "format_specifier"
     ],
@@ -13078,14 +13195,15 @@
       "format_specifier"
     ],
     [
+      "input_statement",
+      "_input_bare_format"
+    ],
+    [
+      "format_specifier",
+      "_input_bare_format"
+    ],
+    [
       "expression",
-      "function_call"
-    ],
-    [
-      "array_statement"
-    ],
-    [
-      "array_element",
       "function_call"
     ],
     [
@@ -13138,9 +13256,6 @@
     ],
     [
       "sql_expression"
-    ],
-    [
-      "data_reference"
     ],
     [
       "expression"
@@ -13224,15 +13339,6 @@
       "compare_out_statement"
     ],
     [
-      "report_define_statement",
-      "expression"
-    ],
-    [
-      "report_define_statement",
-      "expression",
-      "function_call"
-    ],
-    [
       "compare_base_statement",
       "append_base_statement"
     ],
@@ -13268,9 +13374,6 @@
     [
       "macro_expression",
       "function_call"
-    ],
-    [
-      "macro_definition"
     ],
     [
       "macro_variable_reference"
@@ -13318,7 +13421,9 @@
       "name": "_cards4_block"
     }
   ],
-  "inline": [],
+  "inline": [
+    "sql_select_item"
+  ],
   "supertypes": [
     "statement",
     "expression"

@@ -41,10 +41,6 @@ module.exports = grammar({
     // assignment_statement expects '=' after the identifier, but the parser cannot
     // distinguish them without looking ahead past the identifier (and optional .ident).
     [$.assignment_statement, $.bare_statement],
-    // format/informat_statement: the repeat1 body can end after identifiers or
-    // continue with a number. GLR explores both reduce and shift paths.
-    [$.format_statement],
-    [$.informat_statement],
     // format_specifier (identifier number missing_value) vs the repeat1 body
     // (identifier) followed by a bare number/identifier: both can consume
     // "identifier number". GLR resolves once the trailing '.' (missing_value)
@@ -64,16 +60,18 @@ module.exports = grammar({
     // (Task 3b, Phase 0). Without this, "name $char40." ERRORs because the
     // parser commits to the "name $" arm and cannot recover the format.
     [$.input_statement, $.format_specifier],
+    // input_statement vs _input_bare_format: the standalone INPUT format arm
+    // (added M-1 for `input x yymmdd10.;`) shares the (identifier number
+    // missing_value) shape with the "name format_specifier" arm. GLR explores
+    // both and the trailing token (next name vs ';') decides.
+    [$.input_statement, $._input_bare_format],
+    // format_specifier vs _input_bare_format: both match
+    // (identifier number missing_value). _input_bare_format is the
+    // standalone-INPUT-only subset; GLR explores both at a leading identifier.
+    [$.format_specifier, $._input_bare_format],
     // function_call vs expression: "identifier(" is ambiguous -- could be a function
     // call (name + args) or an expression followed by parenthesized_expression.
     [$.expression, $.function_call],
-    // array_statement: after the bracket clause, repeat1($.identifier) before ';'
-    // is ambiguous with the next statement starting with an identifier.
-    [$.array_statement],
-    // array_element vs function_call: "name(...)" is ambiguous -- could be an
-    // array reference name(i) or a function call name(args). SAS uses the same
-    // syntax for both, so GLR explores both interpretations.
-    [$.array_element, $.function_call],
     // proc_body: repeat1(choice(...)) cannot tell whether an identifier
     // starts a new statement inside the proc body or is a new step outside.
     // Also, run/quit can match as bare_statement or as the step terminator.
@@ -102,8 +100,6 @@ module.exports = grammar({
     [$.sgplot_keylegend_statement],
     // sql_expression: optional 'as identifier' suffix creates boundary ambiguity
     [$.sql_expression],
-    // data_reference: data_set_option (identifier '('...) vs second identifier ambiguity
-    [$.data_reference],
     // expression supertype: repeat1($.expression) creates boundary ambiguity in many contexts
     [$.expression],
     // Multiple *_class_statement rules all match 'class' + identifiers
@@ -139,9 +135,6 @@ module.exports = grammar({
     [$.sgplot_refline_statement, $.expression],
     // Multiple *_out_statement rules match 'out' '=' identifier
     [$.contents_out_statement, $.compare_out_statement],
-    // report_define_statement: repeat of ident/string/expression creates boundary ambiguity
-    [$.report_define_statement, $.expression],
-    [$.report_define_statement, $.expression, $.function_call],
     // compare_base_statement vs append_base_statement: both match 'base' '=' identifier
     [$.compare_base_statement, $.append_base_statement],
     // gplot_plot_statement: repeat1 of expr*expr creates boundary ambiguity
@@ -164,9 +157,6 @@ module.exports = grammar({
     // macro_expression includes $.function_call which can conflict with macro_expression
     // when identifier( appears (could be function_call or identifier followed by parens).
     [$.macro_expression, $.function_call],
-    // macro_definition vs macro_call_statement: both start with %keyword at top level.
-    // The %macro keyword regex should win but GLR explores both paths.
-    [$.macro_definition],
     // macro_variable_reference trailing dot: `&var.` consumes an optional '.' as the
     // SAS macro-name terminator. This conflicts when macro_variable_reference appears
     // in dotted contexts (G-01/G-02): `adam.&ds` and `&x.y = 1` want the '.' to bind
@@ -209,6 +199,13 @@ module.exports = grammar({
   supertypes: $ => [
     $.statement,
     $.expression,
+  ],
+
+  // Inline rules are not surfaced as nodes in the parse tree. sql_select_item is
+  // a SELECT-list-only dispatcher (sql_expression OR sql_qualified_column);
+  // inlining keeps plain `select a, b` from gaining an extra wrapper node (I-1).
+  inline: $ => [
+    $.sql_select_item,
   ],
 
   rules: {
@@ -928,6 +925,17 @@ module.exports = grammar({
         seq(choice($.identifier, $.name_literal, $.macro_variable_reference), optional('$'), $.format_specifier),
         // name :format.  or  name :$format.  (informative modifier)
         seq(choice($.identifier, $.name_literal, $.macro_variable_reference), ':', optional('$'), $.format_specifier),
+        // standalone named format with NO preceding name, e.g. `input x yymmdd10.;`
+        // where x is a bare variable and yymmdd10. is a format on its own. We
+        // reuse only the NON-'$'-leading subset of format_specifier (via the
+        // _input_bare_format rule, which excludes the two '$'-leading arms) so it
+        // cannot compete with the "name $" arm at a leading '$' (which broke
+        // "input k $ v $;" / "input line $char40." when a full format_specifier
+        // was listed). Aliased to $.format_specifier so the parse tree shows a
+        // uniform format_specifier node with no extra wrapper. Mirrors
+        // format_statement listing a bare format directly. (M-1: the header
+        // comment above promises this is supported.)
+        alias($._input_bare_format, $.format_specifier),
       )),
       ';'
     ),
@@ -1000,6 +1008,18 @@ module.exports = grammar({
     format_specifier: $ => choice(
       seq('$', $.number, $.missing_value),               // $10.
       seq('$', $.identifier, $.number, $.missing_value), // $char10.
+      seq($.number, $.missing_value),                    // 8.
+      $.number,                                          // 8.2 (number already includes .d)
+      seq($.identifier, $.number, $.missing_value),      // yymmdd10.  date9.
+      seq($.identifier, $.missing_value),                // is8601da.  (name with no trailing width)
+    ),
+
+    // Standalone INPUT format with NO leading '$' (the subset of format_specifier
+    // that can legally begin an INPUT repeat item without a preceding name).
+    // Excludes the two '$'-leading arms so it never competes with the "name $"
+    // arm. In the parse tree it is aliased to format_specifier for a uniform
+    // consumer API (M-1: `input x yymmdd10.;`).
+    _input_bare_format: $ => choice(
       seq($.number, $.missing_value),                    // 8.
       $.number,                                          // 8.2 (number already includes .d)
       seq($.identifier, $.number, $.missing_value),      // yymmdd10.  date9.
@@ -1207,10 +1227,26 @@ module.exports = grammar({
     ),
 
     sql_select_list: $ => repeat1(seq(
-      $.sql_expression,
+      // SELECT items may be a qualified column (b.x) which is matched via the
+      // inline sql_select_item (a superset of sql_expression adding
+      // sql_qualified_column) so it does NOT get split into
+      // identifier+missing_value at the comma boundary. sql_qualified_column
+      // lives ONLY here (not in the shared sql_expression) so WHERE/HAVING
+      // operator expressions like `b.x > 1` still parse via expression's
+      // binary/dotted path (I-1). sql_select_item is inline so plain
+      // sql_expression items are not wrapped in an extra node.
+      $.sql_select_item,
       optional(seq(alias($._as_keyword, 'as'), $.identifier)),
       optional(',')
     )),
+
+    // A SELECT-list item: sql_expression OR a qualified column (b.x). The
+    // qualified column is lexed with token.immediate on '.member' so the '.' is
+    // not reclaimed by missing_value (which matches '.x' and wins on length).
+    sql_select_item: $ => choice(
+      $.sql_qualified_column,
+      $.sql_expression,
+    ),
 
     sql_from_clause: $ => seq(
       alias($._from_keyword, 'from'),
@@ -1330,12 +1366,32 @@ module.exports = grammar({
       ';'
     ),
 
+    // Qualified star (a.*, b.*, lib.tbl.*) -- a NAMED node so SELECT a.* is
+    // recognizable instead of being silently dropped. The '.*' is lexed as a
+    // single immediate token (token.immediate(/\.\*/)) so the '.' is NOT
+    // reclaimed by $.missing_value (token /\.[a-zA-Z]?/, which also matches '.*').
+    // Without token.immediate, GLR early-reduces 'a' to an identifier and the
+    // '.*' becomes a dropped missing_value -- the bug fixed in the review.
+    sql_qualified_star: $ => prec(1, seq(
+      choice($.identifier, $.macro_variable_reference, $.dotted_identifier),
+      token.immediate(/\.\*/),
+    )),
+
+    // Qualified column reference in SQL (b.x, lib.tbl.col). A NAMED node so
+    // SELECT b.x yields a recognizable qualified-column node instead of being
+    // split into identifier(b)+missing_value(.x) at the comma/FROM list
+    // boundary. The '.member' is lexed as a single immediate token so the '.'
+    // is not reclaimed by $.missing_value (which matches '.x' and would win on
+    // longest-match), exactly as sql_qualified_star does for '.*'.
+    sql_qualified_column: $ => seq(
+      field('base', choice($.identifier, $.macro_variable_reference, $.dotted_identifier)),
+      field('member', token.immediate(seq('.', /[a-zA-Z_][a-zA-Z0-9_]*/))),
+    ),
+
     sql_expression: $ => choice(
+      $.sql_qualified_star,
       $.expression,
       '*',  // SELECT * wildcard
-      // qualified star: a.*, b.*, lib.tbl.* -- use prec to beat the GLR path
-      // that splits the prefix into identifier + missing_value + '*'.
-      prec(1, seq(choice($.identifier, $.macro_variable_reference, $.dotted_identifier), '.', '*')),
       seq($.expression, optional(seq(alias($._as_keyword, 'as'), $.identifier))),
     ),
 
@@ -1636,7 +1692,9 @@ module.exports = grammar({
       $.array_element,
       // Dotted identifier: first.varname, last.varname, lib.dataset etc.
       // SAS uses this pattern extensively for BY-group indicators and
-      // qualified references (lib.dataset) in expressions.
+      // qualified references (lib.dataset) in expressions. Given precedence so
+      // that "a.b" is not split into identifier(a)+missing_value(.b) at
+      // list/boundary positions (e.g. SELECT a.b, ...).
       $.dotted_identifier,
       $.identifier,
       $.quoted_string,
