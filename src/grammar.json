@@ -2827,6 +2827,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "expression_statement"
+        },
+        {
+          "type": "SYMBOL",
           "name": "bare_statement"
         }
       ]
@@ -3316,6 +3320,19 @@
             "type": "SYMBOL",
             "name": "expression"
           }
+        },
+        {
+          "type": "STRING",
+          "value": ";"
+        }
+      ]
+    },
+    "expression_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "macro_expression"
         },
         {
           "type": "STRING",
@@ -13271,6 +13288,37 @@
     ],
     [
       "macro_variable_reference"
+    ],
+    [
+      "ods_statement",
+      "macro_variable_reference"
+    ],
+    [
+      "macro_expression",
+      "bare_statement"
+    ],
+    [
+      "macro_expression",
+      "assignment_statement",
+      "bare_statement"
+    ],
+    [
+      "macro_expression",
+      "assignment_statement"
+    ],
+    [
+      "bare_statement",
+      "function_call"
+    ],
+    [
+      "macro_call_statement",
+      "macro_expression"
+    ],
+    [
+      "macro_do_block",
+      "macro_expression",
+      "assignment_statement",
+      "bare_statement"
     ]
   ],
   "precedences": [],

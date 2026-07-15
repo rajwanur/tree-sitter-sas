@@ -153,6 +153,35 @@ module.exports = grammar({
     // both and the path that forms a complete parse wins. Local to one optional token,
     // so no parser-size blow-up (unlike the open-ended macro_text tail excluded above).
     [$.macro_variable_reference],
+    // ods_statement lists both $.macro_variable_reference and a bare '&' token in its
+    // repeat(choice(...)). When the lexer sees '&identifier' it cannot tell whether to
+    // form a macro_variable_reference or take the standalone '&' and continue the repeat.
+    // Genuine lexical ambiguity (the bare '&' was added in 68c15e7); GLR explores both.
+    // Pre-existing latent conflict surfaced by regenerating parser.c. No corpus case
+    // exercises the standalone '&' form.
+    [$.ods_statement, $.macro_variable_reference],
+    // The following six conflicts arise from adding expression_statement
+    // (seq(macro_expression, ';')) to the statement supertype so that macro %then
+    // value consequents like `%then 1;` parse (Task 1, Phase 0 grammar stabilization).
+    // Because macro_expression includes $.identifier / $.macro_variable_reference /
+    // $.function_call, a value-led 'expr;' statement collides at LR(1) with every
+    // existing identifier/macro-led statement. These are the same genuine GLR
+    // ambiguity family as the pre-existing [assignment_statement, bare_statement]
+    // and [expression, function_call] declarations; GLR explores all parses and the
+    // one forming a complete tree wins. Confirmed bounded (set of 6, no cascade).
+    // 'identifier ;' -- bare_statement vs expression_statement(macro_expression).
+    [$.macro_expression, $.bare_statement],
+    // 'identifier =' -- assignment vs bare vs expression_statement (three-way).
+    [$.macro_expression, $.assignment_statement, $.bare_statement],
+    // '&ref =' -- assignment_statement (macro var target) vs expression_statement.
+    [$.macro_expression, $.assignment_statement],
+    // 'identifier (' -- bare_statement vs function_call (now reachable as a statement
+    // via expression_statement -> macro_expression -> function_call).
+    [$.bare_statement, $.function_call],
+    // '%name(' -- macro_call_statement vs macro_expression (%name(args) form).
+    [$.macro_call_statement, $.macro_expression],
+    // macro_do_block body identifier-led statement ambiguity.
+    [$.macro_do_block, $.macro_expression, $.assignment_statement, $.bare_statement],
   ],
 
   // Top-level rules exposed as node types for polymorphic dispatch.
@@ -756,6 +785,7 @@ module.exports = grammar({
       $.macro_statement,
       $.line_comment,
       $.macro_comment,
+      $.expression_statement,
       $.bare_statement,
     ),
 
@@ -825,6 +855,14 @@ module.exports = grammar({
       field('value', $.expression),
       ';'
     ),
+
+    // Expression statement -- a bare expression that terminates with ';'.
+    // Needed for macro %then consequents like `%then 1;` where no other
+    // statement rule can start with a number/value (Task 1, Phase 0).
+    // Member of the statement supertype so it is accepted wherever a $.statement
+    // is (e.g. inside macro_if_statement's consequent). The broad overlap with
+    // identifier-led statements is resolved via the declared conflicts above.
+    expression_statement: $ => seq($.macro_expression, ';'),
 
     // OUTPUT -- write current observation
     output_statement: $ => seq(alias($._output_keyword, 'output'), optional($.data_reference), ';'),

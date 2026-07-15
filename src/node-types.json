@@ -32,6 +32,10 @@
         "named": true
       },
       {
+        "type": "name_literal",
+        "named": true
+      },
+      {
         "type": "number",
         "named": true
       },
@@ -87,6 +91,10 @@
       },
       {
         "type": "drop_statement",
+        "named": true
+      },
+      {
+        "type": "expression_statement",
         "named": true
       },
       {
@@ -655,6 +663,10 @@
           {
             "type": "macro_variable_reference",
             "named": true
+          },
+          {
+            "type": "name_literal",
+            "named": true
           }
         ]
       },
@@ -664,6 +676,10 @@
         "types": [
           {
             "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "name_literal",
             "named": true
           }
         ]
@@ -679,6 +695,10 @@
         },
         {
           "type": "macro_variable_reference",
+          "named": true
+        },
+        {
+          "type": "name_literal",
           "named": true
         }
       ]
@@ -992,30 +1012,30 @@
     }
   },
   {
+    "type": "expression_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "macro_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "filename_statement",
     "named": true,
-    "fields": {
-      "name": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "identifier",
-            "named": true
-          }
-        ]
-      }
-    },
+    "fields": {},
     "children": {
       "multiple": true,
       "required": false,
       "types": [
         {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "quoted_string",
+          "type": "expression",
           "named": true
         }
       ]
@@ -1046,6 +1066,14 @@
       "types": [
         {
           "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "macro_variable_reference",
+          "named": true
+        },
+        {
+          "type": "number",
           "named": true
         }
       ]
@@ -1424,6 +1452,14 @@
         {
           "type": "identifier",
           "named": true
+        },
+        {
+          "type": "macro_variable_reference",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
         }
       ]
     }
@@ -1507,44 +1543,13 @@
   {
     "type": "libname_statement",
     "named": true,
-    "fields": {
-      "engine": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "identifier",
-            "named": true
-          }
-        ]
-      },
-      "name": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "identifier",
-            "named": true
-          }
-        ]
-      },
-      "path": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "quoted_string",
-            "named": true
-          }
-        ]
-      }
-    },
+    "fields": {},
     "children": {
       "multiple": true,
       "required": false,
       "types": [
         {
-          "type": "identifier",
+          "type": "expression",
           "named": true
         }
       ]
@@ -2438,10 +2443,6 @@
       "required": true,
       "types": [
         {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
           "type": "identifier",
           "named": true
         },
@@ -2935,6 +2936,10 @@
           "named": true
         },
         {
+          "type": "sgplot_band_statement",
+          "named": true
+        },
+        {
           "type": "sgplot_boxplot_statement",
           "named": true
         },
@@ -2960,6 +2965,10 @@
         },
         {
           "type": "sgplot_keylegend_statement",
+          "named": true
+        },
+        {
+          "type": "sgplot_needle_statement",
           "named": true
         },
         {
@@ -3654,6 +3663,33 @@
     }
   },
   {
+    "type": "sgplot_band_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "function_call",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "sgplot_boxplot_statement",
     "named": true,
     "fields": {},
@@ -3662,7 +3698,19 @@
       "required": true,
       "types": [
         {
-          "type": "expression",
+          "type": "function_call",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
           "named": true
         }
       ]
@@ -3677,7 +3725,19 @@
       "required": true,
       "types": [
         {
-          "type": "expression",
+          "type": "function_call",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
           "named": true
         }
       ]
@@ -3707,7 +3767,19 @@
       "required": true,
       "types": [
         {
-          "type": "expression",
+          "type": "function_call",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
           "named": true
         }
       ]
@@ -3722,7 +3794,19 @@
       "required": true,
       "types": [
         {
-          "type": "expression",
+          "type": "function_call",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
           "named": true
         }
       ]
@@ -3737,7 +3821,19 @@
       "required": true,
       "types": [
         {
-          "type": "expression",
+          "type": "function_call",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
           "named": true
         }
       ]
@@ -3752,7 +3848,46 @@
       "required": false,
       "types": [
         {
-          "type": "expression",
+          "type": "function_call",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "sgplot_needle_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "function_call",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
           "named": true
         }
       ]
@@ -3782,7 +3917,19 @@
       "required": true,
       "types": [
         {
-          "type": "expression",
+          "type": "function_call",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
           "named": true
         }
       ]
@@ -3797,7 +3944,19 @@
       "required": true,
       "types": [
         {
-          "type": "expression",
+          "type": "function_call",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
           "named": true
         }
       ]
@@ -3812,7 +3971,19 @@
       "required": true,
       "types": [
         {
-          "type": "expression",
+          "type": "function_call",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
           "named": true
         }
       ]
@@ -3842,7 +4013,19 @@
       "required": true,
       "types": [
         {
-          "type": "expression",
+          "type": "function_call",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
           "named": true
         }
       ]
@@ -3857,7 +4040,19 @@
       "required": false,
       "types": [
         {
-          "type": "expression",
+          "type": "function_call",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
           "named": true
         }
       ]
@@ -3872,7 +4067,19 @@
       "required": false,
       "types": [
         {
-          "type": "expression",
+          "type": "function_call",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
           "named": true
         }
       ]
@@ -5107,6 +5314,10 @@
     "named": false
   },
   {
+    "type": "band",
+    "named": false
+  },
+  {
     "type": "base",
     "named": false
   },
@@ -5157,10 +5368,6 @@
   },
   {
     "type": "classlev",
-    "named": false
-  },
-  {
-    "type": "clear",
     "named": false
   },
   {
@@ -5456,10 +5663,6 @@
     "named": true
   },
   {
-    "type": "list",
-    "named": false
-  },
-  {
     "type": "listall",
     "named": false
   },
@@ -5496,7 +5699,15 @@
     "named": false
   },
   {
+    "type": "name_literal",
+    "named": true
+  },
+  {
     "type": "ne",
+    "named": false
+  },
+  {
+    "type": "needle",
     "named": false
   },
   {

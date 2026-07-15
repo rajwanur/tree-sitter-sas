@@ -332,3 +332,31 @@ run;
               (number))
             right: (macro_expression
               (number))))))))
+
+================================================================================
+%IF with value consequent
+================================================================================
+%macro factorial(n);
+  %if &n <= 1 %then 1;
+%mend;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    name: (identifier)
+    params: (macro_parameters
+      (macro_parameter
+        name: (identifier)))
+    (macro_statement
+      (macro_if_statement
+        condition: (macro_expression
+          (macro_binary_expression
+            left: (macro_expression
+              (macro_variable_reference
+                name: (identifier)))
+            right: (macro_expression
+              (number))))
+        (expression_statement
+          (macro_expression
+            (number)))))))
