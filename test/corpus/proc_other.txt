@@ -322,3 +322,51 @@ run;
       (sgplot_scatter_statement
         (identifier)
         (identifier)))))
+
+================================================================================
+SGPLOT BAND with eval expression and SERIES with options
+================================================================================
+proc sgplot data=work.d;
+  band x=visitnum lower=eval(meanval-stdval) upper=eval(meanval+stdval) / category=week;
+  series x=visitnum y=meanval / group=trt markers lineattrs=(thickness=2);
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (proc_option
+        (proc_option_key)
+        (dotted_identifier
+          base: (identifier)
+          member: (identifier))))
+    body: (proc_body
+      (sgplot_band_statement
+        (identifier)
+        (identifier)
+        (identifier)
+        (function_call
+          name: (identifier)
+          (binary_expression
+            left: (identifier)
+            right: (identifier)))
+        (identifier)
+        (function_call
+          name: (identifier)
+          (binary_expression
+            left: (identifier)
+            right: (identifier)))
+        (identifier)
+        (identifier))
+      (sgplot_series_statement
+        (identifier)
+        (identifier)
+        (identifier)
+        (identifier)
+        (identifier)
+        (identifier)
+        (sgplot_option_list
+          (identifier)
+          (number))))))

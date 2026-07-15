@@ -4903,6 +4903,10 @@
               {
                 "type": "STRING",
                 "value": "&"
+              },
+              {
+                "type": "STRING",
+                "value": "/"
               }
             ]
           }
@@ -9607,6 +9611,88 @@
         }
       ]
     },
+    "_sgplot_optval": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "identifier"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "quoted_string"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "number"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "function_call"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "sgplot_option_list"
+        }
+      ]
+    },
+    "sgplot_option_list": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "("
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "identifier"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "quoted_string"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "number"
+              },
+              {
+                "type": "STRING",
+                "value": "="
+              },
+              {
+                "type": "STRING",
+                "value": ","
+              },
+              {
+                "type": "STRING",
+                "value": "+"
+              },
+              {
+                "type": "STRING",
+                "value": "-"
+              },
+              {
+                "type": "STRING",
+                "value": "*"
+              },
+              {
+                "type": "STRING",
+                "value": "/"
+              }
+            ]
+          }
+        },
+        {
+          "type": "STRING",
+          "value": ")"
+        }
+      ]
+    },
     "sgplot_scatter_statement": {
       "type": "SEQ",
       "members": [
@@ -9655,25 +9741,8 @@
                     "value": "="
                   },
                   {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "SYMBOL",
-                        "name": "identifier"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "quoted_string"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "number"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "function_call"
-                      }
-                    ]
+                    "type": "SYMBOL",
+                    "name": "_sgplot_optval"
                   }
                 ]
               },
@@ -9711,25 +9780,8 @@
                             "value": "="
                           },
                           {
-                            "type": "CHOICE",
-                            "members": [
-                              {
-                                "type": "SYMBOL",
-                                "name": "identifier"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "quoted_string"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "number"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "function_call"
-                              }
-                            ]
+                            "type": "SYMBOL",
+                            "name": "_sgplot_optval"
                           }
                         ]
                       },
@@ -9805,25 +9857,8 @@
                     "value": "="
                   },
                   {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "SYMBOL",
-                        "name": "identifier"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "quoted_string"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "number"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "function_call"
-                      }
-                    ]
+                    "type": "SYMBOL",
+                    "name": "_sgplot_optval"
                   }
                 ]
               },
@@ -9861,25 +9896,8 @@
                             "value": "="
                           },
                           {
-                            "type": "CHOICE",
-                            "members": [
-                              {
-                                "type": "SYMBOL",
-                                "name": "identifier"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "quoted_string"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "number"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "function_call"
-                              }
-                            ]
+                            "type": "SYMBOL",
+                            "name": "_sgplot_optval"
                           }
                         ]
                       },
@@ -9935,25 +9953,8 @@
                     "value": "="
                   },
                   {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "SYMBOL",
-                        "name": "identifier"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "quoted_string"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "number"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "function_call"
-                      }
-                    ]
+                    "type": "SYMBOL",
+                    "name": "_sgplot_optval"
                   }
                 ]
               },
@@ -9991,25 +9992,8 @@
                             "value": "="
                           },
                           {
-                            "type": "CHOICE",
-                            "members": [
-                              {
-                                "type": "SYMBOL",
-                                "name": "identifier"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "quoted_string"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "number"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "function_call"
-                              }
-                            ]
+                            "type": "SYMBOL",
+                            "name": "_sgplot_optval"
                           }
                         ]
                       },
@@ -10065,25 +10049,8 @@
                     "value": "="
                   },
                   {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "SYMBOL",
-                        "name": "identifier"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "quoted_string"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "number"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "function_call"
-                      }
-                    ]
+                    "type": "SYMBOL",
+                    "name": "_sgplot_optval"
                   }
                 ]
               },
@@ -10121,25 +10088,8 @@
                             "value": "="
                           },
                           {
-                            "type": "CHOICE",
-                            "members": [
-                              {
-                                "type": "SYMBOL",
-                                "name": "identifier"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "quoted_string"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "number"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "function_call"
-                              }
-                            ]
+                            "type": "SYMBOL",
+                            "name": "_sgplot_optval"
                           }
                         ]
                       },
@@ -10195,25 +10145,8 @@
                     "value": "="
                   },
                   {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "SYMBOL",
-                        "name": "identifier"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "quoted_string"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "number"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "function_call"
-                      }
-                    ]
+                    "type": "SYMBOL",
+                    "name": "_sgplot_optval"
                   }
                 ]
               },
@@ -10251,25 +10184,8 @@
                             "value": "="
                           },
                           {
-                            "type": "CHOICE",
-                            "members": [
-                              {
-                                "type": "SYMBOL",
-                                "name": "identifier"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "quoted_string"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "number"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "function_call"
-                              }
-                            ]
+                            "type": "SYMBOL",
+                            "name": "_sgplot_optval"
                           }
                         ]
                       },
@@ -10325,25 +10241,8 @@
                     "value": "="
                   },
                   {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "SYMBOL",
-                        "name": "identifier"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "quoted_string"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "number"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "function_call"
-                      }
-                    ]
+                    "type": "SYMBOL",
+                    "name": "_sgplot_optval"
                   }
                 ]
               },
@@ -10381,25 +10280,8 @@
                             "value": "="
                           },
                           {
-                            "type": "CHOICE",
-                            "members": [
-                              {
-                                "type": "SYMBOL",
-                                "name": "identifier"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "quoted_string"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "number"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "function_call"
-                              }
-                            ]
+                            "type": "SYMBOL",
+                            "name": "_sgplot_optval"
                           }
                         ]
                       },
@@ -10463,25 +10345,8 @@
                     "value": "="
                   },
                   {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "SYMBOL",
-                        "name": "identifier"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "quoted_string"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "number"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "function_call"
-                      }
-                    ]
+                    "type": "SYMBOL",
+                    "name": "_sgplot_optval"
                   }
                 ]
               },
@@ -10519,25 +10384,8 @@
                             "value": "="
                           },
                           {
-                            "type": "CHOICE",
-                            "members": [
-                              {
-                                "type": "SYMBOL",
-                                "name": "identifier"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "quoted_string"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "number"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "function_call"
-                              }
-                            ]
+                            "type": "SYMBOL",
+                            "name": "_sgplot_optval"
                           }
                         ]
                       },
@@ -10613,25 +10461,8 @@
                     "value": "="
                   },
                   {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "SYMBOL",
-                        "name": "identifier"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "quoted_string"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "number"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "function_call"
-                      }
-                    ]
+                    "type": "SYMBOL",
+                    "name": "_sgplot_optval"
                   }
                 ]
               },
@@ -10669,25 +10500,8 @@
                             "value": "="
                           },
                           {
-                            "type": "CHOICE",
-                            "members": [
-                              {
-                                "type": "SYMBOL",
-                                "name": "identifier"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "quoted_string"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "number"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "function_call"
-                              }
-                            ]
+                            "type": "SYMBOL",
+                            "name": "_sgplot_optval"
                           }
                         ]
                       },
@@ -10739,25 +10553,8 @@
                     "value": "="
                   },
                   {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "SYMBOL",
-                        "name": "identifier"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "quoted_string"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "number"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "function_call"
-                      }
-                    ]
+                    "type": "SYMBOL",
+                    "name": "_sgplot_optval"
                   }
                 ]
               },
@@ -10795,25 +10592,8 @@
                             "value": "="
                           },
                           {
-                            "type": "CHOICE",
-                            "members": [
-                              {
-                                "type": "SYMBOL",
-                                "name": "identifier"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "quoted_string"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "number"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "function_call"
-                              }
-                            ]
+                            "type": "SYMBOL",
+                            "name": "_sgplot_optval"
                           }
                         ]
                       },
@@ -10865,25 +10645,8 @@
                     "value": "="
                   },
                   {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "SYMBOL",
-                        "name": "identifier"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "quoted_string"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "number"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "function_call"
-                      }
-                    ]
+                    "type": "SYMBOL",
+                    "name": "_sgplot_optval"
                   }
                 ]
               },
@@ -10921,25 +10684,8 @@
                             "value": "="
                           },
                           {
-                            "type": "CHOICE",
-                            "members": [
-                              {
-                                "type": "SYMBOL",
-                                "name": "identifier"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "quoted_string"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "number"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "function_call"
-                              }
-                            ]
+                            "type": "SYMBOL",
+                            "name": "_sgplot_optval"
                           }
                         ]
                       },
@@ -10998,25 +10744,8 @@
                     "value": "="
                   },
                   {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "SYMBOL",
-                        "name": "identifier"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "quoted_string"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "number"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "function_call"
-                      }
-                    ]
+                    "type": "SYMBOL",
+                    "name": "_sgplot_optval"
                   }
                 ]
               },
@@ -11054,25 +10783,8 @@
                             "value": "="
                           },
                           {
-                            "type": "CHOICE",
-                            "members": [
-                              {
-                                "type": "SYMBOL",
-                                "name": "identifier"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "quoted_string"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "number"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "function_call"
-                              }
-                            ]
+                            "type": "SYMBOL",
+                            "name": "_sgplot_optval"
                           }
                         ]
                       },
@@ -11124,25 +10836,8 @@
                     "value": "="
                   },
                   {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "SYMBOL",
-                        "name": "identifier"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "quoted_string"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "number"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "function_call"
-                      }
-                    ]
+                    "type": "SYMBOL",
+                    "name": "_sgplot_optval"
                   }
                 ]
               },
@@ -11180,25 +10875,8 @@
                             "value": "="
                           },
                           {
-                            "type": "CHOICE",
-                            "members": [
-                              {
-                                "type": "SYMBOL",
-                                "name": "identifier"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "quoted_string"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "number"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "function_call"
-                              }
-                            ]
+                            "type": "SYMBOL",
+                            "name": "_sgplot_optval"
                           }
                         ]
                       },
@@ -11250,25 +10928,8 @@
                     "value": "="
                   },
                   {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "SYMBOL",
-                        "name": "identifier"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "quoted_string"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "number"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "function_call"
-                      }
-                    ]
+                    "type": "SYMBOL",
+                    "name": "_sgplot_optval"
                   }
                 ]
               },
@@ -11306,25 +10967,8 @@
                             "value": "="
                           },
                           {
-                            "type": "CHOICE",
-                            "members": [
-                              {
-                                "type": "SYMBOL",
-                                "name": "identifier"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "quoted_string"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "number"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "function_call"
-                              }
-                            ]
+                            "type": "SYMBOL",
+                            "name": "_sgplot_optval"
                           }
                         ]
                       },
@@ -11388,25 +11032,8 @@
                     "value": "="
                   },
                   {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "SYMBOL",
-                        "name": "identifier"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "quoted_string"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "number"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "function_call"
-                      }
-                    ]
+                    "type": "SYMBOL",
+                    "name": "_sgplot_optval"
                   }
                 ]
               },
@@ -11444,25 +11071,8 @@
                             "value": "="
                           },
                           {
-                            "type": "CHOICE",
-                            "members": [
-                              {
-                                "type": "SYMBOL",
-                                "name": "identifier"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "quoted_string"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "number"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "function_call"
-                              }
-                            ]
+                            "type": "SYMBOL",
+                            "name": "_sgplot_optval"
                           }
                         ]
                       },
@@ -11530,25 +11140,8 @@
                     "value": "="
                   },
                   {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "SYMBOL",
-                        "name": "identifier"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "quoted_string"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "number"
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "function_call"
-                      }
-                    ]
+                    "type": "SYMBOL",
+                    "name": "_sgplot_optval"
                   }
                 ]
               },
@@ -11586,25 +11179,8 @@
                             "value": "="
                           },
                           {
-                            "type": "CHOICE",
-                            "members": [
-                              {
-                                "type": "SYMBOL",
-                                "name": "identifier"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "quoted_string"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "number"
-                              },
-                              {
-                                "type": "SYMBOL",
-                                "name": "function_call"
-                              }
-                            ]
+                            "type": "SYMBOL",
+                            "name": "_sgplot_optval"
                           }
                         ]
                       },

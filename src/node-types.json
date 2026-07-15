@@ -3809,6 +3809,10 @@
         {
           "type": "quoted_string",
           "named": true
+        },
+        {
+          "type": "sgplot_option_list",
+          "named": true
         }
       ]
     }
@@ -3836,6 +3840,10 @@
         {
           "type": "quoted_string",
           "named": true
+        },
+        {
+          "type": "sgplot_option_list",
+          "named": true
         }
       ]
     }
@@ -3862,6 +3870,10 @@
         },
         {
           "type": "quoted_string",
+          "named": true
+        },
+        {
+          "type": "sgplot_option_list",
           "named": true
         }
       ]
@@ -3905,6 +3917,10 @@
         {
           "type": "quoted_string",
           "named": true
+        },
+        {
+          "type": "sgplot_option_list",
+          "named": true
         }
       ]
     }
@@ -3931,6 +3947,10 @@
         },
         {
           "type": "quoted_string",
+          "named": true
+        },
+        {
+          "type": "sgplot_option_list",
           "named": true
         }
       ]
@@ -3959,6 +3979,10 @@
         {
           "type": "quoted_string",
           "named": true
+        },
+        {
+          "type": "sgplot_option_list",
+          "named": true
         }
       ]
     }
@@ -3985,6 +4009,10 @@
         },
         {
           "type": "quoted_string",
+          "named": true
+        },
+        {
+          "type": "sgplot_option_list",
           "named": true
         }
       ]
@@ -4013,6 +4041,33 @@
         {
           "type": "quoted_string",
           "named": true
+        },
+        {
+          "type": "sgplot_option_list",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "sgplot_option_list",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
+          "named": true
         }
       ]
     }
@@ -4027,6 +4082,10 @@
       "types": [
         {
           "type": "expression",
+          "named": true
+        },
+        {
+          "type": "sgplot_option_list",
           "named": true
         }
       ]
@@ -4055,6 +4114,10 @@
         {
           "type": "quoted_string",
           "named": true
+        },
+        {
+          "type": "sgplot_option_list",
+          "named": true
         }
       ]
     }
@@ -4082,6 +4145,10 @@
         {
           "type": "quoted_string",
           "named": true
+        },
+        {
+          "type": "sgplot_option_list",
+          "named": true
         }
       ]
     }
@@ -4108,6 +4175,10 @@
         },
         {
           "type": "quoted_string",
+          "named": true
+        },
+        {
+          "type": "sgplot_option_list",
           "named": true
         }
       ]
@@ -4151,6 +4222,10 @@
         {
           "type": "quoted_string",
           "named": true
+        },
+        {
+          "type": "sgplot_option_list",
+          "named": true
         }
       ]
     }
@@ -4178,6 +4253,10 @@
         {
           "type": "quoted_string",
           "named": true
+        },
+        {
+          "type": "sgplot_option_list",
+          "named": true
         }
       ]
     }
@@ -4204,6 +4283,10 @@
         },
         {
           "type": "quoted_string",
+          "named": true
+        },
+        {
+          "type": "sgplot_option_list",
           "named": true
         }
       ]

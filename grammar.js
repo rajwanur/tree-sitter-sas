@@ -1147,9 +1147,15 @@ module.exports = grammar({
 
     // Bare statement -- fallback for unrecognized statements (T-01-11: terminates at semicolon).
     // Only consumes raw tokens, not $.expression, to avoid ambiguity with statement dispatch.
+    // Note: '/' (option separator) and arithmetic operators are intentionally NOT in this set.
+    // '/' collides with the division operator in $.expression: adding it makes GLR commit to a
+    // binary_expression parse that errors out and beats the bare_statement path (so `panelby a / b;`
+    // still ERRORs). Arithmetic ops likewise let bare_statement outcompete assignment_statement
+    // during error recovery. Typed sgplot_*_statement rules now accept parenthesized option values
+    // via sgplot_option_list, handling `lineattrs=(...)` at the typed level instead (Task 4).
     bare_statement: $ => seq(
       choice($.identifier, $.name_literal),
-      repeat(choice($.identifier, $.quoted_string, $.number, '(', ')', '=', ',', '.', '&')),
+      repeat(choice($.identifier, $.quoted_string, $.number, '(', ')', '=', ',', '.', '&', '/')),
       ';'
     ),
 
@@ -1568,22 +1574,28 @@ module.exports = grammar({
     // ========================================================================
     // PROC SGPLOT statements
     // ========================================================================
+    // _sgplot_optval: an option value. SAS SGPLOT statements accept parenthesized
+    // option lists as values, e.g. lineattrs=(thickness=2), markerattrs=(symbol=X
+    // size=8), values=(1 2 3). Without this arm the typed sgplot_*_statement rules
+    // die at the '(' and the parse ERRORs to EOF (Task 4).
+    _sgplot_optval: $ => choice($.identifier, $.quoted_string, $.number, $.function_call, $.sgplot_option_list),
+    sgplot_option_list: $ => seq('(', repeat(choice($.identifier, $.quoted_string, $.number, '=', ',', '+', '-', '*', '/')), ')'),
 
-    sgplot_scatter_statement: $ => seq('scatter', 'x', '=', $.identifier, 'y', '=', $.identifier, repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
-    sgplot_series_statement: $ => seq('series', 'x', '=', $.identifier, 'y', '=', $.identifier, repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
-    sgplot_vbar_statement: $ => seq('vbar', $.identifier, repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
-    sgplot_hbar_statement: $ => seq('hbar', $.identifier, repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
-    sgplot_histogram_statement: $ => seq('histogram', $.identifier, repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
-    sgplot_density_statement: $ => seq('density', $.identifier, repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
-    sgplot_boxplot_statement: $ => seq('boxplot', 'y', '=', $.identifier, repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
-    sgplot_reg_statement: $ => seq('reg', 'x', '=', $.identifier, 'y', '=', $.identifier, repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
-    sgplot_band_statement: $ => seq('band', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
-    sgplot_needle_statement: $ => seq('needle', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
-    sgplot_refline_statement: $ => seq('refline', repeat1($.expression), repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
-    sgplot_xaxis_statement: $ => seq('xaxis', repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
-    sgplot_yaxis_statement: $ => seq('yaxis', repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
-    sgplot_keylegend_statement: $ => seq('keylegend', optional($.identifier), repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
-    sgplot_inset_statement: $ => seq('inset', repeat1(choice($.identifier, $.quoted_string)), repeat(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', choice($.identifier, $.quoted_string, $.number, $.function_call)), $.identifier, $.quoted_string)))), ';'),
+    sgplot_scatter_statement: $ => seq('scatter', 'x', '=', $.identifier, 'y', '=', $.identifier, repeat(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier, $.quoted_string)))), ';'),
+    sgplot_series_statement: $ => seq('series', 'x', '=', $.identifier, 'y', '=', $.identifier, repeat(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier, $.quoted_string)))), ';'),
+    sgplot_vbar_statement: $ => seq('vbar', $.identifier, repeat(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier, $.quoted_string)))), ';'),
+    sgplot_hbar_statement: $ => seq('hbar', $.identifier, repeat(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier, $.quoted_string)))), ';'),
+    sgplot_histogram_statement: $ => seq('histogram', $.identifier, repeat(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier, $.quoted_string)))), ';'),
+    sgplot_density_statement: $ => seq('density', $.identifier, repeat(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier, $.quoted_string)))), ';'),
+    sgplot_boxplot_statement: $ => seq('boxplot', 'y', '=', $.identifier, repeat(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier, $.quoted_string)))), ';'),
+    sgplot_reg_statement: $ => seq('reg', 'x', '=', $.identifier, 'y', '=', $.identifier, repeat(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier, $.quoted_string)))), ';'),
+    sgplot_band_statement: $ => seq('band', repeat1(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier, $.quoted_string)))), ';'),
+    sgplot_needle_statement: $ => seq('needle', repeat1(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier, $.quoted_string)))), ';'),
+    sgplot_refline_statement: $ => seq('refline', repeat1($.expression), repeat(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier, $.quoted_string)))), ';'),
+    sgplot_xaxis_statement: $ => seq('xaxis', repeat(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier, $.quoted_string)))), ';'),
+    sgplot_yaxis_statement: $ => seq('yaxis', repeat(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier, $.quoted_string)))), ';'),
+    sgplot_keylegend_statement: $ => seq('keylegend', optional($.identifier), repeat(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier, $.quoted_string)))), ';'),
+    sgplot_inset_statement: $ => seq('inset', repeat1(choice($.identifier, $.quoted_string)), repeat(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier, $.quoted_string)))), ';'),
     sgplot_title_statement: $ => seq('title', $.expression, ';'),
     sgplot_footnote_statement: $ => seq('footnote', $.expression, ';'),
 
