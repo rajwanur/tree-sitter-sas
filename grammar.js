@@ -1131,16 +1131,39 @@ module.exports = grammar({
     // PROC FORMAT -- value/invalue/picture format definitions (G-08).
     // Syntax: value name range=range... e.g.
     //   value agefmt low-17='<18' 18-64='18-64' 65-high='>=65';
-    //   value $sexfmt 'F'='Female' 'M'='Male';
-    // The body is a series of range=value pairs terminated by ';'.
+    //   value $sevfmt 'MILD'='Mild' 'MOD','MODERATE'='Moderate';
+    //   invalue yn_num 'Y'=1 'N'=0 other=.;
+    // The body is a series of value=label pairs terminated by ';'.
+    // LHS: a single value (number/quoted_string/identifier) OR a range (X-Y,
+    // optionally with exclusive '<' bound: 18-<40) OR a comma-separated list of
+    // values ('MOD','MODERATE'). RHS: a label (quoted_string/number/missing_value/
+    // identifier). The format name accepts a leading '$` for character formats
+    // (the identifier token already permits a `$` prefix). Optional `(multilabel)`
+    // style option lists may follow the format name (e.g. value agegrp (multilabel)).
     format_value_statement: $ => seq(
       choice('value', 'invalue', 'picture'),
       $.identifier,
-      repeat1(choice(
-        seq($.quoted_string, '=', $.quoted_string),
-        seq($.number, '-', choice($.number, $.identifier), '=', $.quoted_string),
-        seq($.identifier, '-', choice($.number, $.identifier), '=', $.quoted_string),
-        seq($.identifier, '=', $.quoted_string),
+      optional(seq('(', $.identifier, ')')),
+      repeat1(seq(
+        // Left-hand side: a value, a range, or a comma-separated list of values.
+        choice(
+          // Range X-Y with optional exclusive '<' bound (18-<40, 65-high, low-high, 'A'-'Z').
+          seq(
+            choice($.number, $.quoted_string, $.identifier),
+            '-',
+            optional('<'),
+            choice($.number, $.quoted_string, $.identifier)
+          ),
+          // Single value or comma-separated list of values ('MOD','MODERATE').
+          seq(
+            choice($.number, $.quoted_string, $.identifier),
+            repeat(seq(',', choice($.number, $.quoted_string, $.identifier)))
+          ),
+        ),
+        '=',
+        choice($.quoted_string, $.number, $.missing_value, $.identifier),      // label / value
+        // Optional trailing option list, e.g. picture ... = 'fmt' (prefix='$').
+        optional(seq('(', repeat1(choice($.identifier, $.quoted_string, $.number, '=')), ')'))
       )),
       ';'
     ),

@@ -370,3 +370,62 @@ run;
         (sgplot_option_list
           (identifier)
           (number))))))
+
+================================================================================
+PROC FORMAT value/invalue: number=quoted, comma-list, quoted=number, missing
+================================================================================
+proc format;
+  value sexfmt
+    1 = 'Male'
+    2 = 'Female'
+    other = 'Unknown';
+
+  value $sevfmt
+    'MILD'     = 'Mild'
+    'MOD','MODERATE' = 'Moderate';
+
+  invalue yn_num
+    'Y' = 1
+    'N' = 0
+    other = .;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (format_value_statement
+        (identifier)
+        (number)
+        (quoted_string
+          (single_quoted_string))
+        (number)
+        (quoted_string
+          (single_quoted_string))
+        (identifier)
+        (quoted_string
+          (single_quoted_string)))
+      (format_value_statement
+        (identifier)
+        (quoted_string
+          (single_quoted_string))
+        (quoted_string
+          (single_quoted_string))
+        (quoted_string
+          (single_quoted_string))
+        (quoted_string
+          (single_quoted_string))
+        (quoted_string
+          (single_quoted_string)))
+      (format_value_statement
+        (identifier)
+        (quoted_string
+          (single_quoted_string))
+        (number)
+        (quoted_string
+          (single_quoted_string))
+        (number)
+        (identifier)
+        (missing_value)))))

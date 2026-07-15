@@ -1158,6 +1158,10 @@
           "named": true
         },
         {
+          "type": "missing_value",
+          "named": true
+        },
+        {
           "type": "number",
           "named": true
         },
