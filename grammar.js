@@ -102,6 +102,8 @@ module.exports = grammar({
     [$.sgplot_keylegend_statement],
     // sql_expression: optional 'as identifier' suffix creates boundary ambiguity
     [$.sql_expression],
+    // data_reference: data_set_option (identifier '('...) vs second identifier ambiguity
+    [$.data_reference],
     // expression supertype: repeat1($.expression) creates boundary ambiguity in many contexts
     [$.expression],
     // Multiple *_class_statement rules all match 'class' + identifiers
@@ -275,7 +277,14 @@ module.exports = grammar({
       '(',
       repeat1(seq(
         $.identifier,
-        optional(seq('=', $.expression)),
+        // Value: either a bare expression, OR an =option-list. The latter
+        // handles rename=(old=new old2=new2) where the '=' precedes a
+        // parenthesized list of identifier=identifier pairs. Without this,
+        // the inner (a=b c=d) fails as a single parenthesized_expression.
+        optional(choice(
+          seq('=', $.expression),
+          seq('=', '(', repeat1(seq($.identifier, '=', $.identifier)), ')'),
+        )),
       )),
       ')',
     ),
@@ -1295,6 +1304,9 @@ module.exports = grammar({
     sql_expression: $ => choice(
       $.expression,
       '*',  // SELECT * wildcard
+      // qualified star: a.*, b.*, lib.tbl.* -- use prec to beat the GLR path
+      // that splits the prefix into identifier + missing_value + '*'.
+      prec(1, seq(choice($.identifier, $.macro_variable_reference, $.dotted_identifier), '.', '*')),
       seq($.expression, optional(seq(alias($._as_keyword, 'as'), $.identifier))),
     ),
 

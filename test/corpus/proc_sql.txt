@@ -325,3 +325,28 @@ quit;
           (sql_table_ref
             (identifier)))))))
 
+
+================================================================================
+PROC SQL qualified-star (a.*)
+================================================================================
+proc sql;
+  select a.*, b, age from work.t;
+quit;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (sql_select_statement
+        (sql_select_list
+          (sql_expression
+            (identifier))
+          (sql_expression
+            (identifier))
+          (sql_expression
+            (identifier)))
+        (sql_from_clause
+          (sql_table_ref
+            (identifier)
+            (identifier)))))))

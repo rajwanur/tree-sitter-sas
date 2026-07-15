@@ -587,3 +587,26 @@ run;
       (format_specifier
         (identifier)
         (missing_value)))))
+
+================================================================================
+SET with rename=() dataset option
+================================================================================
+data work.out;
+  set work.dm(rename=(arm=trt01p rfstdtc=trtsdt));
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      library: (identifier)
+      dataset: (identifier))
+    (set_statement
+      (data_reference
+        (identifier)
+        (identifier)
+        (data_set_option
+          (identifier)
+          (identifier)
+          (identifier)
+          (identifier)
+          (identifier))))))
