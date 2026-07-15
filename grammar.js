@@ -1642,11 +1642,11 @@ module.exports = grammar({
     //   libname mylib clear;
     libname_statement: $ => seq(
       alias($._libname_keyword, 'libname'),
+      field('name', $.identifier),
       repeat(choice(
-        seq($.identifier, '=', $.expression),
+        seq($.identifier, '=', choice($.identifier, $.number, $.quoted_string, $.macro_variable_reference)),
         $.quoted_string,
         $.macro_variable_reference,
-        $.identifier,
       )),
       ';'
     ),
@@ -1656,11 +1656,11 @@ module.exports = grammar({
     //   filename myref "c:/temp/data.txt";
     filename_statement: $ => seq(
       alias($._filename_keyword, 'filename'),
+      field('name', $.identifier),
       repeat(choice(
-        seq($.identifier, '=', $.expression),
+        seq($.identifier, '=', choice($.identifier, $.number, $.quoted_string, $.macro_variable_reference)),
         $.quoted_string,
         $.macro_variable_reference,
-        $.identifier,
       )),
       ';'
     ),

@@ -12183,6 +12183,14 @@
           "value": "libname"
         },
         {
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "identifier"
+          }
+        },
+        {
           "type": "REPEAT",
           "content": {
             "type": "CHOICE",
@@ -12199,8 +12207,25 @@
                     "value": "="
                   },
                   {
-                    "type": "SYMBOL",
-                    "name": "expression"
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "SYMBOL",
+                        "name": "identifier"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "number"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "quoted_string"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "macro_variable_reference"
+                      }
+                    ]
                   }
                 ]
               },
@@ -12211,10 +12236,6 @@
               {
                 "type": "SYMBOL",
                 "name": "macro_variable_reference"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "identifier"
               }
             ]
           }
@@ -12238,6 +12259,14 @@
           "value": "filename"
         },
         {
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "SYMBOL",
+            "name": "identifier"
+          }
+        },
+        {
           "type": "REPEAT",
           "content": {
             "type": "CHOICE",
@@ -12254,8 +12283,25 @@
                     "value": "="
                   },
                   {
-                    "type": "SYMBOL",
-                    "name": "expression"
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "SYMBOL",
+                        "name": "identifier"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "number"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "quoted_string"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "macro_variable_reference"
+                      }
+                    ]
                   }
                 ]
               },
@@ -12266,10 +12312,6 @@
               {
                 "type": "SYMBOL",
                 "name": "macro_variable_reference"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "identifier"
               }
             ]
           }

@@ -130,5 +130,5 @@ libname mylib '/tmp/data';
   (global_statement
     (libname_statement
       name: (identifier)
-      path: (quoted_string
+      (quoted_string
         (single_quoted_string)))))

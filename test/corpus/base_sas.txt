@@ -241,8 +241,23 @@ libname mylib '/tmp/data';
   (global_statement
     (libname_statement
       name: (identifier)
-      path: (quoted_string
+      (quoted_string
         (single_quoted_string)))))
+
+================================================================================
+LIBNAME with key=value options
+================================================================================
+libname raw "%sysfunc(pathname(work))" access=readonly;
+--------------------------------------------------------------------------------
+
+(source_file
+  (global_statement
+    (libname_statement
+      name: (identifier)
+      (quoted_string
+        (double_quoted_string))
+      (identifier)
+      (identifier))))
 
 ================================================================================
 TITLE statement
