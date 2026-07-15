@@ -3243,6 +3243,10 @@
               },
               {
                 "type": "SYMBOL",
+                "name": "name_literal"
+              },
+              {
+                "type": "SYMBOL",
                 "name": "macro_variable_reference"
               }
             ]
@@ -3465,6 +3469,10 @@
               },
               {
                 "type": "SYMBOL",
+                "name": "name_literal"
+              },
+              {
+                "type": "SYMBOL",
                 "name": "macro_variable_reference"
               }
             ]
@@ -3496,6 +3504,10 @@
               {
                 "type": "SYMBOL",
                 "name": "identifier"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "name_literal"
               },
               {
                 "type": "SYMBOL",
@@ -3533,6 +3545,10 @@
                   {
                     "type": "SYMBOL",
                     "name": "identifier"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "name_literal"
                   },
                   {
                     "type": "SYMBOL",
@@ -3584,6 +3600,10 @@
                   {
                     "type": "SYMBOL",
                     "name": "identifier"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "name_literal"
                   },
                   {
                     "type": "SYMBOL",
@@ -4119,6 +4139,10 @@
               },
               {
                 "type": "SYMBOL",
+                "name": "name_literal"
+              },
+              {
+                "type": "SYMBOL",
                 "name": "macro_variable_reference"
               }
             ]
@@ -4644,8 +4668,17 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "identifier"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "identifier"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "name_literal"
+            }
+          ]
         },
         {
           "type": "REPEAT",
@@ -12583,7 +12616,7 @@
       "type": "TOKEN",
       "content": {
         "type": "PREC",
-        "value": 1,
+        "value": 2,
         "content": {
           "type": "SEQ",
           "members": [

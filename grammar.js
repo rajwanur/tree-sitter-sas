@@ -846,7 +846,7 @@ module.exports = grammar({
     // array element with a subscript: _v[id], _x{i}. We use [] and {} for
     // subscript brackets to avoid conflict with function_call's () syntax.
     assignment_statement: $ => seq(
-      field('target', choice($.identifier, $.macro_variable_reference)),
+      field('target', choice($.identifier, $.name_literal, $.macro_variable_reference)),
       optional(choice(
         seq('.', $.identifier),
         seq(choice('[', '{'), $.expression, choice(']', '}')),
@@ -879,24 +879,25 @@ module.exports = grammar({
     // KEEP / DROP -- variable selection
     // Variable lists may be macro variable references (&varlist), since a macro
     // may expand to a space-separated variable list (G-04).
-    keep_statement: $ => seq(alias($._keep_keyword, 'keep'), repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
-    drop_statement: $ => seq(alias($._drop_keyword, 'drop'), repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    keep_statement: $ => seq(alias($._keep_keyword, 'keep'), repeat1(choice($.identifier, $.name_literal, $.macro_variable_reference)), ';'),
+    drop_statement: $ => seq(alias($._drop_keyword, 'drop'), repeat1(choice($.identifier, $.name_literal, $.macro_variable_reference)), ';'),
 
     // RETAIN -- retain variables across iterations
     // Variables may be macro variable references (&depvar) in addition to plain
     // identifiers, since a macro may expand to a variable list.
     retain_statement: $ => seq(
       alias($._retain_keyword, 'retain'),
-      repeat1(seq(choice($.identifier, $.macro_variable_reference), optional($.expression))),
+      repeat1(seq(choice($.identifier, $.name_literal, $.macro_variable_reference), optional($.expression))),
       ';'
     ),
 
     // LENGTH -- variable length declaration
     // The declared name may be a macro variable reference (&flagvar $1),
-    // common in macros that generate column names (G-04).
+    // common in macros that generate column names (G-04). With VALIDVARNAME=ANY
+    // the name may be a name literal ('subject id'n $10) (Task 6, Phase 0).
     length_statement: $ => seq(
       alias($._length_keyword, 'length'),
-      repeat1(seq(choice($.identifier, $.macro_variable_reference), '$', repeat1(/./))),
+      repeat1(seq(choice($.identifier, $.name_literal, $.macro_variable_reference), '$', repeat1(/./))),
       ';'
     ),
 
@@ -983,7 +984,7 @@ module.exports = grammar({
 
     // BY -- grouping variable
     // Variable lists may be macro variable references (G-04).
-    by_statement: $ => seq(alias($._by_keyword, 'by'), repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    by_statement: $ => seq(alias($._by_keyword, 'by'), repeat1(choice($.identifier, $.name_literal, $.macro_variable_reference)), ';'),
 
     // CALL -- subroutine call
     call_statement: $ => seq(
@@ -1083,7 +1084,7 @@ module.exports = grammar({
     // Bare statement -- fallback for unrecognized statements (T-01-11: terminates at semicolon).
     // Only consumes raw tokens, not $.expression, to avoid ambiguity with statement dispatch.
     bare_statement: $ => seq(
-      $.identifier,
+      choice($.identifier, $.name_literal),
       repeat(choice($.identifier, $.quoted_string, $.number, '(', ')', '=', ',', '.', '&')),
       ';'
     ),
@@ -1720,9 +1721,12 @@ module.exports = grammar({
     // SAS name literal (VALIDVARNAME=ANY): 'my var'n or "my var"n
     // A quoted string immediately followed by 'n'. Used as a variable/dataset
     // name when the name contains spaces or special characters.
-    // prec(1) ensures it wins over quoted_string (longer match wins anyway,
-    // but explicit precedence is clearer).
-    name_literal: $ => token(prec(1, seq(
+    // prec(2) wins over quoted_string (single/double_quoted_string, which sit at
+    // default precedence). Tree-sitter longest-match-wins would already prefer
+    // the longer token, but the explicit precedence guarantees name_literal is
+    // selected whenever a name position accepts it (assignment target, dataset
+    // name, variable lists, etc.) so the lexer commits to the trailing 'n'.
+    name_literal: $ => token(prec(2, seq(
       choice(
         seq("'", /([^']|'')*/, "'"),
         seq('"', /([^"]|"")*/, '"')

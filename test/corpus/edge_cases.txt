@@ -228,3 +228,36 @@ run;
           (identifier)
           (identifier))
         (number)))))
+
+================================================================================
+Name literal as dataset name
+================================================================================
+data work.'weird names'n;
+run;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    (data_name
+      (identifier)
+      (name_literal))))
+
+================================================================================
+Name literal as variable (assignment)
+================================================================================
+data work.d;
+  'subject id'n = 'S001';
+run;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      library: (identifier)
+      dataset: (identifier))
+    (assignment_statement
+      target: (name_literal)
+      value: (quoted_string
+        (single_quoted_string)))))

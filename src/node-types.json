@@ -291,6 +291,10 @@
           {
             "type": "macro_variable_reference",
             "named": true
+          },
+          {
+            "type": "name_literal",
+            "named": true
           }
         ]
       },
@@ -345,6 +349,10 @@
       "types": [
         {
           "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "name_literal",
           "named": true
         },
         {
@@ -476,6 +484,10 @@
         },
         {
           "type": "macro_variable_reference",
+          "named": true
+        },
+        {
+          "type": "name_literal",
           "named": true
         }
       ]
@@ -1007,6 +1019,10 @@
         {
           "type": "macro_variable_reference",
           "named": true
+        },
+        {
+          "type": "name_literal",
+          "named": true
         }
       ]
     }
@@ -1046,7 +1062,19 @@
       "required": false,
       "types": [
         {
-          "type": "expression",
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "macro_variable_reference",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
           "named": true
         }
       ]
@@ -1505,6 +1533,10 @@
         {
           "type": "macro_variable_reference",
           "named": true
+        },
+        {
+          "type": "name_literal",
+          "named": true
         }
       ]
     }
@@ -1547,6 +1579,10 @@
         {
           "type": "macro_variable_reference",
           "named": true
+        },
+        {
+          "type": "name_literal",
+          "named": true
         }
       ]
     }
@@ -1571,7 +1607,19 @@
       "required": false,
       "types": [
         {
-          "type": "expression",
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "macro_variable_reference",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
           "named": true
         }
       ]
