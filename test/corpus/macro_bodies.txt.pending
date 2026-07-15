@@ -261,20 +261,21 @@ LENGTH with macro variable name (G-04 Phase 3)
 
 (source_file
   (macro_definition
-    (identifier)
-    (macro_parameters
+    name: (identifier)
+    params: (macro_parameters
       (macro_parameter
-        (identifier)))
+        name: (identifier)))
     (data_step
-      (data_name
+      name: (data_name
         (identifier))
       (set_statement
         (data_reference
           (identifier)))
       (length_statement
-        (macro_variable_reference
-          (identifier))))
-    (identifier)))
+        name: (macro_variable_reference
+          name: (identifier))
+        (number)))
+    name: (identifier)))
 
 ================================================================================
 PROC MEANS CLASS with macro variable reference (G-04 Phase 3)

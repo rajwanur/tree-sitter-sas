@@ -1567,21 +1567,32 @@
   {
     "type": "length_statement",
     "named": true,
-    "fields": {},
+    "fields": {
+      "name": {
+        "multiple": true,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "macro_variable_reference",
+            "named": true
+          },
+          {
+            "type": "name_literal",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
       "required": true,
       "types": [
         {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "macro_variable_reference",
-          "named": true
-        },
-        {
-          "type": "name_literal",
+          "type": "number",
           "named": true
         }
       ]

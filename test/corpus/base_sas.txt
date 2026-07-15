@@ -402,3 +402,39 @@ run;
         value: (binary_expression
           left: (identifier)
           right: (number))))))
+
+================================================================================
+LENGTH with multiple variables and widths
+================================================================================
+data work.d;
+  length usubjid $10 trt01p $20;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      library: (identifier)
+      dataset: (identifier))
+    (length_statement
+      name: (identifier)
+      (number)
+      name: (identifier)
+      (number))))
+
+================================================================================
+LENGTH with bare numeric width (numeric variable)
+================================================================================
+data work.e;
+  length x 8;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      library: (identifier)
+      dataset: (identifier))
+    (length_statement
+      name: (identifier)
+      (number))))

@@ -3595,32 +3595,41 @@
             "type": "SEQ",
             "members": [
               {
+                "type": "FIELD",
+                "name": "name",
+                "content": {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "identifier"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "name_literal"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "macro_variable_reference"
+                    }
+                  ]
+                }
+              },
+              {
                 "type": "CHOICE",
                 "members": [
                   {
-                    "type": "SYMBOL",
-                    "name": "identifier"
+                    "type": "STRING",
+                    "value": "$"
                   },
                   {
-                    "type": "SYMBOL",
-                    "name": "name_literal"
-                  },
-                  {
-                    "type": "SYMBOL",
-                    "name": "macro_variable_reference"
+                    "type": "BLANK"
                   }
                 ]
               },
               {
-                "type": "STRING",
-                "value": "$"
-              },
-              {
-                "type": "REPEAT1",
-                "content": {
-                  "type": "PATTERN",
-                  "value": "."
-                }
+                "type": "SYMBOL",
+                "name": "number"
               }
             ]
           }

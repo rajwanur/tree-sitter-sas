@@ -895,9 +895,17 @@ module.exports = grammar({
     // The declared name may be a macro variable reference (&flagvar $1),
     // common in macros that generate column names (G-04). With VALIDVARNAME=ANY
     // the name may be a name literal ('subject id'n $10) (Task 6, Phase 0).
+    // The width is an explicit $.number token so it stops at whitespace/';'
+    // and cannot eat the terminating semicolon (Task 3, Phase 0). The '$' is
+    // optional: `name $N` is a character variable, `name N` (bare numeric) is a
+    // numeric variable -- SAS length allows both forms.
     length_statement: $ => seq(
       alias($._length_keyword, 'length'),
-      repeat1(seq(choice($.identifier, $.name_literal, $.macro_variable_reference), '$', repeat1(/./))),
+      repeat1(seq(
+        field('name', choice($.identifier, $.name_literal, $.macro_variable_reference)),
+        optional('$'),
+        $.number
+      )),
       ';'
     ),
 
