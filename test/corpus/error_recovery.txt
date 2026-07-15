@@ -6,8 +6,14 @@ data a set b;
 run;
 --------------------------------------------------------------------------------
 (source_file
-  (ERROR
-    (identifier)))
+  (data_step
+    name: (data_name
+      (identifier))
+    (ERROR
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (number))))
 
 ================================================================================
 Missing semicolon in assignment

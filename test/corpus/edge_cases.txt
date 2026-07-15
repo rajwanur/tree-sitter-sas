@@ -260,3 +260,36 @@ run;
       target: (name_literal)
       value: (quoted_string
         (single_quoted_string)))))
+
+================================================================================
+Error recovery does not swallow the rest of the file (Task 7)
+================================================================================
+data work.d;
+  set work.x;
+  this is bogus syntax that should ERROR locally;
+  valid_var = 5;
+run;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      library: (identifier)
+      dataset: (identifier))
+    (set_statement
+      (data_reference
+        (identifier)
+        (identifier)))
+    (bare_statement
+      (identifier)
+      (identifier)
+      (identifier)
+      (identifier)
+      (identifier)
+      (identifier)
+      (identifier)
+      (identifier))
+    (assignment_statement
+      target: (identifier)
+      value: (number))))

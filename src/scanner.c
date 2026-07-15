@@ -57,6 +57,33 @@ bool tree_sitter_sas_external_scanner_scan(void *payload, TSLexer *lexer, const 
   ScannerState *state = payload;
   (void)state;  // State tracking reserved for future incremental parsing use
 
+  // ERROR-RECOVERY GUARD (Task 7).
+  //
+  // The CARDS/DATALINES block scanner consumes freeform data to EOF (or the
+  // terminating semicolon line). The parser lists _CARDS_BLOCK and
+  // _CARDS4_BLOCK as valid at every "statement-start" position inside a data
+  // step (because cards_statement/cards4_statement are alternatives of the
+  // statement repeat). During ERROR RECOVERY, tree-sitter explores those
+  // alternatives at positions where NO cards/datalines keyword was actually
+  // shifted. If this scanner then fires, it greedily swallows the rest of the
+  // file into one _cards_block token, turning a local statement failure into a
+  // whole-file ERROR and hiding every downstream statement.
+  //
+  // The discriminator: tree-sitter assigns DISTINCT external-scanner states
+  // depending on how much of a cards statement has already been matched.
+  //   - After the parser has shifted `cards`/`datalines` + `;`, ONLY
+  //     _CARDS_BLOCK is in valid_symbols (external state 2).
+  //   - After `cards4`/`datalines4` + `;`, ONLY _CARDS4_BLOCK is valid
+  //     (external state 3).
+  //   - At an uncommitted statement-start / recovery position, BOTH tokens are
+  //     valid simultaneously (external state 1).
+  // So when BOTH tokens are valid at once, we are NOT in a legitimate
+  // cards-following position: refuse to scan. This localizes errors without
+  // affecting real cards/datalines blocks (where exactly one token is valid).
+  if (valid_symbols[_CARDS_BLOCK] && valid_symbols[_CARDS4_BLOCK]) {
+    return false;
+  }
+
   // CARDS/DATALINES block: terminated by a bare semicolon on its own line.
   // The token includes all data lines AND the terminating semicolon line.
   if (valid_symbols[_CARDS_BLOCK]) {
