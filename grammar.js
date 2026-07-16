@@ -1790,6 +1790,7 @@ module.exports = grammar({
     global_statement: $ => choice(
       $.libname_statement,
       $.filename_statement,
+      $.include_statement,
       $.options_statement,
       $.title_statement,
       $.footnote_statement,
@@ -1823,6 +1824,19 @@ module.exports = grammar({
         $.quoted_string,
         $.macro_variable_reference,
       )),
+      ';'
+    ),
+
+    // %INCLUDE -- include an external SAS file. Forms:
+    //   %include "path/file.sas";
+    //   %include "&macrovar/file.sas" /source2;
+    //   %include fileref;
+    // Reuses the existing _include_keyword token (previously orphaned),
+    // which matches both %include and the %inc abbreviation.
+    include_statement: $ => seq(
+      alias($._include_keyword, '%include'),
+      repeat1(choice($.quoted_string, $.identifier, $.macro_variable_reference)),
+      optional(seq('/', repeat1($.identifier))),  // options: /source2 /nosource2 ...
       ';'
     ),
 
@@ -1952,7 +1966,11 @@ module.exports = grammar({
     _title_keyword: $ => /[tT][iI][tT][lL][eE][0-9]*/,
     _footnote_keyword: $ => /[fF][oO][oO][tT][nN][oO][tT][eE][0-9]*/,
     _ods_keyword: $ => /[oO][dD][sS]/,
-    _include_keyword: $ => /%[iI][nN][cC][lL][uU][dD][eE]/,
+    // Matches %include and the %inc abbreviation (case-insensitive).
+    // token(prec(1, ...)) ensures the lexer matches the full %include keyword
+    // as one token, winning over the generic '%' + identifier split that
+    // macro_call_statement would otherwise consume.
+    _include_keyword: $ => token(prec(1, /%[iI][nN][cC]([lL][uU][dD][eE])?/)),
     _global_keyword: $ => /%[gG][lL][oO][bB][aA][lL]/,
     _local_keyword: $ => /%[lL][oO][cC][aA][lL]/,
     _symdel_keyword: $ => /%[sS][yY][mM][dD][eE][lL]/,

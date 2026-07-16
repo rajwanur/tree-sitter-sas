@@ -360,3 +360,30 @@ run;
         (expression_statement
           (macro_expression
             (number)))))))
+
+================================================================================
+%INCLUDE statements (global)
+================================================================================
+%let progname = study53/f-ada-eff.sas;
+%include "&progname";
+%include "/abs/path/file.sas" /source2;
+%include fileref;
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_let_statement
+    name: (identifier)
+    value: (macro_text
+      (macro_text_token)))
+  (global_statement
+    (include_statement
+      (quoted_string
+        (double_quoted_string))))
+  (global_statement
+    (include_statement
+      (quoted_string
+        (double_quoted_string))
+      (identifier)))
+  (global_statement
+    (include_statement
+      (identifier))))
