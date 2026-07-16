@@ -3239,6 +3239,10 @@
           "named": true
         },
         {
+          "type": "univariate_cdfplot_statement",
+          "named": true
+        },
+        {
           "type": "univariate_class_statement",
           "named": true
         },
@@ -5148,6 +5152,25 @@
     }
   },
   {
+    "type": "univariate_cdfplot_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "macro_variable_reference",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "univariate_class_statement",
     "named": true,
     "fields": {},
@@ -5700,6 +5723,10 @@
   },
   {
     "type": "cards4",
+    "named": false
+  },
+  {
+    "type": "cdfplot",
     "named": false
   },
   {

@@ -994,6 +994,10 @@
           },
           {
             "type": "SYMBOL",
+            "name": "univariate_cdfplot_statement"
+          },
+          {
+            "type": "SYMBOL",
             "name": "univariate_output_statement"
           },
           {
@@ -8869,6 +8873,35 @@
         {
           "type": "STRING",
           "value": "qqplot"
+        },
+        {
+          "type": "REPEAT1",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "identifier"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "macro_variable_reference"
+              }
+            ]
+          }
+        },
+        {
+          "type": "STRING",
+          "value": ";"
+        }
+      ]
+    },
+    "univariate_cdfplot_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "cdfplot"
         },
         {
           "type": "REPEAT1",

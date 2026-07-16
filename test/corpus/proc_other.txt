@@ -241,6 +241,7 @@ PROC UNIVARIATE
 ================================================================================
 proc univariate data=mydata;
   var height;
+  cdfplot height;
   histogram height;
 run;
 --------------------------------------------------------------------------------
@@ -255,6 +256,8 @@ run;
         (identifier)))
     body: (proc_body
       (tabulate_var_statement
+        (identifier))
+      (univariate_cdfplot_statement
         (identifier))
       (sgplot_histogram_statement
         (identifier)))))

@@ -471,6 +471,7 @@ module.exports = grammar({
       $.univariate_histogram_statement,
       $.univariate_probplot_statement,
       $.univariate_qqplot_statement,
+      $.univariate_cdfplot_statement,
       $.univariate_output_statement,
       $.univariate_inset_statement,
       // PROC REG statements
@@ -1611,6 +1612,7 @@ module.exports = grammar({
     univariate_histogram_statement: $ => seq('histogram', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     univariate_probplot_statement: $ => seq('probplot', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     univariate_qqplot_statement: $ => seq('qqplot', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    univariate_cdfplot_statement: $ => seq('cdfplot', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     univariate_output_statement: $ => seq('output', optional(seq('out', '=', $.data_reference)), repeat(choice($.identifier, seq($.identifier, '=', $.identifier))), ';'),
     univariate_inset_statement: $ => seq('inset', repeat1(choice($.identifier, $.quoted_string)), ';'),
 
