@@ -162,6 +162,10 @@
         "named": true
       },
       {
+        "type": "report_line_statement",
+        "named": true
+      },
+      {
         "type": "retain_statement",
         "named": true
       },
@@ -3083,6 +3087,10 @@
           "named": true
         },
         {
+          "type": "report_line_statement",
+          "named": true
+        },
+        {
           "type": "report_order_statement",
           "named": true
         },
@@ -3709,6 +3717,33 @@
         },
         {
           "type": "report_usage_keyword",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "report_line_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "macro_variable_reference",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
           "named": true
         }
       ]
@@ -5559,6 +5594,10 @@
     "named": false
   },
   {
+    "type": "@",
+    "named": false
+  },
+  {
     "type": "ASC",
     "named": false
   },
@@ -5961,6 +6000,10 @@
   },
   {
     "type": "libname",
+    "named": false
+  },
+  {
+    "type": "line",
     "named": false
   },
   {

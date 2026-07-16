@@ -40,3 +40,50 @@ run;
       (report_define_statement
         (identifier)
         (report_usage_keyword)))))
+
+================================================================================
+PROC REPORT compute block with LINE statement
+================================================================================
+proc report data=mydata;
+  column name age;
+  define age / analysis;
+  compute age;
+    line @5 "Total: " age;
+    if age > 14 then call define(_row_, 'style', 'style=[background=yellow]');
+  endcomp;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (proc_option
+        (proc_option_key)
+        (identifier)))
+    body: (proc_body
+      (report_column_statement
+        (identifier)
+        (identifier))
+      (report_define_statement
+        (identifier)
+        (report_usage_keyword))
+      (report_compute_statement
+        (identifier)
+        (report_line_statement
+          (number)
+          (quoted_string
+            (double_quoted_string))
+          (identifier))
+        (if_statement
+          condition: (binary_expression
+            left: (identifier)
+            right: (number))
+          consequence: (call_statement
+            (identifier)
+            (identifier)
+            (quoted_string
+              (single_quoted_string))
+            (quoted_string
+              (single_quoted_string))))))))

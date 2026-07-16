@@ -411,6 +411,7 @@ module.exports = grammar({
       $.report_break_statement,
       $.report_rbreak_statement,
       $.report_order_statement,
+      $.report_line_statement,
       // PROC TABULATE statements
       $.tabulate_class_statement,
       $.tabulate_classlev_statement,
@@ -811,6 +812,7 @@ module.exports = grammar({
       $.line_comment,
       $.macro_comment,
       $.expression_statement,
+      $.report_line_statement, // PROC REPORT LINE statement (valid inside COMPUTE blocks)
       $.bare_statement,
     ),
 
@@ -1471,6 +1473,25 @@ module.exports = grammar({
     // report_define_statement slash-options, so display/group/analysis/across/
     // order/computed highlight distinctly from generic identifiers.
     _report_usage_keyword: $ => /[dD][iI][sS][pP][lL][aA][yY]|[gG][rR][oO][uU][pP]|[aA][nN][aA][lL][yY][sS][iI][sS]|[aA][cC][rR][oO][sS][sS]|[oO][rR][dD][eE][rR]|[cC][oO][mM][pP][uU][tT][eE][dD]/,
+
+    // LINE -- output statement, valid inside COMPUTE blocks.
+    //   line @5 name $20.;
+    //   line "Total: " sumvar;
+    //   line @10 region;
+    // Supports @N column pointers, quoted strings, identifiers/variables,
+    // numbers, and macro variable references. The dot-format (age.dollar8.)
+    // and informat ($charN.) parse loosely via the identifier/dot fallback.
+    report_line_statement: $ => seq(
+      'line',
+      repeat1(choice(
+        seq('@', $.number),                       // @5 column pointer
+        $.quoted_string,
+        $.identifier,
+        $.number,
+        $.macro_variable_reference,
+      )),
+      ';'
+    ),
 
     // ========================================================================
     // PROC TABULATE statements
