@@ -1,0 +1,42 @@
+================================================================================
+PROC REPORT define usage keywords
+================================================================================
+proc report data=mydata;
+  column name age;
+  define name / display;
+  define age / analysis sum;
+  define region / group order;
+  define col1 / across;
+  define computed_col / computed;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (proc_option
+        (proc_option_key)
+        (identifier)))
+    body: (proc_body
+      (report_column_statement
+        (identifier)
+        (identifier))
+      (report_define_statement
+        (identifier)
+        (report_usage_keyword))
+      (report_define_statement
+        (identifier)
+        (report_usage_keyword)
+        (identifier))
+      (report_define_statement
+        (identifier)
+        (report_usage_keyword)
+        (report_usage_keyword))
+      (report_define_statement
+        (identifier)
+        (report_usage_keyword))
+      (report_define_statement
+        (identifier)
+        (report_usage_keyword)))))

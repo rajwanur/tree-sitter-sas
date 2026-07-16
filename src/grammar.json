@@ -6868,6 +6868,15 @@
             "type": "CHOICE",
             "members": [
               {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_report_usage_keyword"
+                },
+                "named": true,
+                "value": "report_usage_keyword"
+              },
+              {
                 "type": "SYMBOL",
                 "name": "identifier"
               },
@@ -7116,6 +7125,10 @@
           "value": ";"
         }
       ]
+    },
+    "_report_usage_keyword": {
+      "type": "PATTERN",
+      "value": "[dD][iI][sS][pP][lL][aA][yY]|[gG][rR][oO][uU][pP]|[aA][nN][aA][lL][yY][sS][iI][sS]|[aA][cC][rR][oO][sS][sS]|[oO][rR][dD][eE][rR]|[cC][oO][mM][pP][uU][tT][eE][dD]"
     },
     "tabulate_class_statement": {
       "type": "SEQ",

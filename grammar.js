@@ -1453,6 +1453,7 @@ module.exports = grammar({
     // Uses raw tokens for paren/bracket groups (like bare_statement) to avoid
     // conflict with function_call (G-16).
     report_define_statement: $ => seq('define', choice($.identifier, $.macro_variable_reference), '/', repeat1(choice(
+      alias($._report_usage_keyword, $.report_usage_keyword),
       $.identifier,
       $.quoted_string,
       $.number,
@@ -1464,6 +1465,12 @@ module.exports = grammar({
     report_break_statement: $ => seq('break', choice('before', 'after'), $.identifier, '/', repeat1($.identifier), ';'),
     report_rbreak_statement: $ => seq('rbreak', choice('before', 'after'), '/', repeat1($.identifier), ';'),
     report_order_statement: $ => seq('order', repeat1($.identifier), ';'),
+
+    // Token: PROC REPORT DEFINE usage keywords (case-insensitive).
+    // Aliased to a named 'report_usage_keyword' node when used inside
+    // report_define_statement slash-options, so display/group/analysis/across/
+    // order/computed highlight distinctly from generic identifiers.
+    _report_usage_keyword: $ => /[dD][iI][sS][pP][lL][aA][yY]|[gG][rR][oO][uU][pP]|[aA][nN][aA][lL][yY][sS][iI][sS]|[aA][cC][rR][oO][sS][sS]|[oO][rR][dD][eE][rR]|[cC][oO][mM][pP][uU][tT][eE][dD]/,
 
     // ========================================================================
     // PROC TABULATE statements

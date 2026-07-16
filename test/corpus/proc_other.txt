@@ -48,7 +48,7 @@ run;
         (identifier))
       (report_define_statement
         (identifier)
-        (identifier)))))
+        (report_usage_keyword)))))
 
 ================================================================================
 PROC TABULATE with CLASS and TABLE

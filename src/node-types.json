@@ -3706,6 +3706,10 @@
         {
           "type": "quoted_string",
           "named": true
+        },
+        {
+          "type": "report_usage_keyword",
+          "named": true
         }
       ]
     }
@@ -6162,6 +6166,10 @@
   {
     "type": "repair",
     "named": false
+  },
+  {
+    "type": "report_usage_keyword",
+    "named": true
   },
   {
     "type": "reset",
