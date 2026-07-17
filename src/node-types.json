@@ -1885,7 +1885,17 @@
     "fields": {
       "left": {
         "multiple": false,
-        "required": true,
+        "required": false,
+        "types": [
+          {
+            "type": "macro_expression",
+            "named": true
+          }
+        ]
+      },
+      "operand": {
+        "multiple": false,
+        "required": false,
         "types": [
           {
             "type": "macro_expression",
@@ -2549,6 +2559,14 @@
       "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "macro_expression",
+          "named": true
+        },
         {
           "type": "macro_function_call",
           "named": true

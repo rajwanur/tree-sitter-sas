@@ -455,3 +455,21 @@ Macro control: %abort, %sysmacexist, empty param defaults, empty-value %if
             left: (macro_expression
               (macro_variable_reference
                 name: (identifier)))))))))
+
+================================================================================
+Macro %put with user macro call inside text
+================================================================================
+%macro m;
+  %put NOTE: result = %factorial(5);
+%mend;
+--------------------------------------------------------------------------------
+(source_file
+  (macro_definition
+    name: (identifier)
+    (macro_statement
+      (macro_put_statement
+        (macro_text
+          (macro_text_token)
+          (identifier)
+          (macro_expression
+            (number)))))))

@@ -51,6 +51,13 @@ module.exports = grammar({
     // both; the shorthand path wins when '=' follows a bare identifier/array
     // element in a PUT item list (G5).
     [$.put_statement, $.expression],
+    // macro_statement vs macro_expression at 'not' (unary not prefix): a macro
+    // function call followed by 'not' could be a macro_statement boundary or a
+    // macro_binary/unary expression. GLR explores both (G8).
+    [$.macro_statement, $.macro_expression],
+    // macro_binary_expression internal: the unary 'not' arm vs a binary arm at
+    // 'not expr op ...' is genuinely ambiguous. GLR explores both (G8).
+    [$.macro_binary_expression],
     // format_specifier (identifier number missing_value) vs the repeat1 body
     // (identifier) followed by a bare number/identifier: both can consume
     // "identifier number". GLR resolves once the trailing '.' (missing_value)
@@ -728,6 +735,13 @@ module.exports = grammar({
       $.macro_variable_reference,
       $.macro_function_call,
       $.macro_quoting_function,
+      // Generic user macro call inside text: %factorial(5), %util_trim(...).
+      // Bounded form (args are macro_expression, not recursive macro_text) so it
+      // does NOT re-trigger the historical 160K-line parser explosion. Only
+      // %name(args) -- bare %name without parens is handled by macro_text_token
+      // (the % is excluded there, so a bare %name in text still errors; that is
+      // rare and acceptable). G8.
+      seq('%', $.identifier, '(', repeat(seq($.macro_expression, optional(','))), ')'),
       $.quoted_string,
       $.macro_text_token,
     ))),
@@ -802,7 +816,11 @@ module.exports = grammar({
       prec.left(4, seq(field('left', $.macro_expression), field('operator', '/'), field('right', $.macro_expression))),
       prec.left(1, seq(field('left', $.macro_expression), field('operator', 'and'), field('right', $.macro_expression))),
       prec.left(1, seq(field('left', $.macro_expression), field('operator', 'or'), field('right', $.macro_expression))),
+      // 'not' as a binary operator (a not b) and as a UNARY prefix (not %sysfunc(x)).
       prec.left(1, seq(field('left', $.macro_expression), field('operator', 'not'), field('right', $.macro_expression))),
+      // Unary 'not' prefix: %if not %sysfunc(...) %then. Higher precedence than
+      // the binary comparison arms so it binds to the following macro function (G8).
+      prec(2, seq(field('operator', 'not'), field('operand', $.macro_expression))),
     ),
 
     // Macro function calls: %SYSFUNC, %SCAN, %EVAL, etc. (the value-returning

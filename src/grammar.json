@@ -2129,6 +2129,51 @@
               "name": "macro_quoting_function"
             },
             {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "%"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "identifier"
+                },
+                {
+                  "type": "STRING",
+                  "value": "("
+                },
+                {
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "SYMBOL",
+                        "name": "macro_expression"
+                      },
+                      {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "STRING",
+                            "value": ","
+                          },
+                          {
+                            "type": "BLANK"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "type": "STRING",
+                  "value": ")"
+                }
+              ]
+            },
+            {
               "type": "SYMBOL",
               "name": "quoted_string"
             },
@@ -2769,6 +2814,31 @@
               {
                 "type": "FIELD",
                 "name": "right",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "macro_expression"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "PREC",
+          "value": 2,
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "FIELD",
+                "name": "operator",
+                "content": {
+                  "type": "STRING",
+                  "value": "not"
+                }
+              },
+              {
+                "type": "FIELD",
+                "name": "operand",
                 "content": {
                   "type": "SYMBOL",
                   "name": "macro_expression"
@@ -14310,6 +14380,13 @@
     [
       "put_statement",
       "expression"
+    ],
+    [
+      "macro_statement",
+      "macro_expression"
+    ],
+    [
+      "macro_binary_expression"
     ],
     [
       "format_statement",
