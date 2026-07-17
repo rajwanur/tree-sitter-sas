@@ -334,7 +334,7 @@ Keyword parameters with space-list and %str() defaults (G-06 Phase 4)
         (macro_parameter_default
           (macro_param_text
             (macro_param_text_token)
-            (macro_function_call))))
+            (macro_quoting_function))))
       (macro_parameter
         (identifier)
         (macro_parameter_default
@@ -378,7 +378,7 @@ Positional + keyword params with default (G-06 Phase 4)
         (identifier)
         (macro_parameter_default
           (macro_param_text
-            (macro_function_call)))))
+            (macro_quoting_function)))))
     (macro_statement
       (macro_put_statement
         (macro_text

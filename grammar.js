@@ -710,6 +710,7 @@ module.exports = grammar({
     macro_text: $ => prec.right(repeat1(choice(
       $.macro_variable_reference,
       $.macro_function_call,
+      $.macro_quoting_function,
       $.quoted_string,
       $.macro_text_token,
     ))),
@@ -730,6 +731,7 @@ module.exports = grammar({
     macro_param_text: $ => prec.right(repeat1(choice(
       $.macro_variable_reference,
       $.macro_function_call,
+      $.macro_quoting_function,
       $.quoted_string,
       $.macro_param_text_token,
     ))),
@@ -754,6 +756,7 @@ module.exports = grammar({
     macro_expression: $ => choice(
       $.macro_binary_expression,
       $.macro_function_call,
+      $.macro_quoting_function,
       $.macro_variable_reference,
       seq('%', $.identifier, optional(seq('(', repeat(seq($.macro_expression, optional(','))), ')'))),
       $.function_call,
@@ -778,7 +781,8 @@ module.exports = grammar({
       prec.left(1, seq(field('left', $.macro_expression), field('operator', 'not'), field('right', $.macro_expression))),
     ),
 
-    // Macro function calls: %SYSFUNC, %SCAN, %EVAL, etc.
+    // Macro function calls: %SYSFUNC, %SCAN, %EVAL, etc. (the value-returning
+    // functions whose args are macro expressions).
     macro_function_call: $ => seq(
       field('name', choice(
         alias($._macro_sysfunc_keyword, '%sysfunc'),
@@ -790,6 +794,20 @@ module.exports = grammar({
         alias($._macro_index_keyword, '%index'),
         alias($._macro_eval_keyword, '%eval'),
         alias($._macro_sysevalf_keyword, '%sysevalf'),
+      )),
+      '(',
+      repeat(seq($.macro_expression, optional(','))),
+      ')'
+    ),
+
+    // Macro quoting functions: %STR/%NRSTR/%BQUOTE/%NRBQUOTE/%UNQUOTE. These
+    // exist to wrap ARBITRARY text including %, &, >, commas, and unmatched
+    // quotes -- their args are freeform text, not strict macro expressions.
+    // Using macro_quoted_text (whose token allows % & , > etc., stopping only at
+    // the balancing ')') avoids the cascade of ERRORs from %nrstr(This has a
+    // %macro token) / %bquote(50% > 25%) / %str(,). G6.
+    macro_quoting_function: $ => seq(
+      field('name', choice(
         alias($._macro_str_keyword, '%str'),
         alias($._macro_nrstr_keyword, '%nrstr'),
         alias($._macro_bquote_keyword, '%bquote'),
@@ -797,9 +815,27 @@ module.exports = grammar({
         alias($._macro_unquote_keyword, '%unquote'),
       )),
       '(',
-      repeat(seq($.macro_expression, optional(','))),
+      optional($.macro_quoted_text),
       ')'
     ),
+
+    // Freeform text inside a macro quoting function's parens. Allows everything
+    // a quoting function is meant to neutralize -- %, &, >, <, commas, =, etc.
+    // -- stopping only at the closing ')'. Nested macro constructs (variable
+    // refs, nested function calls, quoted strings) are recognized as structured
+    // children; everything else is macro_quoted_text_token runs.
+    macro_quoted_text: $ => prec.right(repeat1(choice(
+      $.macro_variable_reference,
+      $.macro_function_call,
+      $.macro_quoting_function,
+      $.quoted_string,
+      $.macro_quoted_text_token,
+    ))),
+
+    // Raw text inside a quoting function: anything except ')' (and quote chars,
+    // which start separate quoted_string children). % and & ARE included --
+    // quoting exists precisely to wrap them literally.
+    macro_quoted_text_token: $ => /[^)'"]+/,
 
     // ========================================================================
     // Statement supertype -- all SAS statement types
@@ -1848,6 +1884,10 @@ module.exports = grammar({
       $.function_call,
       $.method_call,
       $.macro_variable_reference,
+      // Macro quoting function as an argument value: %str(,) passed to a SAS
+      // function via %sysfunc(countw(&list, %str(,))). Valid in expression
+      // positions so nested function args accept quoting (G6).
+      $.macro_quoting_function,
       // Array element: arr[i], _v{id}, x(j) -- common in DATA step expressions.
       $.array_element,
       // Dotted identifier: first.varname, last.varname, lib.dataset etc.

@@ -24,6 +24,10 @@
         "named": true
       },
       {
+        "type": "macro_quoting_function",
+        "named": true
+      },
+      {
         "type": "macro_variable_reference",
         "named": true
       },
@@ -2098,6 +2102,10 @@
           "named": true
         },
         {
+          "type": "macro_quoting_function",
+          "named": true
+        },
+        {
           "type": "macro_variable_reference",
           "named": true
         },
@@ -2125,10 +2133,6 @@
         "required": true,
         "types": [
           {
-            "type": "%bquote",
-            "named": false
-          },
-          {
             "type": "%eval",
             "named": false
           },
@@ -2145,19 +2149,7 @@
             "named": false
           },
           {
-            "type": "%nrbquote",
-            "named": false
-          },
-          {
-            "type": "%nrstr",
-            "named": false
-          },
-          {
             "type": "%scan",
-            "named": false
-          },
-          {
-            "type": "%str",
             "named": false
           },
           {
@@ -2170,10 +2162,6 @@
           },
           {
             "type": "%sysfunc",
-            "named": false
-          },
-          {
-            "type": "%unquote",
             "named": false
           },
           {
@@ -2301,6 +2289,10 @@
           "named": true
         },
         {
+          "type": "macro_quoting_function",
+          "named": true
+        },
+        {
           "type": "macro_variable_reference",
           "named": true
         },
@@ -2383,6 +2375,79 @@
     }
   },
   {
+    "type": "macro_quoted_text",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "macro_function_call",
+          "named": true
+        },
+        {
+          "type": "macro_quoted_text_token",
+          "named": true
+        },
+        {
+          "type": "macro_quoting_function",
+          "named": true
+        },
+        {
+          "type": "macro_variable_reference",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "macro_quoting_function",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "%bquote",
+            "named": false
+          },
+          {
+            "type": "%nrbquote",
+            "named": false
+          },
+          {
+            "type": "%nrstr",
+            "named": false
+          },
+          {
+            "type": "%str",
+            "named": false
+          },
+          {
+            "type": "%unquote",
+            "named": false
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "macro_quoted_text",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "macro_statement",
     "named": true,
     "fields": {},
@@ -2439,6 +2504,10 @@
       "types": [
         {
           "type": "macro_function_call",
+          "named": true
+        },
+        {
+          "type": "macro_quoting_function",
           "named": true
         },
         {
@@ -6358,6 +6427,10 @@
   },
   {
     "type": "macro_param_text_token",
+    "named": true
+  },
+  {
+    "type": "macro_quoted_text_token",
     "named": true
   },
   {

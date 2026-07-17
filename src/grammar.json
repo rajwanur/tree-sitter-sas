@@ -2055,6 +2055,10 @@
             },
             {
               "type": "SYMBOL",
+              "name": "macro_quoting_function"
+            },
+            {
+              "type": "SYMBOL",
               "name": "quoted_string"
             },
             {
@@ -2084,6 +2088,10 @@
             {
               "type": "SYMBOL",
               "name": "macro_function_call"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "macro_quoting_function"
             },
             {
               "type": "SYMBOL",
@@ -2161,6 +2169,10 @@
         {
           "type": "SYMBOL",
           "name": "macro_function_call"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "macro_quoting_function"
         },
         {
           "type": "SYMBOL",
@@ -2707,7 +2719,53 @@
                 },
                 "named": false,
                 "value": "%sysevalf"
+              }
+            ]
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "("
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "macro_expression"
               },
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": ","
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "STRING",
+          "value": ")"
+        }
+      ]
+    },
+    "macro_quoting_function": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "FIELD",
+          "name": "name",
+          "content": {
+            "type": "CHOICE",
+            "members": [
               {
                 "type": "ALIAS",
                 "content": {
@@ -2761,34 +2819,58 @@
           "value": "("
         },
         {
-          "type": "REPEAT",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "macro_expression"
-              },
-              {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "STRING",
-                    "value": ","
-                  },
-                  {
-                    "type": "BLANK"
-                  }
-                ]
-              }
-            ]
-          }
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "macro_quoted_text"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         },
         {
           "type": "STRING",
           "value": ")"
         }
       ]
+    },
+    "macro_quoted_text": {
+      "type": "PREC_RIGHT",
+      "value": 0,
+      "content": {
+        "type": "REPEAT1",
+        "content": {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "macro_variable_reference"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "macro_function_call"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "macro_quoting_function"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "quoted_string"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "macro_quoted_text_token"
+            }
+          ]
+        }
+      }
+    },
+    "macro_quoted_text_token": {
+      "type": "PATTERN",
+      "value": "[^)'\"]+"
     },
     "statement": {
       "type": "CHOICE",
@@ -12097,6 +12179,10 @@
         {
           "type": "SYMBOL",
           "name": "macro_variable_reference"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "macro_quoting_function"
         },
         {
           "type": "SYMBOL",
