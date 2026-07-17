@@ -28,6 +28,10 @@
         "named": true
       },
       {
+        "type": "method_call",
+        "named": true
+      },
+      {
         "type": "missing_value",
         "named": true
       },
@@ -103,6 +107,10 @@
       },
       {
         "type": "goto_statement",
+        "named": true
+      },
+      {
+        "type": "hash_declaration_statement",
         "named": true
       },
       {
@@ -451,7 +459,31 @@
             "named": false
           },
           {
+            "type": "eq",
+            "named": false
+          },
+          {
+            "type": "ge",
+            "named": false
+          },
+          {
+            "type": "gt",
+            "named": false
+          },
+          {
             "type": "in",
+            "named": false
+          },
+          {
+            "type": "le",
+            "named": false
+          },
+          {
+            "type": "lt",
+            "named": false
+          },
+          {
+            "type": "ne",
             "named": false
           },
           {
@@ -1493,6 +1525,32 @@
     "children": {
       "multiple": false,
       "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "hash_declaration_statement",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
       "types": [
         {
           "type": "expression",
@@ -2572,6 +2630,42 @@
         },
         {
           "type": "set_statement_option",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "method_call",
+    "named": true,
+    "fields": {
+      "method": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "object": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "expression",
           "named": true
         }
       ]
@@ -5957,6 +6051,10 @@
     "named": false
   },
   {
+    "type": "declare",
+    "named": false
+  },
+  {
     "type": "define",
     "named": false
   },
@@ -6078,6 +6176,10 @@
   },
   {
     "type": "guessingrows",
+    "named": false
+  },
+  {
+    "type": "hash",
     "named": false
   },
   {

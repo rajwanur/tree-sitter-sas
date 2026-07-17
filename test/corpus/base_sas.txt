@@ -683,3 +683,31 @@ run;
       (number)
       (number)
       (number))))
+
+================================================================================
+HASH object declaration and method call
+================================================================================
+data work.d;
+  declare hash h(dataset: 'work.x');
+  if h.find() ne 0 then x = 1;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      library: (identifier)
+      dataset: (identifier))
+    (hash_declaration_statement
+      name: (identifier)
+      (identifier)
+      (quoted_string
+        (single_quoted_string)))
+    (if_statement
+      condition: (binary_expression
+        left: (method_call
+          object: (identifier)
+          method: (identifier))
+        right: (number))
+      consequence: (assignment_statement
+        target: (identifier)
+        value: (number)))))

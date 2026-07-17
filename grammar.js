@@ -812,6 +812,7 @@ module.exports = grammar({
       $.label_statement,
       $.attrib_statement,
       $.array_statement,
+      $.hash_declaration_statement,
       $.by_statement,
       $.call_statement,
       $.return_statement,
@@ -1096,6 +1097,20 @@ module.exports = grammar({
         seq($.identifier, '-', $.identifier),
       )),
       optional(seq('(', repeat(choice($.identifier, $.macro_variable_reference, $.number, $.missing_value, '*', ',')), ')')),
+      ';'
+    ),
+
+    // HASH object declaration: declare hash h(dataset: 'x', multidata: 'no');
+    // SAS hash objects use a constructor with tag:value arguments (note the ':'
+    // not '='), and methods like h.find(), h.add_key(). The declaration is a
+    // DATA-step statement; method calls are handled as a method_call expression.
+    hash_declaration_statement: $ => seq(
+      'declare',
+      'hash',
+      field('name', $.identifier),
+      '(',
+      repeat(seq($.identifier, ':', $.expression, optional(','))),
+      ')',
       ';'
     ),
 
@@ -1786,6 +1801,7 @@ module.exports = grammar({
       $.unary_expression,
       $.parenthesized_expression,
       $.function_call,
+      $.method_call,
       $.macro_variable_reference,
       // Array element: arr[i], _v{id}, x(j) -- common in DATA step expressions.
       $.array_element,
@@ -1821,11 +1837,14 @@ module.exports = grammar({
     // Used for SAS BY-group indicators (first.USUBJID, last.LBTEST),
     // qualified references (lib.dataset, work.&contds), and other dotted-name
     // patterns. Either side may be a macro variable reference (G-11d).
-    dotted_identifier: $ => seq(
+    // Given higher precedence than method_call (prec 2) so lib.dataset binds as
+    // a dotted reference first; method_call only wins when '(' follows AND the
+    // dotted_identifier cannot form a complete unit (G4).
+    dotted_identifier: $ => prec(3, seq(
       field('base', choice($.identifier, $.macro_variable_reference)),
       '.',
       field('member', choice($.identifier, $.macro_variable_reference)),
-    ),
+    )),
 
     // Operator precedence (higher number = tighter binding):
     // 1: comparison (==, !=, <, >, <=, >=, IN, NOT, AND, OR)
@@ -1847,8 +1866,8 @@ module.exports = grammar({
       prec.left(4, seq(field('left', $.expression), field('operator', '/'), field('right', $.expression))),
       // Exponentiation
       prec.left(5, seq(field('left', $.expression), field('operator', '**'), field('right', $.expression))),
-      // Comparison operators
-      prec.left(1, seq(field('left', $.expression), field('operator', choice('=', '^=', '~=', '<=', '>=', '<', '>')), field('right', $.expression))),
+      // Comparison operators (symbolic and word forms: = ^= ~= <= >= < > eq ne gt lt ge le)
+      prec.left(1, seq(field('left', $.expression), field('operator', choice('=', '^=', '~=', '<=', '>=', '<', '>', 'eq', 'ne', 'gt', 'lt', 'ge', 'le')), field('right', $.expression))),
       // IN operator
       prec.left(1, seq(field('left', $.expression), field('operator', 'in'), field('right', $.expression))),
       // Logical NOT
@@ -1872,6 +1891,20 @@ module.exports = grammar({
       repeat(seq(choice($.expression, '*'), optional(','))),
       ')',
     ),
+
+    // Method call on a hash/Java object: h.find(), h2.add_key('a'), obj.setValue(x).
+    // Distinct from function_call (dotted object.method name) and from a dataset
+    // reference (lib.dataset(options)): the args are expressions, not key=value
+    // options. Given precedence so it wins over dotted_identifier + data_set_option
+    // when '(' follows, but only in expression positions (G4).
+    method_call: $ => prec(2, seq(
+      field('object', $.identifier),
+      '.',
+      field('method', $.identifier),
+      '(',
+      repeat(seq(choice($.expression, '*'), optional(','))),
+      ')',
+    )),
 
     // The optional trailing '.' is a word delimiter in SAS: &var. tells SAS the
     // macro variable name ends at the dot. Without it, &varx would be ambiguous
