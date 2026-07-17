@@ -376,3 +376,82 @@ quit;
         (sql_from_clause
           (sql_table_ref
             (identifier)))))))
+
+================================================================================
+SQL count(*), into :macrovar separated by, and having count(*)
+================================================================================
+proc sql noprint;
+  select count(*) as n into :clist separated by ', ' from d having count(*) >= 1;
+quit;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (identifier))
+    body: (proc_body
+      (sql_select_statement
+        (sql_select_list
+          (sql_expression
+            (function_call
+              name: (identifier))
+            (identifier)))
+        (sql_into_clause
+          (identifier)
+          (quoted_string
+            (single_quoted_string)))
+        (sql_from_clause
+          (sql_table_ref
+            (identifier)))
+        (sql_having_clause
+          (sql_expression
+            (binary_expression
+              left: (function_call
+                name: (identifier))
+              right: (number))))))))
+
+================================================================================
+SQL CASE WHEN expression and scalar subquery
+================================================================================
+proc sql;
+  select case when age < 40 then 'Young' else 'Old' end as cat from d
+  where x > (select avg(z) from e);
+quit;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    body: (proc_body
+      (sql_select_statement
+        (sql_select_list
+          (sql_expression
+            (sql_case_expression
+              (sql_expression
+                (binary_expression
+                  left: (identifier)
+                  right: (number)))
+              (sql_expression
+                (quoted_string
+                  (single_quoted_string)))
+              (sql_expression
+                (quoted_string
+                  (single_quoted_string)))))
+          (identifier))
+        (sql_from_clause
+          (sql_table_ref
+            (identifier)))
+        (sql_where_clause
+          (sql_expression
+            (binary_expression
+              left: (identifier)
+              right: (parenthesized_expression
+                (sql_select_list
+                  (sql_expression
+                    (function_call
+                      name: (identifier)
+                      (identifier))))
+                (sql_from_clause
+                  (sql_table_ref
+                    (identifier)))))))))))

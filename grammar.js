@@ -100,6 +100,11 @@ module.exports = grammar({
     [$.sgplot_keylegend_statement],
     // sql_expression: optional 'as identifier' suffix creates boundary ambiguity
     [$.sql_expression],
+    // sql_select_list: the column-attributes repeat (format=, length=) after an
+    // optional alias collides with the next select item at 'identifier'.
+    // "select a format=8.1, b" -- after 'a', is 'format' an attr or the alias?
+    // GLR explores both; the complete-parse path wins (G3).
+    [$.sql_select_list],
     // expression supertype: repeat1($.expression) creates boundary ambiguity in many contexts
     [$.expression],
     // Multiple *_class_statement rules all match 'class' + identifiers
@@ -1246,12 +1251,27 @@ module.exports = grammar({
       alias($._select_keyword, 'select'),
       optional('distinct'),
       $.sql_select_list,
+      optional($.sql_into_clause),
       optional($.sql_from_clause),
       optional($.sql_where_clause),
       repeat($.sql_join_clause),
       optional($.sql_group_by_clause),
       optional($.sql_having_clause),
       optional($.sql_order_by_clause),
+    ),
+
+    // SELECT ... INTO :macrovar (separated by 'sep') -- PROC SQL macro-variable
+    // assignment. Each target is a ':' + identifier (the SQL macro-variable
+    // syntax uses a colon prefix, distinct from the & form used elsewhere),
+    // optionally with a 'separated by' delimiter. E.g.:
+    //   into :country_list separated by ', ', :n_list separated by ', '
+    sql_into_clause: $ => seq(
+      'into',
+      repeat1(seq(
+        seq(':', $.identifier),
+        optional(seq('separated', 'by', $.quoted_string)),
+        optional(','),
+      )),
     ),
 
     sql_select_list: $ => repeat1(seq(
@@ -1265,6 +1285,8 @@ module.exports = grammar({
       // sql_expression items are not wrapped in an extra node.
       $.sql_select_item,
       optional(seq(alias($._as_keyword, 'as'), $.identifier)),
+      // Column attributes after the alias: format=8.1, length=20, label='x'.
+      repeat(seq($.identifier, '=', $.expression)),
       optional(',')
     )),
 
@@ -1418,9 +1440,31 @@ module.exports = grammar({
 
     sql_expression: $ => choice(
       $.sql_qualified_star,
+      $.sql_case_expression,
       $.expression,
       '*',  // SELECT * wildcard
       seq($.expression, optional(seq(alias($._as_keyword, 'as'), $.identifier))),
+    ),
+
+    // Scalar subqueries (where x > (select avg(y) from t)) are handled by
+    // parenthesized_expression, which accepts either a general expression or a
+    // full _sql_select_query inside the parens. This avoids a separate
+    // sql_scalar_subquery rule that would conflict with parenthesized_expression
+    // at every '(' (G3).
+
+    // SQL CASE expression: case when <cond> then <val> [when ...] [else <val>] end.
+    // SAS PROC SQL supports both simple (case x when 1 then ...) and searched
+    // (case when x=1 then ...) forms; we accept both via expression operands.
+    sql_case_expression: $ => seq(
+      'case',
+      repeat1(seq(
+        'when',
+        $.sql_expression,
+        'then',
+        $.sql_expression,
+      )),
+      optional(seq('else', $.sql_expression)),
+      'end',
     ),
 
     // ========================================================================
@@ -1820,12 +1864,12 @@ module.exports = grammar({
       field('operand', $.expression)
     )),
 
-    parenthesized_expression: $ => seq('(', $.expression, ')'),
+    parenthesized_expression: $ => seq('(', choice($.expression, $._sql_select_query), ')'),
 
     function_call: $ => seq(
       field('name', $.identifier),
       '(',
-      repeat(seq($.expression, optional(','))),
+      repeat(seq(choice($.expression, '*'), optional(','))),
       ')',
     ),
 
@@ -2066,6 +2110,7 @@ module.exports = grammar({
     _on_keyword: $ => /[oO][nN]/,
     _as_keyword: $ => /[aA][sS]/,
     _having_keyword: $ => /[hH][aA][vV][iI][nN][gG]/,
+    _into_keyword: $ => /[iI][nN][tT][oO]/,
     _table_keyword: $ => /[tT][aA][bB][lL][eE]/,
     _var_keyword: $ => /[vV][aA][rR]/,
 

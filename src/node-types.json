@@ -2726,11 +2726,43 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
           "type": "expression",
+          "named": true
+        },
+        {
+          "type": "sql_from_clause",
+          "named": true
+        },
+        {
+          "type": "sql_group_by_clause",
+          "named": true
+        },
+        {
+          "type": "sql_having_clause",
+          "named": true
+        },
+        {
+          "type": "sql_into_clause",
+          "named": true
+        },
+        {
+          "type": "sql_join_clause",
+          "named": true
+        },
+        {
+          "type": "sql_order_by_clause",
+          "named": true
+        },
+        {
+          "type": "sql_select_list",
+          "named": true
+        },
+        {
+          "type": "sql_where_clause",
           "named": true
         }
       ]
@@ -4488,6 +4520,21 @@
     }
   },
   {
+    "type": "sql_case_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "sql_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "sql_create_table",
     "named": true,
     "fields": {},
@@ -4509,6 +4556,10 @@
         },
         {
           "type": "sql_having_clause",
+          "named": true
+        },
+        {
+          "type": "sql_into_clause",
           "named": true
         },
         {
@@ -4552,6 +4603,10 @@
         },
         {
           "type": "sql_having_clause",
+          "named": true
+        },
+        {
+          "type": "sql_into_clause",
           "named": true
         },
         {
@@ -4613,6 +4668,10 @@
       "types": [
         {
           "type": "expression",
+          "named": true
+        },
+        {
+          "type": "sql_case_expression",
           "named": true
         },
         {
@@ -4692,6 +4751,10 @@
           "named": true
         },
         {
+          "type": "sql_into_clause",
+          "named": true
+        },
+        {
           "type": "sql_join_clause",
           "named": true
         },
@@ -4705,6 +4768,25 @@
         },
         {
           "type": "sql_where_clause",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "sql_into_clause",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
           "named": true
         }
       ]
@@ -4819,7 +4901,7 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
+          "type": "expression",
           "named": true
         },
         {
@@ -4851,6 +4933,10 @@
         },
         {
           "type": "sql_having_clause",
+          "named": true
+        },
+        {
+          "type": "sql_into_clause",
           "named": true
         },
         {
@@ -4901,6 +4987,10 @@
           "named": true
         },
         {
+          "type": "sql_into_clause",
+          "named": true
+        },
+        {
           "type": "sql_join_clause",
           "named": true
         },
@@ -4937,6 +5027,10 @@
         },
         {
           "type": "sql_having_clause",
+          "named": true
+        },
+        {
+          "type": "sql_into_clause",
           "named": true
         },
         {
@@ -5791,6 +5885,10 @@
     "named": false
   },
   {
+    "type": "case",
+    "named": false
+  },
+  {
     "type": "cdfplot",
     "named": false
   },
@@ -6340,6 +6438,10 @@
   },
   {
     "type": "select",
+    "named": false
+  },
+  {
+    "type": "separated",
     "named": false
   },
   {
