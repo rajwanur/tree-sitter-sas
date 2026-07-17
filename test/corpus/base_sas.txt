@@ -628,3 +628,23 @@ run;
           (identifier)
           (identifier)
           (identifier))))))
+
+================================================================================
+SET with name_literal and end= option
+================================================================================
+data work.out;
+  set work.'weird names'n end=eof;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      library: (identifier)
+      dataset: (identifier))
+    (set_statement
+      (data_reference
+        (identifier)
+        (name_literal))
+      (set_statement_option
+        (identifier)
+        (identifier)))))

@@ -486,6 +486,18 @@
         {
           "type": "SYMBOL",
           "name": "expression"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "data_set_option"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         }
       ]
     },
@@ -2944,6 +2956,13 @@
           }
         },
         {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "set_statement_option"
+          }
+        },
+        {
           "type": "STRING",
           "value": ";"
         }
@@ -2966,6 +2985,13 @@
           "content": {
             "type": "SYMBOL",
             "name": "data_reference"
+          }
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "set_statement_option"
           }
         },
         {
@@ -2994,6 +3020,13 @@
           }
         },
         {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "set_statement_option"
+          }
+        },
+        {
           "type": "STRING",
           "value": ";"
         }
@@ -3019,8 +3052,45 @@
           }
         },
         {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "set_statement_option"
+          }
+        },
+        {
           "type": "STRING",
           "value": ";"
+        }
+      ]
+    },
+    "set_statement_option": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "identifier"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "identifier"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "macro_variable_reference"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "number"
+            }
+          ]
         }
       ]
     },
@@ -3033,6 +3103,10 @@
             {
               "type": "SYMBOL",
               "name": "identifier"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "name_literal"
             },
             {
               "type": "SYMBOL",
@@ -3056,6 +3130,10 @@
                     {
                       "type": "SYMBOL",
                       "name": "identifier"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "name_literal"
                     },
                     {
                       "type": "SYMBOL",

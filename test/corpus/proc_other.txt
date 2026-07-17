@@ -432,3 +432,32 @@ run;
         (number)
         (identifier)
         (missing_value)))))
+
+================================================================================
+PROC TRANSPOSE out= dataset-option suffix
+================================================================================
+proc transpose data=work.labs out=work.labs_wide(drop=_name_) prefix=Score_;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (proc_option
+        (proc_option_key)
+        (dotted_identifier
+          base: (identifier)
+          member: (identifier)))
+      (proc_option
+        (proc_option_key)
+        (dotted_identifier
+          base: (identifier)
+          member: (identifier))
+        (data_set_option
+          (identifier)
+          (identifier)))
+      (proc_option
+        (proc_option_key
+          (identifier))
+        (identifier)))))

@@ -739,6 +739,10 @@
         {
           "type": "macro_variable_reference",
           "named": true
+        },
+        {
+          "type": "name_literal",
+          "named": true
         }
       ]
     }
@@ -2551,6 +2555,10 @@
         {
           "type": "data_reference",
           "named": true
+        },
+        {
+          "type": "set_statement_option",
+          "named": true
         }
       ]
     }
@@ -2588,6 +2596,10 @@
       "types": [
         {
           "type": "data_reference",
+          "named": true
+        },
+        {
+          "type": "set_statement_option",
           "named": true
         }
       ]
@@ -3313,6 +3325,10 @@
       "required": true,
       "types": [
         {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
           "type": "expression",
           "named": true
         },
@@ -3855,6 +3871,33 @@
         },
         {
           "type": "macro_do_block",
+          "named": true
+        },
+        {
+          "type": "set_statement_option",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "set_statement_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "macro_variable_reference",
+          "named": true
+        },
+        {
+          "type": "number",
           "named": true
         }
       ]
@@ -5370,6 +5413,10 @@
       "types": [
         {
           "type": "data_reference",
+          "named": true
+        },
+        {
+          "type": "set_statement_option",
           "named": true
         }
       ]

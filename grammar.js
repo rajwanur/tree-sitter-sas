@@ -325,11 +325,15 @@ module.exports = grammar({
     // Also supports complex PROC options with a parenthesized argument group:
     //   plots(stepaxis=normb unpack)=all
     //   outest(type=beta)
+    // The value may carry a trailing data_set_option group, modeling dataset
+    // options on the value: out=work.x(drop=_name_), base=lib.d(keep=a b).
+    // Without this, the (drop=...) suffix after a dotted value cannot parse.
     proc_option: $ => seq(
       $.proc_option_key,
       optional($.proc_option_args),
       '=',
       $.expression,
+      optional($.data_set_option),
     ),
 
     // Parenthesized argument group for complex PROC options.
@@ -825,17 +829,27 @@ module.exports = grammar({
     // SET additionally allows %do loops interleaved with data references, since
     // macros commonly build the set list dynamically:
     //   set %do i=1 %to &n; work.ds&i %end; ;
-    // (G-14)
-    set_statement: $ => seq(alias($._set_keyword, 'set'), repeat1(choice($.data_reference, $.macro_do_block)), ';'),
-    merge_statement: $ => seq(alias($._merge_keyword, 'merge'), repeat1($.data_reference), ';'),
-    update_statement: $ => seq(alias($._update_keyword, 'update'), repeat1($.data_reference), ';'),
-    modify_statement: $ => seq(alias($._modify_keyword, 'modify'), repeat1($.data_reference), ';'),
+    // (G-14). SET/MERGE/UPDATE/MODIFY also accept per-dataset statement options
+    // OUTSIDE the data_set_option parens (end=eof, nobs=&n, point=p, key=...).
+    // The trailing repeat models those options; it is local to these statements
+    // (not data_reference) so it does not collide with means_output etc.
+    set_statement: $ => seq(alias($._set_keyword, 'set'), repeat1(choice($.data_reference, $.macro_do_block)), repeat($.set_statement_option), ';'),
+    merge_statement: $ => seq(alias($._merge_keyword, 'merge'), repeat1($.data_reference), repeat($.set_statement_option), ';'),
+    update_statement: $ => seq(alias($._update_keyword, 'update'), repeat1($.data_reference), repeat($.set_statement_option), ';'),
+    modify_statement: $ => seq(alias($._modify_keyword, 'modify'), repeat1($.data_reference), repeat($.set_statement_option), ';'),
 
-    // Either part of a data reference may be a macro variable reference,
-    // e.g. set &indata; or set adam.&ds; (macro-written DATA steps).
+    // SET/MERGE/UPDATE/MODIFY statement option (outside dataset-option parens).
+    // e.g. end=eof, nobs=&nvars, point=ptr, key=primkey. Bounded to identifier/
+    // macro-variable/number values (the real option-value grammar); declared as
+    // a named node so navigation/highlighting can treat it uniformly.
+    set_statement_option: $ => seq($.identifier, '=', choice($.identifier, $.macro_variable_reference, $.number)),
+
+    // Either part of a data reference may be a macro variable reference
+    // or a name literal (VALIDVARNAME=ANY: 'my ds'n), e.g. set &indata; or
+    // set adam.&ds; or set work.'weird names'n (macro-written DATA steps).
     data_reference: $ => seq(
-      choice($.identifier, $.macro_variable_reference),
-      optional(seq('.', choice($.identifier, $.macro_variable_reference))),
+      choice($.identifier, $.name_literal, $.macro_variable_reference),
+      optional(seq('.', choice($.identifier, $.name_literal, $.macro_variable_reference))),
       optional($.data_set_option),
     ),
 
