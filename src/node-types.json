@@ -914,11 +914,7 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "macro_variable_reference",
+          "type": "expression",
           "named": true
         }
       ]
@@ -1061,6 +1057,10 @@
           {
             "type": "macro_variable_reference",
             "named": true
+          },
+          {
+            "type": "name_literal",
+            "named": true
           }
         ]
       }
@@ -1147,7 +1147,7 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": false,
       "types": [
         {
@@ -2615,11 +2615,7 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "macro_variable_reference",
+          "type": "expression",
           "named": true
         }
       ]
@@ -5370,11 +5366,7 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "macro_variable_reference",
+          "type": "expression",
           "named": true
         }
       ]
@@ -5484,7 +5476,7 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": false,
       "types": [
         {
@@ -5636,11 +5628,7 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "macro_variable_reference",
+          "type": "expression",
           "named": true
         }
       ]
@@ -6114,7 +6102,15 @@
     "named": false
   },
   {
+    "type": "CANCEL",
+    "named": false
+  },
+  {
     "type": "DESC",
+    "named": false
+  },
+  {
+    "type": "QUIT",
     "named": false
   },
   {
@@ -6204,6 +6200,10 @@
   },
   {
     "type": "call",
+    "named": false
+  },
+  {
+    "type": "cancel",
     "named": false
   },
   {

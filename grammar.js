@@ -66,6 +66,11 @@ module.exports = grammar({
     // tabulate_table_statement: same format_specifier vs identifier+number
     // ambiguity in the TABLE token list (G10 tolerant form).
     [$.format_specifier, $.tabulate_table_statement],
+    // title/footnote_statement: the leading key=value options (justify=left)
+    // collide with the trailing text expression at 'identifier ='. GLR explores
+    // both; the options repeat binds when '=' follows an identifier that is not
+    // the text (G11).
+    [$.title_statement, $.expression],
     // format_specifier (identifier number missing_value) vs the repeat1 body
     // (identifier) followed by a bare number/identifier: both can consume
     // "identifier number". GLR resolves once the trailing '.' (missing_value)
@@ -285,6 +290,7 @@ module.exports = grammar({
       ';',
       repeat(choice($.statement, $.cards_statement, $.cards4_statement)),
       alias($._run_keyword, 'run'),
+      optional(choice('cancel', 'quit', 'CANCEL', 'QUIT')),
       ';'
     ),
 
@@ -332,8 +338,8 @@ module.exports = grammar({
       ';',
       optional(field('body', $.proc_body)),
       optional(choice(
-        seq(alias($._run_keyword, 'run'), ';'),
-        seq(alias($._quit_keyword, 'quit'), ';')
+        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
+        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';')
       ))
     ),
 
@@ -568,8 +574,8 @@ module.exports = grammar({
     // Standalone step terminators (orphan run;/quit; outside any step)
     // ========================================================================
 
-    run_statement: $ => seq(alias($._run_keyword, 'run'), ';'),
-    quit_statement: $ => seq(alias($._quit_keyword, 'quit'), ';'),
+    run_statement: $ => seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
+    quit_statement: $ => seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
 
     // ========================================================================
     // Macro language (PARSE-01, PARSE-03, PARSE-06) -- D-02: full macro support
@@ -1626,8 +1632,8 @@ module.exports = grammar({
     // PROC MEANS / SUMMARY statements
     // ========================================================================
 
-    means_var_statement: $ => seq(alias($._var_keyword, 'var'), repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
-    means_class_statement: $ => seq('class', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    means_var_statement: $ => seq(alias($._var_keyword, 'var'), repeat1(choice($.identifier, $.macro_variable_reference, seq($.identifier, '-', $.identifier))), ';'),
+    means_class_statement: $ => seq('class', repeat1(choice($.identifier, $.macro_variable_reference)), optional($._class_slash_options), ';'),
     means_freq_statement: $ => seq('freq', choice($.identifier, $.macro_variable_reference), ';'),
     means_weight_statement: $ => seq('weight', choice($.identifier, $.macro_variable_reference), ';'),
     means_id_statement: $ => seq('id', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
@@ -1740,9 +1746,9 @@ module.exports = grammar({
     // PROC TABULATE statements
     // ========================================================================
 
-    tabulate_class_statement: $ => seq('class', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    tabulate_class_statement: $ => seq('class', repeat1(choice($.identifier, $.macro_variable_reference)), optional($._class_slash_options), ';'),
     tabulate_classlev_statement: $ => seq('classlev', repeat1($.identifier), ';'),
-    tabulate_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    tabulate_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference, seq($.identifier, '-', $.identifier))), ';'),
     // PROC TABULATE TABLE statement -- a crossed/composed expression DSL:
     //   table (trt01p all='Total'), (aesev all='Any AE')*n=' '*f=3.0 age*(mean='Mean Age' std='SD')*f=8.1;
     // The DSL uses '*' (cross), ',' (page/dimension separator), parenthesized
@@ -1768,7 +1774,7 @@ module.exports = grammar({
     // PROC PRINT statements
     // ========================================================================
 
-    print_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    print_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference, seq($.identifier, '-', $.identifier))), ';'),
     print_id_statement: $ => seq('id', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     print_sum_statement: $ => seq('sum', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     print_pageby_statement: $ => seq('pageby', choice($.identifier, $.macro_variable_reference), ';'),
@@ -1777,7 +1783,7 @@ module.exports = grammar({
     // PROC TRANSPOSE statements
     // ========================================================================
 
-    transpose_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    transpose_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference, seq($.identifier, '-', $.identifier))), ';'),
     transpose_id_statement: $ => seq('id', choice($.identifier, $.macro_variable_reference), ';'),
     transpose_idlabel_statement: $ => seq('idlabel', choice($.identifier, $.macro_variable_reference), ';'),
     transpose_copy_statement: $ => seq('copy', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
@@ -1817,7 +1823,7 @@ module.exports = grammar({
       seq('listall', ';'),
     ),
     compare_id_statement: $ => seq('id', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
-    compare_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    compare_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference, seq($.identifier, '-', $.identifier))), ';'),
     compare_with_statement: $ => seq('with', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
 
     // ========================================================================
@@ -1831,7 +1837,13 @@ module.exports = grammar({
       seq('select', repeat1($.identifier), ';'),
       seq('exclude', repeat1($.identifier), ';'),
     ))),
-    datasets_delete_statement: $ => seq('delete', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    datasets_delete_statement: $ => seq('delete', repeat1(choice($.identifier, $.macro_variable_reference)), optional($._class_slash_options), ';'),
+
+    // Shared slash-options group for CLASS/DELETE statements: /order=data,
+    // /memtype=data, /missing, /key=value. A flat repeat of identifiers and
+    // key=value pairs after a '/'. Reused by means/tabulate/univariate class
+    // statements and datasets_delete (G11).
+    _class_slash_options: $ => seq('/', repeat1(choice($.identifier, seq($.identifier, '=', $.expression)))),
     datasets_change_statement: $ => seq('change', $.identifier, '=', $.identifier, ';'),
     datasets_repair_statement: $ => seq('repair', $.identifier, ';'),
     datasets_save_statement: $ => seq('save', repeat1($.identifier), ';'),
@@ -1863,8 +1875,8 @@ module.exports = grammar({
     // PROC UNIVARIATE statements
     // ========================================================================
 
-    univariate_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
-    univariate_class_statement: $ => seq('class', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    univariate_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference, seq($.identifier, '-', $.identifier))), ';'),
+    univariate_class_statement: $ => seq('class', repeat1(choice($.identifier, $.macro_variable_reference)), optional($._class_slash_options), ';'),
     univariate_freq_statement: $ => seq('freq', choice($.identifier, $.macro_variable_reference), ';'),
     univariate_weight_statement: $ => seq('weight', choice($.identifier, $.macro_variable_reference), ';'),
     univariate_id_statement: $ => seq('id', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
@@ -1916,7 +1928,7 @@ module.exports = grammar({
       ))),
       ';'
     )), ';'),
-    reg_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    reg_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference, seq($.identifier, '-', $.identifier))), ';'),
     reg_weight_statement: $ => seq('weight', choice($.identifier, $.macro_variable_reference), ';'),
     reg_id_statement: $ => seq('id', choice($.identifier, $.macro_variable_reference), ';'),
     reg_plot_statement: $ => seq('plot', repeat1(choice($.expression, $.quoted_string)), ';'),
@@ -2022,7 +2034,7 @@ module.exports = grammar({
     dotted_identifier: $ => prec(3, seq(
       field('base', choice($.identifier, $.macro_variable_reference)),
       '.',
-      field('member', choice($.identifier, $.macro_variable_reference)),
+      field('member', choice($.identifier, $.name_literal, $.macro_variable_reference)),
     )),
 
     // Operator precedence (higher number = tighter binding):
@@ -2129,11 +2141,14 @@ module.exports = grammar({
     // FILENAME -- external file reference with optional path and options.
     //   filename dump "%sysfunc(pathname(work))/dump.txt" lrecl=200;
     //   filename myref "c:/temp/data.txt";
+    //   filename syspipe pipe 'echo hello';   (pipe/disk/terminal device types
+    //   are bare identifiers with no '=', so a bare-identifier arm is needed).
     filename_statement: $ => seq(
       alias($._filename_keyword, 'filename'),
       field('name', $.identifier),
       repeat(choice(
         seq($.identifier, '=', choice($.identifier, $.number, $.quoted_string, $.macro_variable_reference)),
+        $.identifier,
         $.quoted_string,
         $.macro_variable_reference,
       )),
@@ -2163,8 +2178,11 @@ module.exports = grammar({
       ';'
     ),
 
-    title_statement: $ => seq(alias($._title_keyword, 'title'), optional($.expression), ';'),
-    footnote_statement: $ => seq(alias($._footnote_keyword, 'footnote'), optional($.expression), ';'),
+    // TITLE/FOOTNOTE with leading key=value options: title1 justify=left "Protocol";
+    // The options (justify=, height=, color=, bold, italic) precede the text.
+    // Accept a repeat of identifier=value pairs before the optional text expr (G11).
+    title_statement: $ => seq(alias($._title_keyword, 'title'), repeat(seq($.identifier, '=', $.expression)), optional($.expression), ';'),
+    footnote_statement: $ => seq(alias($._footnote_keyword, 'footnote'), repeat(seq($.identifier, '=', $.expression)), optional($.expression), ';'),
     x_statement: $ => seq('x', $.quoted_string, ';'),
 
     // ========================================================================
