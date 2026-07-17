@@ -1641,6 +1641,32 @@
                       "name": "macro_expression"
                     },
                     {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "SEQ",
+                          "members": [
+                            {
+                              "type": "ALIAS",
+                              "content": {
+                                "type": "SYMBOL",
+                                "name": "_macro_by_keyword"
+                              },
+                              "named": false,
+                              "value": "%by"
+                            },
+                            {
+                              "type": "SYMBOL",
+                              "name": "macro_expression"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "BLANK"
+                        }
+                      ]
+                    },
+                    {
                       "type": "STRING",
                       "value": ";"
                     }
@@ -12908,6 +12934,10 @@
     "_macro_to_keyword": {
       "type": "PATTERN",
       "value": "%[tT][oO]"
+    },
+    "_macro_by_keyword": {
+      "type": "PATTERN",
+      "value": "%[bB][yY]"
     },
     "_by_keyword": {
       "type": "PATTERN",

@@ -637,7 +637,7 @@ module.exports = grammar({
       optional(choice(
         seq('%while', '(', $.macro_expression, ')', ';'),
         seq('%until', '(', $.macro_expression, ')', ';'),
-        seq($.identifier, "=", $.macro_expression, alias($._macro_to_keyword, "%to"), $.macro_expression, ";"),
+        seq($.identifier, "=", $.macro_expression, alias($._macro_to_keyword, "%to"), $.macro_expression, optional(seq(alias($._macro_by_keyword, "%by"), $.macro_expression)), ";"),
         ';'
       )),
       repeat(choice($.data_step, $.proc_step, $.statement, $.macro_statement)),
@@ -1957,6 +1957,7 @@ module.exports = grammar({
     _until_keyword: $ => /[uU][nN][tT][iI][lL]/,
     _to_keyword: $ => /[tT][oO]/,
     _macro_to_keyword: $ => /%[tT][oO]/,
+    _macro_by_keyword: $ => /%[bB][yY]/,
     _by_keyword: $ => /[bB][yY]/,
     _return_keyword: $ => /[rR][eE][tT][uU][rR][nN]/,
     _goto_keyword: $ => /[gG][oO][tT][oO]/,
