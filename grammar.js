@@ -58,6 +58,11 @@ module.exports = grammar({
     // macro_binary_expression internal: the unary 'not' arm vs a binary arm at
     // 'not expr op ...' is genuinely ambiguous. GLR explores both (G8).
     [$.macro_binary_expression],
+    // report_line_statement: a format_specifier (identifier number missing_value)
+    // in the LINE item list collides with identifier + number as separate items.
+    // GLR explores both; the format_specifier path wins when the trailing '.'
+    // (missing_value) follows (G9).
+    [$.format_specifier, $.report_line_statement],
     // format_specifier (identifier number missing_value) vs the repeat1 body
     // (identifier) followed by a bare number/identifier: both can consume
     // "identifier number". GLR resolves once the trailing '.' (missing_value)
@@ -1681,13 +1686,29 @@ module.exports = grammar({
       $.quoted_string,
       $.number,
       '=',
-      seq('(', repeat(choice($.identifier, $.number, '=', ',')), ')'),
-      seq('[', repeat(choice($.identifier, $.number, '=', ',')), ']'),
+      $._report_style_attr,
+      seq('(', repeat(choice($.identifier, $.number, '=', ',', $.quoted_string)), ')'),
+      seq('[', repeat(choice($.identifier, $.number, '=', ',', $.quoted_string)), ']'),
+      seq('{', repeat(choice($.identifier, $.number, '=', ',', $.quoted_string)), '}'),
     )), ';'),
-    report_compute_statement: $ => seq('compute', $.identifier, optional(choice('before', 'after')), ';', repeat($.statement), 'endcomp', ';'),
-    report_break_statement: $ => seq('break', choice('before', 'after'), $.identifier, '/', repeat1($.identifier), ';'),
-    report_rbreak_statement: $ => seq('rbreak', choice('before', 'after'), '/', repeat1($.identifier), ';'),
+    report_compute_statement: $ => seq('compute', $.identifier, optional(choice('before', 'after')), optional(seq('/', repeat1(choice($.identifier, seq($.identifier, '=', $.number))))), ';', repeat($.statement), 'endcomp', ';'),
+    report_break_statement: $ => seq('break', choice('before', 'after'), $.identifier, '/', repeat1(choice($.identifier, $._report_style_attr)), ';'),
+    report_rbreak_statement: $ => seq('rbreak', choice('before', 'after'), '/', repeat1(choice($.identifier, $._report_style_attr)), ';'),
     report_order_statement: $ => seq('order', repeat1($.identifier), ';'),
+
+    // PROC REPORT style attribute: style(column)={...} or style=[...] or style={...}.
+    // The optional (location) classifies the style target (column/header/summary);
+    // the value group may use {}, [], or () braces with key=value pairs. Reused by
+    // define/break/rbreak slash-options (G9).
+    _report_style_attr: $ => prec(1, seq(
+      'style',
+      optional(seq('(', repeat(choice($.identifier, '=')), ')')),
+      choice(
+        seq('=', '{', repeat(choice($.identifier, $.number, $.quoted_string, '=', ',')), '}'),
+        seq('=', '[', repeat(choice($.identifier, $.number, $.quoted_string, '=', ',')), ']'),
+        seq('=', '(', repeat(choice($.identifier, $.number, $.quoted_string, '=', ',')), ')'),
+      ),
+    )),
 
     // Token: PROC REPORT DEFINE usage keywords (case-insensitive).
     // Aliased to a named 'report_usage_keyword' node when used inside
@@ -1710,6 +1731,8 @@ module.exports = grammar({
         $.identifier,
         $.number,
         $.macro_variable_reference,
+        seq('$', $.number, $.missing_value),       // $9. character format
+        $.format_specifier,                        // yymmdd10. etc.
       )),
       ';'
     ),

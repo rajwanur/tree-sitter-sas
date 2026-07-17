@@ -3947,6 +3947,14 @@
         {
           "type": "identifier",
           "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
+          "named": true
         }
       ]
     }
@@ -3984,6 +3992,10 @@
       "types": [
         {
           "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "number",
           "named": true
         },
         {
@@ -4033,11 +4045,19 @@
       "required": true,
       "types": [
         {
+          "type": "format_specifier",
+          "named": true
+        },
+        {
           "type": "identifier",
           "named": true
         },
         {
           "type": "macro_variable_reference",
+          "named": true
+        },
+        {
+          "type": "missing_value",
           "named": true
         },
         {
@@ -4072,10 +4092,18 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
           "named": true
         }
       ]
@@ -6770,6 +6798,10 @@
   {
     "type": "single_quoted_string",
     "named": true
+  },
+  {
+    "type": "style",
+    "named": false
   },
   {
     "type": "sum",

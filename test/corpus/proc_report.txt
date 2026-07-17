@@ -87,3 +87,42 @@ run;
               (single_quoted_string))
             (quoted_string
               (single_quoted_string))))))))
+
+================================================================================
+PROC REPORT style attributes and compute slash-options
+================================================================================
+proc report data=work.d;
+  define x / display 'Label' style(column)={just=center};
+  compute x / character length=10;
+  endcomp;
+  rbreak after / summarize style=[fontweight=bold];
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (proc_option
+        (proc_option_key)
+        (dotted_identifier
+          base: (identifier)
+          member: (identifier))))
+    body: (proc_body
+      (report_define_statement
+        (identifier)
+        (report_usage_keyword)
+        (quoted_string
+          (single_quoted_string))
+        (identifier)
+        (identifier)
+        (identifier))
+      (report_compute_statement
+        (identifier)
+        (identifier)
+        (identifier)
+        (number))
+      (report_rbreak_statement
+        (identifier)
+        (identifier)
+        (identifier)))))
