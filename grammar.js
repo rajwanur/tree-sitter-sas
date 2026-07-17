@@ -8,6 +8,11 @@ module.exports = grammar({
   // via explicit token rules with regex patterns (/[dD][aA][tT][aA]/ etc).
   // These regex tokens have distinct AST node names so tree-sitter's GLR
   // parser can distinguish keywords from identifiers.
+  //
+  // The 'running_total' prefix-split (where _run_keyword matched 'run' inside
+  // 'running_total') is instead handled by giving identifier higher lexical
+  // precedence via token.immediate on the terminator context. Setting word
+  // globally broke PROC keywords (class/var/output) that double as identifiers.
 
   // Whitespace and block comments appear between any tokens.
   // Line comments (* ...;) and macro comments (%* ...;) are NOT in extras because
@@ -41,6 +46,11 @@ module.exports = grammar({
     // assignment_statement expects '=' after the identifier, but the parser cannot
     // distinguish them without looking ahead past the identifier (and optional .ident).
     [$.assignment_statement, $.bare_statement],
+    // put_statement: the 'var=' shorthand arm collides with expression at
+    // 'identifier =' (since expression can be a bare identifier). GLR explores
+    // both; the shorthand path wins when '=' follows a bare identifier/array
+    // element in a PUT item list (G5).
+    [$.put_statement, $.expression],
     // format_specifier (identifier number missing_value) vs the repeat1 body
     // (identifier) followed by a bare number/identifier: both can consume
     // "identifier number". GLR resolves once the trailing '.' (missing_value)
@@ -246,6 +256,11 @@ module.exports = grammar({
 
     // SAS identifiers start with letter, underscore, or $ prefix.
     // The $ prefix is used for special SAS variable names.
+    // identifier uses prec(-1) so exact keyword tokens (run, data, set, ...) win
+    // on ties. Longer identifiers (running_total) still win by longest-match.
+    // The word field is used by tree-sitter's reserved-keyword handling so that
+    // keywords like 'run' are NOT recognized when they are a prefix of a longer
+    // identifier (running_total, dataset_name) -- a common SAS pattern.
     identifier: $ => token(prec(-1, /[$a-zA-Z_][a-zA-Z0-9_]*/)),
 
     // ========================================================================
@@ -822,6 +837,7 @@ module.exports = grammar({
       $.macro_statement,
       $.line_comment,
       $.macro_comment,
+      $.sum_statement,
       $.expression_statement,
       $.report_line_statement, // PROC REPORT LINE statement (valid inside COMPUTE blocks)
       $.bare_statement,
@@ -932,6 +948,13 @@ module.exports = grammar({
     input_statement: $ => seq(
       alias($._input_keyword, 'input'),
       repeat1(choice(
+        // Column/relative pointer controls: @1 (absolute column), +1 (relative),
+        // @@ (hold line), #n (go to line n). These may prefix or interleave with
+        // variable specs in column-style INPUT (G5).
+        seq('@', $.number),
+        seq('+', $.number),
+        '@@',
+        seq('#', $.number),
         // bare variable name
         choice($.identifier, $.name_literal, $.macro_variable_reference),
         // name $              (character, no width) — bare '$' NOT part of a format
@@ -963,8 +986,30 @@ module.exports = grammar({
       ';'
     ),
 
-    // PUT -- write to log
-    put_statement: $ => seq(alias($._put_keyword, 'put'), $.expression, ';'),
+    // PUT -- write to log. PUT takes a list of items: quoted strings, variable
+    // references, and the 'var=' shorthand (prints "var=<value>"). The shorthand
+    // is NOT an expression (= is not an expression operator), so it gets a
+    // dedicated arm. Also accepts array subscripts (grid{r,c}=) and formats.
+    put_statement: $ => seq(
+      alias($._put_keyword, 'put'),
+      repeat1(choice(
+        $.expression,
+        seq($.identifier, '='),
+        seq($.array_element, '='),
+      )),
+      ';'
+    ),
+
+    // SUM statement: target + expression (no '='). Accumulator: running_total + age;
+    // Distinct from assignment (which has '=') and expression_statement (which
+    // would mis-model it). Given precedence so it wins over expression_statement
+    // for the 'identifier + expression' shape (G5).
+    sum_statement: $ => prec(1, seq(
+      field('target', $.identifier),
+      '+',
+      field('value', $.expression),
+      ';'
+    )),
 
     // KEEP / DROP -- variable selection
     // Variable lists may be macro variable references (&varlist), since a macro

@@ -190,6 +190,10 @@
         "named": true
       },
       {
+        "type": "sum_statement",
+        "named": true
+      },
+      {
         "type": "update_statement",
         "named": true
       },
@@ -1651,7 +1655,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "format_specifier",
@@ -1667,6 +1671,10 @@
         },
         {
           "type": "name_literal",
+          "named": true
+        },
+        {
+          "type": "number",
           "named": true
         }
       ]
@@ -3582,7 +3590,7 @@
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
         {
@@ -5166,6 +5174,32 @@
     }
   },
   {
+    "type": "sum_statement",
+    "named": true,
+    "fields": {
+      "target": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "value": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "expression",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "tabulate_class_statement",
     "named": true,
     "fields": {},
@@ -5674,6 +5708,10 @@
     }
   },
   {
+    "type": "#",
+    "named": false
+  },
+  {
     "type": "$",
     "named": false
   },
@@ -5871,6 +5909,10 @@
   },
   {
     "type": "@",
+    "named": false
+  },
+  {
+    "type": "@@",
     "named": false
   },
   {

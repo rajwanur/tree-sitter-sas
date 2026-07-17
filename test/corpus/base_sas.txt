@@ -711,3 +711,36 @@ run;
       consequence: (assignment_statement
         target: (identifier)
         value: (number)))))
+
+================================================================================
+INPUT pointer controls and PUT var= shorthand
+================================================================================
+data work.d;
+  input @1 subjid $3. +1 status $8.;
+  put 'x' country= grid{r,c}=;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      library: (identifier)
+      dataset: (identifier))
+    (input_statement
+      (number)
+      (identifier)
+      (format_specifier
+        (number)
+        (missing_value))
+      (number)
+      (identifier)
+      (format_specifier
+        (number)
+        (missing_value)))
+    (put_statement
+      (quoted_string
+        (single_quoted_string))
+      (identifier)
+      (array_element
+        array: (identifier)
+        index: (identifier)
+        (identifier)))))
