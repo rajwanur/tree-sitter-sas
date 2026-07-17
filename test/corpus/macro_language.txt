@@ -421,3 +421,37 @@ Macro quoting functions with freeform text
                 (macro_quoting_function
                   (macro_quoted_text
                     (macro_quoted_text_token)))))))))))
+
+================================================================================
+Macro control: %abort, %sysmacexist, empty param defaults, empty-value %if
+================================================================================
+%macro m(outname=, title=);
+  %abort cancel;
+  %if %sysmacexist(util) %then %do; %end;
+  %if &val = %then %do; %end;
+%mend;
+--------------------------------------------------------------------------------
+(source_file
+  (macro_definition
+    name: (identifier)
+    params: (macro_parameters
+      (macro_parameter
+        name: (identifier))
+      (macro_parameter
+        name: (identifier)))
+    (macro_statement
+      (macro_abort_statement
+        (identifier)))
+    (macro_statement
+      (macro_if_statement
+        condition: (macro_expression
+          (macro_function_call
+            (macro_expression
+              (identifier))))))
+    (macro_statement
+      (macro_if_statement
+        condition: (macro_expression
+          (macro_binary_expression
+            left: (macro_expression
+              (macro_variable_reference
+                name: (identifier)))))))))

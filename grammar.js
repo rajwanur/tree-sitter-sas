@@ -583,10 +583,14 @@ module.exports = grammar({
 
     macro_parameter: $ => seq(
       field('name', $.identifier),
-      // Keyword parameter: =value or positional (no =).
-      // Empty default (subtitle=) is not supported due to GLR reduce/shift
-      // conflict -- the parser matches identifier as positional before seeing =.
-      optional(seq('=', field('default', $.macro_parameter_default))),
+      // Keyword parameter: =value or positional (no =). The default may be EMPTY
+      // (outname=, tflno=, title=) -- a common flexible-API pattern where the
+      // parameter exists but has no default value. Making the default optional
+      // after '=' lets an empty default parse; the GLR reduce/shift conflict
+      // this risks (identifier matched as positional before seeing =) is bounded
+      // to a single 'identifier =' lookahead and resolved by declaring the
+      // conflict in the conflicts array (G7).
+      optional(seq('=', optional(field('default', $.macro_parameter_default)))),
     ),
 
     // Macro parameter default value. Real SAS defaults are freeform text bounded
@@ -639,6 +643,17 @@ module.exports = grammar({
       ';'
     ),
 
+    // %ABORT -- abort macro/DATA-step execution with an optional action argument.
+    // Forms: %abort;  %abort cancel;  %abort return;  %abort cancel updvar=&x;
+    // The bare action words (cancel, return) are not parenthesized, so they get
+    // a dedicated rule rather than macro_call_statement (which only accepts
+    // %name(args) or %name;).
+    macro_abort_statement: $ => seq(
+      alias($._macro_abort_keyword, '%abort'),
+      repeat(choice($.identifier, $.number, $.macro_variable_reference, seq($.identifier, '=', $.macro_expression))),
+      ';'
+    ),
+
     // Macro statement supertype -- used inside macro_definition bodies.
     // Now includes macro_call_statement (bounded form) and macro_put_statement
     // so that user macro calls and %put statements work inside macro bodies.
@@ -651,8 +666,10 @@ module.exports = grammar({
       $.macro_global_statement,
       $.macro_local_statement,
       $.macro_function_call,
+      $.macro_quoting_function,
       $.macro_call_statement,
       $.macro_put_statement,
+      $.macro_abort_statement,
     ),
 
     // %DO block with WHILE/UNTIL/iterative variants
@@ -669,7 +686,7 @@ module.exports = grammar({
       ';'
     ),
 
-    // %IF/%THEN/%ELSE -- macro conditional logic
+    // %IF/%THEN/%ELSE -- macro conditional logic.
     macro_if_statement: $ => seq(
       alias($._macro_if_keyword, '%if'),
       field('condition', $.macro_expression),
@@ -768,9 +785,16 @@ module.exports = grammar({
       $.number,
     ),
 
-    // Binary operators in macro expressions
+    // Binary operators in macro expressions. Includes an open-comparison arm
+    // (comparison with no RHS) for empty-value conditions: %if &val = %then,
+    // where a macro variable resolving to empty leaves nothing after the
+    // operator. This tests for emptiness. The conflict with the full comparison
+    // is declared in the conflicts array (G7).
     macro_binary_expression: $ => choice(
       prec.left(1, seq(field('left', $.macro_expression), field('operator', choice('=', '^=', '~=', '<=', '>=', '<', '>', 'eq', 'ne', 'gt', 'lt', 'ge', 'le')), field('right', $.macro_expression))),
+      // Open comparison -- comparison operator with no right operand (empty-value
+      // test). %if &val = %then;  %if &x ne %then;
+      prec.left(1, seq(field('left', $.macro_expression), field('operator', choice('=', '^=', '~=', '<=', '>=', '<', '>', 'eq', 'ne', 'gt', 'lt', 'ge', 'le')))),
       prec.left(2, seq(field('left', $.macro_expression), field('operator', '||'), field('right', $.macro_expression))),
       prec.left(3, seq(field('left', $.macro_expression), field('operator', '+'), field('right', $.macro_expression))),
       prec.left(3, seq(field('left', $.macro_expression), field('operator', '-'), field('right', $.macro_expression))),
@@ -782,7 +806,10 @@ module.exports = grammar({
     ),
 
     // Macro function calls: %SYSFUNC, %SCAN, %EVAL, etc. (the value-returning
-    // functions whose args are macro expressions).
+    // functions whose args are macro expressions). Includes the macro-state
+    // helpers %SYMGET (resolve a macro variable) and %SYSMACEEXIST-style
+    // existence checks (%SYMEXIST/%SYSMACEEXIST/%SYSLOCALEX/%SYSGLOBALEX) and
+    // %SUPERQ (mask-a-name) used in robust macros.
     macro_function_call: $ => seq(
       field('name', choice(
         alias($._macro_sysfunc_keyword, '%sysfunc'),
@@ -794,6 +821,9 @@ module.exports = grammar({
         alias($._macro_index_keyword, '%index'),
         alias($._macro_eval_keyword, '%eval'),
         alias($._macro_sysevalf_keyword, '%sysevalf'),
+        alias($._macro_symget_keyword, '%symget'),
+        alias($._macro_sysmacexist_keyword, '%sysmacexist'),
+        alias($._macro_superq_keyword, '%superq'),
       )),
       '(',
       repeat(seq($.macro_expression, optional(','))),
@@ -1181,16 +1211,23 @@ module.exports = grammar({
       ';'
     ),
 
-    // HASH object declaration: declare hash h(dataset: 'x', multidata: 'no');
+    // HASH / HASH-ITERATOR object declaration:
+    //   declare hash h(dataset: 'x', multidata: 'no');
+    //   declare hiter ih('hh');
     // SAS hash objects use a constructor with tag:value arguments (note the ':'
-    // not '='), and methods like h.find(), h.add_key(). The declaration is a
-    // DATA-step statement; method calls are handled as a method_call expression.
+    // not '='), and methods like h.find(), h.add_key(). The hash iterator
+    // (declare hiter) takes the hash object name in parens. The declaration is
+    // a DATA-step statement; method calls are handled as a method_call expression.
     hash_declaration_statement: $ => seq(
       'declare',
-      'hash',
+      choice('hash', 'hiter'),
       field('name', $.identifier),
       '(',
-      repeat(seq($.identifier, ':', $.expression, optional(','))),
+      repeat(seq(choice(
+        seq($.identifier, ':', $.expression),
+        $.quoted_string,
+        $.identifier,
+      ), optional(','))),
       ')',
       ';'
     ),
@@ -2220,6 +2257,13 @@ module.exports = grammar({
     _macro_bquote_keyword: $ => /%[bB][qQ][uU][oO][tT][eE]/,
     _macro_nrbquote_keyword: $ => /%[nN][rR][bB][qQ][uU][oO][tT][eE]/,
     _macro_unquote_keyword: $ => /%[uU][nN][qQ][uU][oO][tT][eE]/,
+    // Macro-state helpers and control keywords (G7): %SYMGET resolves a macro
+    // variable; %SYSMACEEXIST/%SYMEXIST-style existence checks; %SUPERQ masks a
+    // name; %ABORT terminates macro execution (optionally with an action arg).
+    _macro_symget_keyword: $ => /%[sS][yY][mM][gG][eE][tT]/,
+    _macro_sysmacexist_keyword: $ => /%[sS][yY][sS][mM][aA][cC][eE][xX][iI][sS][tT]/,
+    _macro_superq_keyword: $ => /%[sS][uU][pP][eE][rR][qQ]/,
+    _macro_abort_keyword: $ => /%[aA][bB][oO][rR][tT]/,
 
     // --- PROC SQL keywords ---
     _select_keyword: $ => /[sS][eE][lL][eE][cC][tT]/,

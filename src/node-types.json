@@ -1853,6 +1853,33 @@
     }
   },
   {
+    "type": "macro_abort_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "macro_expression",
+          "named": true
+        },
+        {
+          "type": "macro_variable_reference",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "macro_binary_expression",
     "named": true,
     "fields": {
@@ -1958,7 +1985,7 @@
       },
       "right": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "macro_expression",
@@ -2157,11 +2184,23 @@
             "named": false
           },
           {
+            "type": "%superq",
+            "named": false
+          },
+          {
+            "type": "%symget",
+            "named": false
+          },
+          {
             "type": "%sysevalf",
             "named": false
           },
           {
             "type": "%sysfunc",
+            "named": false
+          },
+          {
+            "type": "%sysmacexist",
             "named": false
           },
           {
@@ -2456,6 +2495,10 @@
       "required": true,
       "types": [
         {
+          "type": "macro_abort_statement",
+          "named": true
+        },
+        {
           "type": "macro_call_statement",
           "named": true
         },
@@ -2489,6 +2532,10 @@
         },
         {
           "type": "macro_put_statement",
+          "named": true
+        },
+        {
+          "type": "macro_quoting_function",
           "named": true
         }
       ]
@@ -5789,6 +5836,10 @@
     "named": false
   },
   {
+    "type": "%abort",
+    "named": false
+  },
+  {
     "type": "%bquote",
     "named": false
   },
@@ -5877,11 +5928,23 @@
     "named": false
   },
   {
+    "type": "%superq",
+    "named": false
+  },
+  {
+    "type": "%symget",
+    "named": false
+  },
+  {
     "type": "%sysevalf",
     "named": false
   },
   {
     "type": "%sysfunc",
+    "named": false
+  },
+  {
+    "type": "%sysmacexist",
     "named": false
   },
   {
@@ -6303,6 +6366,10 @@
   },
   {
     "type": "histogram",
+    "named": false
+  },
+  {
+    "type": "hiter",
     "named": false
   },
   {

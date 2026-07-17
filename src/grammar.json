@@ -1385,12 +1385,20 @@
                   "value": "="
                 },
                 {
-                  "type": "FIELD",
-                  "name": "default",
-                  "content": {
-                    "type": "SYMBOL",
-                    "name": "macro_parameter_default"
-                  }
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "FIELD",
+                      "name": "default",
+                      "content": {
+                        "type": "SYMBOL",
+                        "name": "macro_parameter_default"
+                      }
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
                 }
               ]
             },
@@ -1515,6 +1523,61 @@
         }
       ]
     },
+    "macro_abort_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_macro_abort_keyword"
+          },
+          "named": false,
+          "value": "%abort"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "identifier"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "number"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "macro_variable_reference"
+              },
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "identifier"
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "="
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "macro_expression"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "STRING",
+          "value": ";"
+        }
+      ]
+    },
     "macro_statement": {
       "type": "CHOICE",
       "members": [
@@ -1548,11 +1611,19 @@
         },
         {
           "type": "SYMBOL",
+          "name": "macro_quoting_function"
+        },
+        {
+          "type": "SYMBOL",
           "name": "macro_call_statement"
         },
         {
           "type": "SYMBOL",
           "name": "macro_put_statement"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "macro_abort_statement"
         }
       ]
     },
@@ -2366,6 +2437,84 @@
         },
         {
           "type": "PREC_LEFT",
+          "value": 1,
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "FIELD",
+                "name": "left",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "macro_expression"
+                }
+              },
+              {
+                "type": "FIELD",
+                "name": "operator",
+                "content": {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "="
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "^="
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "~="
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "<="
+                    },
+                    {
+                      "type": "STRING",
+                      "value": ">="
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "<"
+                    },
+                    {
+                      "type": "STRING",
+                      "value": ">"
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "eq"
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "ne"
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "gt"
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "lt"
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "ge"
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "le"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "PREC_LEFT",
           "value": 2,
           "content": {
             "type": "SEQ",
@@ -2719,6 +2868,33 @@
                 },
                 "named": false,
                 "value": "%sysevalf"
+              },
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_macro_symget_keyword"
+                },
+                "named": false,
+                "value": "%symget"
+              },
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_macro_sysmacexist_keyword"
+                },
+                "named": false,
+                "value": "%sysmacexist"
+              },
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_macro_superq_keyword"
+                },
+                "named": false,
+                "value": "%superq"
               }
             ]
           }
@@ -4734,8 +4910,17 @@
           "value": "declare"
         },
         {
-          "type": "STRING",
-          "value": "hash"
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "hash"
+            },
+            {
+              "type": "STRING",
+              "value": "hiter"
+            }
+          ]
         },
         {
           "type": "FIELD",
@@ -4755,16 +4940,34 @@
             "type": "SEQ",
             "members": [
               {
-                "type": "SYMBOL",
-                "name": "identifier"
-              },
-              {
-                "type": "STRING",
-                "value": ":"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "expression"
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "SYMBOL",
+                        "name": "identifier"
+                      },
+                      {
+                        "type": "STRING",
+                        "value": ":"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "expression"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "quoted_string"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "identifier"
+                  }
+                ]
               },
               {
                 "type": "CHOICE",
@@ -13887,6 +14090,22 @@
     "_macro_unquote_keyword": {
       "type": "PATTERN",
       "value": "%[uU][nN][qQ][uU][oO][tT][eE]"
+    },
+    "_macro_symget_keyword": {
+      "type": "PATTERN",
+      "value": "%[sS][yY][mM][gG][eE][tT]"
+    },
+    "_macro_sysmacexist_keyword": {
+      "type": "PATTERN",
+      "value": "%[sS][yY][sS][mM][aA][cC][eE][xX][iI][sS][tT]"
+    },
+    "_macro_superq_keyword": {
+      "type": "PATTERN",
+      "value": "%[sS][uU][pP][eE][rR][qQ]"
+    },
+    "_macro_abort_keyword": {
+      "type": "PATTERN",
+      "value": "%[aA][bB][oO][rR][tT]"
     },
     "_from_keyword": {
       "type": "PATTERN",
