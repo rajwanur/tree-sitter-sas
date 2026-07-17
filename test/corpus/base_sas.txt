@@ -648,3 +648,38 @@ run;
       (set_statement_option
         (identifier)
         (identifier)))))
+
+================================================================================
+ARRAY with multi-dim, bounds, _temporary_, and initializer
+================================================================================
+data work.d;
+  array grid{2,3} _temporary_ (1 2 3 4 5 6);
+  array off{-2:2} _temporary_ (10 20 30 40 50);
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (data_step
+    name: (data_name
+      library: (identifier)
+      dataset: (identifier))
+    (array_statement
+      (identifier)
+      (number)
+      (number)
+      (identifier)
+      (number)
+      (number)
+      (number)
+      (number)
+      (number)
+      (number))
+    (array_statement
+      (identifier)
+      (number)
+      (number)
+      (identifier)
+      (number)
+      (number)
+      (number)
+      (number)
+      (number))))

@@ -255,6 +255,16 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -271,6 +281,10 @@
         },
         {
           "type": "macro_variable_reference",
+          "named": true
+        },
+        {
+          "type": "missing_value",
           "named": true
         },
         {

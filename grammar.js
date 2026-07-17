@@ -1067,19 +1067,30 @@ module.exports = grammar({
     // ARRAY -- declares an array of variables.
     // SAS allows [], {}, and () for array dimensions, but we restrict to
     // [] and {} to avoid conflict with the () initializer list and function_call.
-    // The dimension can be a number, identifier, macro variable reference
-    // (&nvars), or `*` (implicit dimension). An optional initializer list
-    // may follow in parens, e.g. `array _v{&nvars} &covars (&nvars *0);`
+    // The dimension can be: a number/identifier/macro-ref (fixed), `*` (implicit),
+    // comma-separated for multi-dim (grid{2,3}), or a bound range {-2:2}.
+    // The element list accepts variable ranges (score1-score5) and _temporary_.
+    // An optional initializer list may follow in parens, with comma-or-space
+    // separated values including the missing value (.): (85, 90, .) or (1 2 3).
     array_statement: $ => seq(
       alias($._array_keyword, 'array'),
       $.identifier,
       optional(seq(
         choice('[', '{'),
-        repeat1(choice($.identifier, $.macro_variable_reference, $.number, '*')),
+        // Dimension list: numbers, macro-refs, or '*'. NOT identifiers -- a bare
+        // identifier here is ambiguous with the element list that follows, and
+        // real array dimensions are numeric or '*'. Bounds use ':' (lower:upper),
+        // multi-dim uses ','. A leading '-' allows negative bounds (-2:2).
+        optional('-'),
+        repeat1(choice($.number, $.macro_variable_reference, '*', seq(':', $.number), ',')),
         choice(']', '}'),
       )),
-      repeat1(choice($.identifier, $.macro_variable_reference)),
-      optional(seq('(', repeat(choice($.identifier, $.macro_variable_reference, $.number, '*')), ')')),
+      repeat1(choice(
+        $.identifier,
+        $.macro_variable_reference,
+        seq($.identifier, '-', $.identifier),
+      )),
+      optional(seq('(', repeat(choice($.identifier, $.macro_variable_reference, $.number, $.missing_value, '*', ',')), ')')),
       ';'
     ),
 
@@ -1753,10 +1764,12 @@ module.exports = grammar({
     // SAS accepts [], {}, and () for array subscripting, but () is also the
     // function-call syntax. We restrict array_element to [] and {} to avoid
     // a pervasive conflict with function_call; x(j) parses as a function_call.
+    // Multi-dimensional subscripts use comma-separated indices: grid{r,c}.
     array_element: $ => prec(1, seq(
       field('array', $.identifier),
       choice('[', '{'),
       field('index', $.expression),
+      repeat(seq(',', $.expression)),
       choice(']', '}'),
     )),
 
