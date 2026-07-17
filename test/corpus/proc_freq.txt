@@ -63,3 +63,34 @@ run;
           right: (number)))
       (freq_tables_statement
         (identifier)))))
+
+================================================================================
+PROC TABULATE TABLE crossed expression (tolerant)
+================================================================================
+proc tabulate data=work.d;
+  table a, b*c, (x y)*n=' '*f=8.1;
+run;
+--------------------------------------------------------------------------------
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (proc_option
+        (proc_option_key)
+        (dotted_identifier
+          base: (identifier)
+          member: (identifier))))
+    body: (proc_body
+      (tabulate_table_statement
+        (identifier)
+        (identifier)
+        (identifier)
+        (identifier)
+        (identifier)
+        (identifier)
+        (quoted_string
+          (single_quoted_string))
+        (identifier)
+        (format_specifier
+          (number))))))

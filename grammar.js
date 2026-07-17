@@ -63,6 +63,9 @@ module.exports = grammar({
     // GLR explores both; the format_specifier path wins when the trailing '.'
     // (missing_value) follows (G9).
     [$.format_specifier, $.report_line_statement],
+    // tabulate_table_statement: same format_specifier vs identifier+number
+    // ambiguity in the TABLE token list (G10 tolerant form).
+    [$.format_specifier, $.tabulate_table_statement],
     // format_specifier (identifier number missing_value) vs the repeat1 body
     // (identifier) followed by a bare number/identifier: both can consume
     // "identifier number". GLR resolves once the trailing '.' (missing_value)
@@ -101,10 +104,6 @@ module.exports = grammar({
     // proc_step: optional proc_body creates ambiguity -- parser cannot tell if next
     // token starts a proc_body statement or is a top-level item after an empty proc.
     [$.proc_step],
-    // tabulate_table_statement contains $.expression which conflicts with standalone
-    // $.expression when parsing "table ident1 ident2 ..." sequences.
-    [$.tabulate_table_statement, $.expression],
-    [$.tabulate_table_statement, $.expression, $.function_call],
     // Multiple PROC-specific *_id_statement rules start with 'id' + identifier.
     // All are in proc_body's choice(), creating lookahead conflicts.
     [$.means_id_statement, $.print_id_statement, $.transpose_id_statement, $.compare_id_statement, $.univariate_id_statement, $.reg_id_statement],
@@ -1744,7 +1743,24 @@ module.exports = grammar({
     tabulate_class_statement: $ => seq('class', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     tabulate_classlev_statement: $ => seq('classlev', repeat1($.identifier), ';'),
     tabulate_var_statement: $ => seq('var', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
-    tabulate_table_statement: $ => seq('table', repeat1(seq(choice($.identifier, seq($.identifier, '*', $.identifier), seq('(', repeat1($.identifier), ')'), $.quoted_string, $.expression), optional(','))), ';'),
+    // PROC TABULATE TABLE statement -- a crossed/composed expression DSL:
+    //   table (trt01p all='Total'), (aesev all='Any AE')*n=' '*f=3.0 age*(mean='Mean Age' std='SD')*f=8.1;
+    // The DSL uses '*' (cross), ',' (page/dimension separator), parenthesized
+    // groups with embedded label assignments (all='Total'), statistic-with-label
+    // (n=' '), and format application (*f=8.1). Full structural modeling of this
+    // DSL is genuinely ambiguous with expression/function-call and risks parser
+    // explosion, so we use a TOLERANT token-list form: accept the TABULATE token
+    // set flatly (identifiers, quoted strings, numbers, '*', ',', '=', '(', ')',
+    // ':', format_specifier) as a single repeat. This sacrifices CST precision
+    // for TABLE expressions but achieves zero-error parsing (G10 fallback).
+    tabulate_table_statement: $ => seq('table', repeat1(choice(
+      $.identifier,
+      $.quoted_string,
+      $.number,
+      $.format_specifier,
+      $.macro_variable_reference,
+      '*', ',', '=', '(', ')', ':',
+    )), ';'),
     tabulate_keylabel_statement: $ => seq('keylabel', repeat1(seq($.identifier, '=', $.quoted_string)), ';'),
     tabulate_format_statement: $ => seq('format', repeat1(seq($.identifier, $.identifier)), ';'),
 
