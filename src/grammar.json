@@ -5928,6 +5928,63 @@
           "name": "_sql_select_query"
         },
         {
+          "type": "REPEAT",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "union"
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "intersect"
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "except"
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "outer union"
+                  }
+                ]
+              },
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "all"
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
+              },
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "corr"
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_sql_select_query"
+              }
+            ]
+          }
+        },
+        {
           "type": "STRING",
           "value": ";"
         }
@@ -6681,6 +6738,63 @@
                 {
                   "type": "SYMBOL",
                   "name": "_sql_select_query"
+                },
+                {
+                  "type": "REPEAT",
+                  "content": {
+                    "type": "SEQ",
+                    "members": [
+                      {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "STRING",
+                            "value": "union"
+                          },
+                          {
+                            "type": "STRING",
+                            "value": "intersect"
+                          },
+                          {
+                            "type": "STRING",
+                            "value": "except"
+                          },
+                          {
+                            "type": "STRING",
+                            "value": "outer union"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "STRING",
+                            "value": "all"
+                          },
+                          {
+                            "type": "BLANK"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "CHOICE",
+                        "members": [
+                          {
+                            "type": "STRING",
+                            "value": "corr"
+                          },
+                          {
+                            "type": "BLANK"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "_sql_select_query"
+                      }
+                    ]
+                  }
                 }
               ]
             },

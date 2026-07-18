@@ -1418,8 +1418,10 @@ module.exports = grammar({
 
     // SELECT statement: complete query with optional FROM/WHERE/JOIN/GROUP BY/HAVING/ORDER BY.
     // In PROC SQL, SELECT ... FROM ... WHERE ... is ONE statement ending with a single ';'.
+    // Supports set operations (UNION/INTERSECT/EXCEPT [ALL|CORR]) between queries.
     sql_select_statement: $ => seq(
       $._sql_select_query,
+      repeat(seq(choice('union', 'intersect', 'except', 'outer union'), optional('all'), optional('corr'), $._sql_select_query)),
       ';'
     ),
 
@@ -1539,7 +1541,7 @@ module.exports = grammar({
       $.identifier,
       optional(seq('.', $.identifier)),
       choice(
-        seq(alias($._as_keyword, 'as'), $._sql_select_query),
+        seq(alias($._as_keyword, 'as'), $._sql_select_query, repeat(seq(choice('union', 'intersect', 'except', 'outer union'), optional('all'), optional('corr'), $._sql_select_query))),
         seq('(', repeat(seq($.identifier, optional($.identifier), optional(','))), ')')
       ),
       ';'

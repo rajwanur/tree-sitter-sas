@@ -6200,6 +6200,10 @@
     "named": false
   },
   {
+    "type": "all",
+    "named": false
+  },
+  {
     "type": "and",
     "named": false
   },
@@ -6321,6 +6325,10 @@
     "named": false
   },
   {
+    "type": "corr",
+    "named": false
+  },
+  {
     "type": "create",
     "named": false
   },
@@ -6418,6 +6426,10 @@
   },
   {
     "type": "exact",
+    "named": false
+  },
+  {
+    "type": "except",
     "named": false
   },
   {
@@ -6542,6 +6554,10 @@
   },
   {
     "type": "inset",
+    "named": false
+  },
+  {
+    "type": "intersect",
     "named": false
   },
   {
@@ -6742,6 +6758,10 @@
   },
   {
     "type": "outdif",
+    "named": false
+  },
+  {
+    "type": "outer union",
     "named": false
   },
   {
@@ -6963,6 +6983,10 @@
   },
   {
     "type": "types",
+    "named": false
+  },
+  {
+    "type": "union",
     "named": false
   },
   {
