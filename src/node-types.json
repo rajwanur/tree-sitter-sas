@@ -1542,6 +1542,52 @@
     }
   },
   {
+    "type": "gtl_define_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "gtl_plot_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "function_call",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "number",
+          "named": true
+        },
+        {
+          "type": "quoted_string",
+          "named": true
+        },
+        {
+          "type": "sgplot_option_list",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "hash_declaration_statement",
     "named": true,
     "fields": {
@@ -3242,6 +3288,14 @@
         },
         {
           "type": "gplot_title_statement",
+          "named": true
+        },
+        {
+          "type": "gtl_define_statement",
+          "named": true
+        },
+        {
+          "type": "gtl_plot_statement",
           "named": true
         },
         {
@@ -6170,6 +6224,10 @@
     "named": false
   },
   {
+    "type": "barchart",
+    "named": false
+  },
+  {
     "type": "base",
     "named": false
   },
@@ -6579,6 +6637,10 @@
     "named": false
   },
   {
+    "type": "modelband",
+    "named": false
+  },
+  {
     "type": "modify",
     "named": false
   },
@@ -6691,6 +6753,10 @@
     "named": false
   },
   {
+    "type": "piechart",
+    "named": false
+  },
+  {
     "type": "plot",
     "named": false
   },
@@ -6728,6 +6794,10 @@
   },
   {
     "type": "rbreak",
+    "named": false
+  },
+  {
+    "type": "referenceline",
     "named": false
   },
   {
@@ -6783,6 +6853,14 @@
     "named": false
   },
   {
+    "type": "scatterplot",
+    "named": false
+  },
+  {
+    "type": "scatterplotmatrix",
+    "named": false
+  },
+  {
     "type": "select",
     "named": false
   },
@@ -6800,6 +6878,10 @@
     "named": false
   },
   {
+    "type": "seriesplot",
+    "named": false
+  },
+  {
     "type": "set",
     "named": false
   },
@@ -6814,6 +6896,14 @@
   {
     "type": "single_quoted_string",
     "named": true
+  },
+  {
+    "type": "statgraph",
+    "named": false
+  },
+  {
+    "type": "stepplet",
+    "named": false
   },
   {
     "type": "style",

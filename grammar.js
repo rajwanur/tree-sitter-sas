@@ -538,6 +538,10 @@ module.exports = grammar({
       // PROC SGPLOT statements
       $.sgplot_scatter_statement,
       $.sgplot_series_statement,
+      // GTL (PROC TEMPLATE) plot statements -- distinct from SGPLOT (seriesplot
+      // vs series). Tolerant form: name + key=value options + /options (G13).
+      $.gtl_plot_statement,
+      $.gtl_define_statement,
       $.sgplot_vbar_statement,
       $.sgplot_hbar_statement,
       $.sgplot_histogram_statement,
@@ -1978,6 +1982,22 @@ module.exports = grammar({
     sgplot_inset_statement: $ => seq('inset', repeat1(choice($.identifier, $.quoted_string)), repeat(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier)), optional(seq('/', repeat1(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier, $.quoted_string)))), ';'),
     sgplot_title_statement: $ => seq('title', $.expression, ';'),
     sgplot_footnote_statement: $ => seq('footnote', $.expression, ';'),
+
+    // GTL (PROC TEMPLATE) statements -- the Graph Template Language sub-language.
+    // Full GTL modeling (300+ statements) is out of scope; these tolerant rules
+    // cover the common plot/header forms so proc template bodies parse cleanly.
+    // gtl_plot_statement handles seriesplot/scatterplot/boxplot/etc. with x=/y=
+    // and /options; gtl_define_statement handles 'define statgraph x;' (distinct
+    // from report_define_statement which expects a '/'). Other GTL keywords
+    // (begingraph, endgraph, layout, endlayout, dynamic, entrytitle, end) fall
+    // through to bare_statement, which already tolerates them (G13).
+    gtl_plot_statement: $ => prec(1, seq(
+      choice('seriesplot', 'scatterplot', 'barchart', 'piechart', 'referenceline', 'scatterplotmatrix', 'modelband', 'stepplet'),
+      repeat1(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier, $.quoted_string)),
+      optional(seq('/', repeat1(choice(seq($.identifier, '=', $._sgplot_optval), $.identifier, $.quoted_string)))),
+      ';'
+    )),
+    gtl_define_statement: $ => prec(1, seq('define', 'statgraph', $.identifier, ';')),
 
     // ========================================================================
     // Expression supertype with operator precedence (PARSE-01, T-01-04)

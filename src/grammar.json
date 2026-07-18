@@ -1169,6 +1169,14 @@
           },
           {
             "type": "SYMBOL",
+            "name": "gtl_plot_statement"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "gtl_define_statement"
+          },
+          {
+            "type": "SYMBOL",
             "name": "sgplot_vbar_statement"
           },
           {
@@ -13049,6 +13057,164 @@
           "value": ";"
         }
       ]
+    },
+    "gtl_plot_statement": {
+      "type": "PREC",
+      "value": 1,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "seriesplot"
+              },
+              {
+                "type": "STRING",
+                "value": "scatterplot"
+              },
+              {
+                "type": "STRING",
+                "value": "barchart"
+              },
+              {
+                "type": "STRING",
+                "value": "piechart"
+              },
+              {
+                "type": "STRING",
+                "value": "referenceline"
+              },
+              {
+                "type": "STRING",
+                "value": "scatterplotmatrix"
+              },
+              {
+                "type": "STRING",
+                "value": "modelband"
+              },
+              {
+                "type": "STRING",
+                "value": "stepplet"
+              }
+            ]
+          },
+          {
+            "type": "REPEAT1",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "identifier"
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "="
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "_sgplot_optval"
+                    }
+                  ]
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "identifier"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "quoted_string"
+                }
+              ]
+            }
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "/"
+                  },
+                  {
+                    "type": "REPEAT1",
+                    "content": {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "SEQ",
+                          "members": [
+                            {
+                              "type": "SYMBOL",
+                              "name": "identifier"
+                            },
+                            {
+                              "type": "STRING",
+                              "value": "="
+                            },
+                            {
+                              "type": "SYMBOL",
+                              "name": "_sgplot_optval"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "SYMBOL",
+                          "name": "identifier"
+                        },
+                        {
+                          "type": "SYMBOL",
+                          "name": "quoted_string"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          },
+          {
+            "type": "STRING",
+            "value": ";"
+          }
+        ]
+      }
+    },
+    "gtl_define_statement": {
+      "type": "PREC",
+      "value": 1,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "define"
+          },
+          {
+            "type": "STRING",
+            "value": "statgraph"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "identifier"
+          },
+          {
+            "type": "STRING",
+            "value": ";"
+          }
+        ]
+      }
     },
     "expression": {
       "type": "CHOICE",
