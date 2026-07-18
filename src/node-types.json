@@ -5289,6 +5289,10 @@
           "named": true
         },
         {
+          "type": "name_literal",
+          "named": true
+        },
+        {
           "type": "sql_from_clause",
           "named": true
         },

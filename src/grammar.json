@@ -6503,8 +6503,17 @@
           "type": "SEQ",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "identifier"
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "identifier"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "name_literal"
+                }
+              ]
             },
             {
               "type": "CHOICE",
@@ -6522,6 +6531,10 @@
                         {
                           "type": "SYMBOL",
                           "name": "identifier"
+                        },
+                        {
+                          "type": "SYMBOL",
+                          "name": "name_literal"
                         },
                         {
                           "type": "SYMBOL",
@@ -8698,6 +8711,10 @@
               {
                 "type": "STRING",
                 "value": ":"
+              },
+              {
+                "type": "STRING",
+                "value": "/"
               }
             ]
           }

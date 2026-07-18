@@ -1521,8 +1521,8 @@ module.exports = grammar({
     sql_table_ref: $ => choice(
       $.macro_variable_reference,
       seq(
-        $.identifier,
-        optional(seq('.', choice($.identifier, $.macro_variable_reference))),
+        choice($.identifier, $.name_literal),
+        optional(seq('.', choice($.identifier, $.name_literal, $.macro_variable_reference))),
         optional(seq(alias($._as_keyword, 'as'), $.identifier))
       ),
       seq(
@@ -1780,7 +1780,7 @@ module.exports = grammar({
       $.number,
       $.format_specifier,
       $.macro_variable_reference,
-      '*', ',', '=', '(', ')', ':',
+      '*', ',', '=', '(', ')', ':', '/',
     )), ';'),
     tabulate_keylabel_statement: $ => seq('keylabel', repeat1(seq($.identifier, '=', $.quoted_string)), ';'),
     tabulate_format_statement: $ => seq('format', repeat1(seq($.identifier, $.identifier)), ';'),
