@@ -102,6 +102,13 @@ module.exports = grammar({
     // function_call vs expression: "identifier(" is ambiguous -- could be a function
     // call (name + args) or an expression followed by parenthesized_expression.
     [$.expression, $.function_call],
+    // binary_expression: the between/and and is-missing arms collide with the
+    // comparison arms at the shared operands. GLR explores both (G13).
+    [$.binary_expression],
+    // proc_options vs proc_option_key: with proc_option's value now optional,
+    // 'identifier identifier' is ambiguous (two bare flags vs flag+value). GLR
+    // explores both (G13).
+    [$.proc_options, $.proc_option_key],
     // proc_body: repeat1(choice(...)) cannot tell whether an identifier
     // starts a new statement inside the proc body or is a new step outside.
     // Also, run/quit can match as bare_statement or as the step terminator.
@@ -368,9 +375,13 @@ module.exports = grammar({
     proc_option: $ => seq(
       $.proc_option_key,
       optional($.proc_option_args),
-      '=',
-      $.expression,
-      optional($.data_set_option),
+      // The '=value' is optional so bare PROC flags (outnoequal, listall, noprint,
+      // replace) match as a proc_option with no value (G13).
+      optional(seq(
+        '=',
+        $.expression,
+        optional($.data_set_option),
+      )),
     ),
 
     // Parenthesized argument group for complex PROC options.
@@ -2081,6 +2092,10 @@ module.exports = grammar({
       prec.left(1, seq(field('left', $.expression), field('operator', choice('=', '^=', '~=', '<=', '>=', '<', '>', 'eq', 'ne', 'gt', 'lt', 'ge', 'le')), field('right', $.expression))),
       // IN operator
       prec.left(1, seq(field('left', $.expression), field('operator', 'in'), field('right', $.expression))),
+      // BETWEEN x AND y operator (SAS/SQL): a.age between 40 and 64
+      prec.left(1, seq(field('left', $.expression), 'between', field('right', $.expression), 'and', field('right', $.expression))),
+      // IS [NOT] MISSING / IS NULL: where a.age is not missing
+      prec.left(1, seq(field('left', $.expression), 'is', optional('not'), choice('missing', 'null'))),
       // Logical NOT
       prec.left(1, seq(field('left', $.expression), field('operator', 'not'), field('right', $.expression))),
       // Logical AND

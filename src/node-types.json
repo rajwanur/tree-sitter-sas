@@ -416,7 +416,7 @@
       },
       "operator": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "*",
@@ -517,8 +517,8 @@
         ]
       },
       "right": {
-        "multiple": false,
-        "required": true,
+        "multiple": true,
+        "required": false,
         "types": [
           {
             "type": "expression",
@@ -6236,6 +6236,10 @@
     "named": false
   },
   {
+    "type": "between",
+    "named": false
+  },
+  {
     "type": "block_comment",
     "named": true,
     "extra": true
@@ -6545,6 +6549,10 @@
     "named": false
   },
   {
+    "type": "is",
+    "named": false
+  },
+  {
     "type": "join",
     "named": false
   },
@@ -6629,6 +6637,10 @@
     "named": false
   },
   {
+    "type": "missing",
+    "named": false
+  },
+  {
     "type": "missing_value",
     "named": true
   },
@@ -6674,6 +6686,10 @@
   },
   {
     "type": "note",
+    "named": false
+  },
+  {
+    "type": "null",
     "named": false
   },
   {
