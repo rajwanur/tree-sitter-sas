@@ -178,6 +178,10 @@ module.exports = grammar({
     // gplot_plot_statement: repeat1 of expr*expr creates boundary ambiguity
     [$.gplot_plot_statement, $.expression],
     [$.gplot_plot_statement, $.expression, $.function_call],
+    // ttest_paired_statement: 'var * var' is ambiguous with expression (a * b)
+    [$.ttest_paired_statement, $.expression],
+    // lifetest_time_statement: 'var * var' is ambiguous with expression
+    [$.lifetest_time_statement, $.expression],
     // macro_definition body: statement and macro_statement both contain
     // macro_statement via the statement supertype, creating LR(1) conflict.
     [$.macro_definition, $.statement],
@@ -552,6 +556,10 @@ module.exports = grammar({
       $.univariate_cdfplot_statement,
       $.univariate_output_statement,
       $.univariate_inset_statement,
+      // PROC TTEST / LIFETEST statements
+      $.ttest_paired_statement,
+      $.lifetest_time_statement,
+      $.lifetest_strata_statement,
       // PROC REG statements
       $.reg_model_statement,
       $.reg_var_statement,
@@ -1682,7 +1690,12 @@ module.exports = grammar({
     // ========================================================================
 
     means_var_statement: $ => seq(alias($._var_keyword, 'var'), repeat1(choice($.identifier, $.macro_variable_reference, seq($.identifier, '-', $.identifier))), ';'),
-    means_class_statement: $ => seq('class', repeat1(choice($.identifier, $.macro_variable_reference)), optional($._class_slash_options), ';'),
+    means_class_statement: $ => seq('class', repeat1(choice(
+      // Class variable may carry a parenthesized option group: trt(ref='Placebo'),
+      // sex(ref='M'). Used by PROC LOGISTIC/GENMOD for reference/param coding.
+      seq($.identifier, optional(seq('(', repeat(choice($.identifier, '=', $.quoted_string)), ')'))),
+      $.macro_variable_reference,
+    )), optional($._class_slash_options), ';'),
     means_freq_statement: $ => seq('freq', choice($.identifier, $.macro_variable_reference), ';'),
     means_weight_statement: $ => seq('weight', choice($.identifier, $.macro_variable_reference), ';'),
     means_id_statement: $ => seq('id', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
@@ -1714,7 +1727,9 @@ module.exports = grammar({
     // The /options group is permissive (key=value, parens, etc.) like
     // bare_statement since FREQ options are complex: out=work.x(drop=percent).
     freq_tables_statement: $ => seq('tables', repeat1(seq(choice($.identifier, $.macro_variable_reference), repeat(choice('*', '(')), optional(choice($.identifier, $.macro_variable_reference)))), optional(seq('/', repeat1(choice($.identifier, $.quoted_string, $.number, $.macro_variable_reference, '(', ')', '=', ',', '.')))), ';'),
-    freq_exact_statement: $ => seq('exact', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    // exact chisq / mc n=10000; — exact-test keyword(s) followed by optional
+    // slash-options (mc n=, alpha=, maxtime=).
+    freq_exact_statement: $ => seq('exact', repeat1(choice($.identifier, $.macro_variable_reference)), optional($._class_slash_options), ';'),
     freq_weight_statement: $ => seq('weight', choice($.identifier, $.macro_variable_reference), ';'),
     freq_test_statement: $ => seq('test', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
     freq_output_statement: $ => seq('output', optional(seq('out', '=', $.data_reference)), repeat(choice($.identifier, seq($.identifier, '=', $.identifier))), ';'),
@@ -1958,6 +1973,16 @@ module.exports = grammar({
     // key=value pairs after a '/'. Reused by means/tabulate/univariate class
     // statements and datasets_delete (G11).
     _class_slash_options: $ => seq('/', repeat1(choice($.identifier, seq($.identifier, '=', $.expression)))),
+    // Slash-options for UNIVARIATE plot statements (histogram/probplot/qqplot/
+    // cdfplot). Accepts bare distribution keywords (normal, lognormal, kernel),
+    // keyword=value pairs, and parenthesized parameter groups after a keyword:
+    //   normal(mu=est sigma=est)     exponential(scale=est)
+    //   weibull(c=est)               lognormal(sigma=est theta=est)
+    _plot_slash_options: $ => seq('/', repeat1(choice(
+      $.identifier,
+      seq($.identifier, '=', $.expression),
+      seq($.identifier, '(', repeat(choice($.identifier, '=', $.number, ',')), ')'),
+    ))),
     datasets_change_statement: $ => seq('change', $.identifier, '=', $.identifier, ';'),
     datasets_repair_statement: $ => seq('repair', $.identifier, ';'),
     datasets_save_statement: $ => seq('save', repeat1($.identifier), ';'),
@@ -1994,12 +2019,46 @@ module.exports = grammar({
     univariate_freq_statement: $ => seq('freq', choice($.identifier, $.macro_variable_reference), ';'),
     univariate_weight_statement: $ => seq('weight', choice($.identifier, $.macro_variable_reference), ';'),
     univariate_id_statement: $ => seq('id', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
-    univariate_histogram_statement: $ => seq('histogram', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
-    univariate_probplot_statement: $ => seq('probplot', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
-    univariate_qqplot_statement: $ => seq('qqplot', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
-    univariate_cdfplot_statement: $ => seq('cdfplot', repeat1(choice($.identifier, $.macro_variable_reference)), ';'),
+    univariate_histogram_statement: $ => seq('histogram', repeat1(choice($.identifier, $.macro_variable_reference)), optional($._plot_slash_options), ';'),
+    // probplot bmi / normal(mu=est sigma=est); — distribution option with a
+    // parenthesized parameter group follows the slash.
+    univariate_probplot_statement: $ => seq('probplot', repeat1(choice($.identifier, $.macro_variable_reference)), optional($._plot_slash_options), ';'),
+    univariate_qqplot_statement: $ => seq('qqplot', repeat1(choice($.identifier, $.macro_variable_reference)), optional($._plot_slash_options), ';'),
+    univariate_cdfplot_statement: $ => seq('cdfplot', repeat1(choice($.identifier, $.macro_variable_reference)), optional($._plot_slash_options), ';'),
     univariate_output_statement: $ => seq('output', optional(seq('out', '=', $.data_reference)), repeat(choice($.identifier, seq($.identifier, '=', $.identifier))), ';'),
     univariate_inset_statement: $ => seq('inset', repeat1(choice($.identifier, $.quoted_string)), ';'),
+
+    // ========================================================================
+    // PROC TTEST / LIFETEST statements
+    // ========================================================================
+
+    // TTEST paired: `paired baseline*week12;` or `paired pre*post / options;`.
+    // The asterisk joins the paired variables; options follow an optional slash.
+    ttest_paired_statement: $ => seq(
+      'paired',
+      $.identifier, '*', $.identifier,
+      repeat(seq('*', $.identifier)),
+      optional($._class_slash_options),
+      ';'
+    ),
+
+    // LIFETEST time: `time survtime * censor(0);` — survival time crossed with
+    // a censoring variable whose parentheses list the censoring values.
+    lifetest_time_statement: $ => seq(
+      'time',
+      $.identifier, '*', $.identifier,
+      optional(seq('(', repeat(choice($.identifier, $.number, ',')), ')')),
+      ';'
+    ),
+
+    // LIFETEST strata: `strata trt / test=(logrank wilcoxon);` — the stratum
+    // variable(s) with optional slash-options (test=, order=, missing, etc.).
+    lifetest_strata_statement: $ => seq(
+      'strata',
+      repeat1(choice($.identifier, $.macro_variable_reference)),
+      optional($._class_slash_options),
+      ';'
+    ),
 
     // ========================================================================
     // PROC LOGISTIC statements
