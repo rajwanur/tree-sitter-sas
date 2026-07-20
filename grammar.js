@@ -514,6 +514,18 @@ module.exports = grammar({
       $.append_data_statement,
       $.append_force_statement,
       $.append_getsort_statement,
+      // PROC IMPORT / EXPORT body statements
+      // (the SAS IMPORT/EXPORT wizard emits these as separate lines after the
+      // header, e.g. `guessingrows=200; datarow=2; getnames=yes;`. They are also
+      // valid on the header line via proc_options; these body forms handle the
+      // wizard-generated multi-line style.)
+      $.import_datarow_statement,
+      $.import_getnames_statement,
+      $.import_guessingrows_statement,
+      $.import_sheet_statement,
+      $.import_range_statement,
+      $.export_label_statement,
+      $.export_putnames_statement,
       // PROC UNIVARIATE statements
       $.univariate_var_statement,
       $.univariate_class_statement,
@@ -1824,10 +1836,22 @@ module.exports = grammar({
       seq('short', ';'),
     ),
 
-    // NOTE: PROC IMPORT/EXPORT option statements were removed.
-    // Real SAS writes all IMPORT/EXPORT options on the header line behind a
-    // single ';', so they are parsed by proc_options/proc_option_key, not as
-    // separate body statements. See proc_options above.
+    // NOTE: PROC IMPORT/EXPORT options are parsed on the header line via
+    // proc_options/proc_option_key. The body-statement forms below handle the
+    // multi-line style the SAS IMPORT/EXPORT wizard generates:
+    //   proc import datafile="x.csv" out=work.x dbms=csv replace;
+    //     guessingrows=200;
+    //     datarow=2;
+    //     getnames=yes;
+    //   run;
+    // Each option as its own `key = value ;` statement in the proc body.
+    import_datarow_statement: $ => seq(alias($._datarow_keyword, 'datarow'), '=', $.number, ';'),
+    import_getnames_statement: $ => seq(alias($._getnames_keyword, 'getnames'), '=', $.identifier, ';'),
+    import_guessingrows_statement: $ => seq(alias($._guessingrows_keyword, 'guessingrows'), '=', $.number, ';'),
+    import_sheet_statement: $ => seq(alias($._sheet_keyword, 'sheet'), '=', $.quoted_string, ';'),
+    import_range_statement: $ => seq(alias($._range_keyword, 'range'), '=', $.quoted_string, ';'),
+    export_label_statement: $ => seq(alias($._label_keyword, 'label'), '=', $.identifier, ';'),
+    export_putnames_statement: $ => seq(alias($._putnames_keyword, 'putnames'), '=', $.identifier, ';'),
 
     // ========================================================================
     // PROC COMPARE statements
@@ -2175,6 +2199,11 @@ module.exports = grammar({
       field('name', $.identifier),
       repeat(choice(
         seq($.identifier, '=', choice($.identifier, $.number, $.quoted_string, $.macro_variable_reference)),
+        // Bare identifier arm: accepts engine names (`libname xlout xlsx "..."`)
+        // and the `clear`/`list`/`_all_` deassignment forms
+        // (`libname xlout clear;`, `libname _all_ list;`). Mirrors the
+        // filename_statement bare-identifier arm.
+        $.identifier,
         $.quoted_string,
         $.macro_variable_reference,
       )),
@@ -2407,6 +2436,7 @@ module.exports = grammar({
     _sheet_keyword: $ => /[sS][hH][eE][eE][tT]/,
     _range_keyword: $ => /[rR][aA][nN][gG][eE]/,
     _guessingrows_keyword: $ => /[gG][uU][eE][sS][sS][iI][nN][gG][rR][oO][wW][sS]/,
+    _putnames_keyword: $ => /[pP][uU][tT][nN][aA][mM][eE][sS]/,
     _base_keyword: $ => /[bB][aA][sS][eE]/,
     _compare_keyword: $ => /[cC][oO][mM][pP][aA][rR][eE]/,
     _outest_keyword: $ => /[oO][uU][tT][eE][sS][tT]/,

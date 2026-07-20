@@ -118,8 +118,43 @@ run;
         (identifier))
       (proc_option_flag))
     body: (proc_body
-      (bare_statement
-        (identifier)
+      (import_getnames_statement
+        (identifier)))))
+
+================================================================================
+PROC IMPORT — wizard-style multi-line options (G19b)
+================================================================================
+proc import datafile="x.csv" out=work.x dbms=csv replace;
+  guessingrows=200;
+  datarow=2;
+  getnames=yes;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (proc_option
+        (proc_option_key)
+        (quoted_string
+          (double_quoted_string)))
+      (proc_option
+        (proc_option_key)
+        (dotted_identifier
+          base: (identifier)
+          member: (identifier)))
+      (proc_option
+        (proc_option_key)
+        (identifier))
+      (proc_option_flag))
+    body: (proc_body
+      (import_guessingrows_statement
+        (number))
+      (import_datarow_statement
+        (number))
+      (import_getnames_statement
         (identifier)))))
 
 ================================================================================

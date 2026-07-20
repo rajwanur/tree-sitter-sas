@@ -1058,6 +1058,34 @@
           },
           {
             "type": "SYMBOL",
+            "name": "import_datarow_statement"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "import_getnames_statement"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "import_guessingrows_statement"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "import_sheet_statement"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "import_range_statement"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "export_label_statement"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "export_putnames_statement"
+          },
+          {
+            "type": "SYMBOL",
             "name": "univariate_var_statement"
           },
           {
@@ -9295,6 +9323,188 @@
         }
       ]
     },
+    "import_datarow_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_datarow_keyword"
+          },
+          "named": false,
+          "value": "datarow"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "SYMBOL",
+          "name": "number"
+        },
+        {
+          "type": "STRING",
+          "value": ";"
+        }
+      ]
+    },
+    "import_getnames_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_getnames_keyword"
+          },
+          "named": false,
+          "value": "getnames"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "SYMBOL",
+          "name": "identifier"
+        },
+        {
+          "type": "STRING",
+          "value": ";"
+        }
+      ]
+    },
+    "import_guessingrows_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_guessingrows_keyword"
+          },
+          "named": false,
+          "value": "guessingrows"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "SYMBOL",
+          "name": "number"
+        },
+        {
+          "type": "STRING",
+          "value": ";"
+        }
+      ]
+    },
+    "import_sheet_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_sheet_keyword"
+          },
+          "named": false,
+          "value": "sheet"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "SYMBOL",
+          "name": "quoted_string"
+        },
+        {
+          "type": "STRING",
+          "value": ";"
+        }
+      ]
+    },
+    "import_range_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_range_keyword"
+          },
+          "named": false,
+          "value": "range"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "SYMBOL",
+          "name": "quoted_string"
+        },
+        {
+          "type": "STRING",
+          "value": ";"
+        }
+      ]
+    },
+    "export_label_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_label_keyword"
+          },
+          "named": false,
+          "value": "label"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "SYMBOL",
+          "name": "identifier"
+        },
+        {
+          "type": "STRING",
+          "value": ";"
+        }
+      ]
+    },
+    "export_putnames_statement": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_putnames_keyword"
+          },
+          "named": false,
+          "value": "putnames"
+        },
+        {
+          "type": "STRING",
+          "value": "="
+        },
+        {
+          "type": "SYMBOL",
+          "name": "identifier"
+        },
+        {
+          "type": "STRING",
+          "value": ";"
+        }
+      ]
+    },
     "compare_base_statement": {
       "type": "SEQ",
       "members": [
@@ -14423,6 +14633,10 @@
               },
               {
                 "type": "SYMBOL",
+                "name": "identifier"
+              },
+              {
+                "type": "SYMBOL",
                 "name": "quoted_string"
               },
               {
@@ -15330,6 +15544,10 @@
     "_guessingrows_keyword": {
       "type": "PATTERN",
       "value": "[gG][uU][eE][sS][sS][iI][nN][gG][rR][oO][wW][sS]"
+    },
+    "_putnames_keyword": {
+      "type": "PATTERN",
+      "value": "[pP][uU][tT][nN][aA][mM][eE][sS]"
     },
     "_base_keyword": {
       "type": "PATTERN",

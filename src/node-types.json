@@ -1090,6 +1090,36 @@
     }
   },
   {
+    "type": "export_label_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "export_putnames_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "expression_statement",
     "named": true,
     "fields": {},
@@ -1647,6 +1677,81 @@
           }
         ]
       }
+    }
+  },
+  {
+    "type": "import_datarow_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "number",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "import_getnames_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "import_guessingrows_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "number",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "import_range_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "quoted_string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "import_sheet_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "quoted_string",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -3235,6 +3340,14 @@
           "named": true
         },
         {
+          "type": "export_label_statement",
+          "named": true
+        },
+        {
+          "type": "export_putnames_statement",
+          "named": true
+        },
+        {
           "type": "format_value_statement",
           "named": true
         },
@@ -3296,6 +3409,26 @@
         },
         {
           "type": "gtl_plot_statement",
+          "named": true
+        },
+        {
+          "type": "import_datarow_statement",
+          "named": true
+        },
+        {
+          "type": "import_getnames_statement",
+          "named": true
+        },
+        {
+          "type": "import_guessingrows_statement",
+          "named": true
+        },
+        {
+          "type": "import_range_statement",
+          "named": true
+        },
+        {
+          "type": "import_sheet_statement",
           "named": true
         },
         {
@@ -6818,6 +6951,10 @@
   },
   {
     "type": "put",
+    "named": false
+  },
+  {
+    "type": "putnames",
     "named": false
   },
   {
