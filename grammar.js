@@ -1145,10 +1145,16 @@ module.exports = grammar({
     // numeric variable -- SAS length allows both forms.
     length_statement: $ => seq(
       alias($._length_keyword, 'length'),
+      // Each entry is a variable name followed by an OPTIONAL length spec.
+      // SAS allows both per-variable widths (`length a $10 b $20;`) and a
+      // shared trailing width that applies to the preceding list
+      // (`length lastname firstname credential $20;`). Modeling the width as
+      // optional on every entry handles both: in the shared form, earlier
+      // names simply have no width attached and the trailing `$20` binds to
+      // the last entry (tolerant — downstream tools resolve the shared scope).
       repeat1(seq(
         field('name', choice($.identifier, $.name_literal, $.macro_variable_reference)),
-        optional('$'),
-        $.number
+        optional(seq(optional('$'), $.number))
       )),
       ';'
     ),
