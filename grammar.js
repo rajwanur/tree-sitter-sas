@@ -379,10 +379,21 @@ module.exports = grammar({
       // replace) match as a proc_option with no value (G13).
       optional(seq(
         '=',
-        $.expression,
+        // The value may be a 3-part SAS catalog path (lib.dataset.member), e.g.
+        // the PROC FCMP `outlib=work.funcs.trial` option, which is not a valid
+        // dotted_identifier (only 2 parts) nor a plain expression.
+        choice($.catalog_path, $.expression),
         optional($.data_set_option),
       )),
     ),
+
+    // 3-part SAS catalog reference: library.dataset.member (or library.catalog.entry).
+    // Used by PROC FCMP outlib=, PROC FORMAT cntlin= catalog entries, etc. Kept
+    // separate from dotted_identifier (2-part) to avoid GLR ambiguity with the
+    // qualified-column forms (first.var).
+    catalog_path: $ => prec(2, seq(
+      $.identifier, '.', $.identifier, '.', $.identifier,
+    )),
 
     // Parenthesized argument group for complex PROC options.
     // Contents are freeform: key=value pairs, bare keywords, identifiers.
@@ -526,6 +537,9 @@ module.exports = grammar({
       $.import_range_statement,
       $.export_label_statement,
       $.export_putnames_statement,
+      // PROC FCMP function/subroutine blocks (multi-statement: header ... body ... endsub;)
+      $.fcmp_function_block,
+      $.fcmp_subroutine_block,
       // PROC UNIVARIATE statements
       $.univariate_var_statement,
       $.univariate_class_statement,
@@ -1852,6 +1866,59 @@ module.exports = grammar({
     import_range_statement: $ => seq(alias($._range_keyword, 'range'), '=', $.quoted_string, ';'),
     export_label_statement: $ => seq(alias($._label_keyword, 'label'), '=', $.identifier, ';'),
     export_putnames_statement: $ => seq(alias($._putnames_keyword, 'putnames'), '=', $.identifier, ';'),
+
+    // ========================================================================
+    // PROC FCMP function/subroutine blocks
+    // ========================================================================
+    // FCMP defines reusable functions/subroutines in a block form:
+    //   function bmi_calc(weight_kg, height_m);
+    //     if height_m <= 0 then return (.);
+    //     return (weight_kg / (height_m ** 2));
+    //   endsub;
+    //   subroutine flag_outlier(value, lo, hi, outflag);
+    //     outargs outflag;
+    //     ...
+    //   endsub;
+    // The body reuses $.statement (so if/else/assignment/length/etc. all work)
+    // plus an fcmp_outargs_statement and fcmp_return_statement. The optional
+    // `$type` after the function name models the return-type annotation
+    // (`function bmi_class(bmi_value) $12;`).
+
+    fcmp_function_block: $ => seq(
+      'function',
+      field('name', $.identifier),
+      field('params', optional(seq('(', repeat(choice($.identifier, ',', $.macro_variable_reference)), ')'))),
+      optional(seq('$', $.number)),                       // return-type width: $12
+      ';',
+      repeat(choice(
+        $.fcmp_return_statement,
+        $.fcmp_outargs_statement,
+        $.statement,
+      )),
+      'endsub', ';'
+    ),
+
+    fcmp_subroutine_block: $ => seq(
+      'subroutine',
+      field('name', $.identifier),
+      field('params', optional(seq('(', repeat(choice($.identifier, ',', $.macro_variable_reference)), ')'))),
+      optional(seq('$', $.number)),
+      ';',
+      repeat(choice(
+        $.fcmp_return_statement,
+        $.fcmp_outargs_statement,
+        $.statement,
+      )),
+      'endsub', ';'
+    ),
+
+    // FCMP return: `return (expr);`. Distinct from base-SAS return because FCMP
+    // requires parens around the value and lives only inside a function/
+    // subroutine block.
+    fcmp_return_statement: $ => seq('return', '(', $.expression, ')', ';'),
+
+    // FCMP outargs: declares which parameters are output (modified in place).
+    fcmp_outargs_statement: $ => seq('outargs', repeat1($.identifier), ';'),
 
     // ========================================================================
     // PROC COMPARE statements

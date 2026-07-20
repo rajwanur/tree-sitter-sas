@@ -1,0 +1,76 @@
+PROC FCMP — function block with outlib catalog path (G15)
+================================================================================
+proc fcmp outlib=work.funcs.trial;
+  function bmi_calc(weight_kg, height_m);
+    return (weight_kg);
+  endsub;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (proc_option
+        (proc_option_key))
+      (proc_option
+        (proc_option_key
+          (identifier))
+        (catalog_path
+          (identifier)
+          (identifier)
+          (identifier))))
+    body: (proc_body
+      (fcmp_function_block
+        name: (identifier)
+        params: (identifier)
+        params: (identifier)
+        (fcmp_return_statement
+          (identifier))))))
+
+================================================================================
+PROC FCMP — subroutine block with outargs + character return type (G15)
+================================================================================
+proc fcmp outlib=work.funcs.trial;
+  function bmi_class(bmi_value) $12;
+    return (bmi_value);
+  endsub;
+  subroutine flag_outlier(value, lo, hi, outflag);
+    outargs outflag;
+    return (outflag);
+  endsub;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    name: (proc_name
+      (identifier))
+    options: (proc_options
+      (proc_option
+        (proc_option_key))
+      (proc_option
+        (proc_option_key
+          (identifier))
+        (catalog_path
+          (identifier)
+          (identifier)
+          (identifier))))
+    body: (proc_body
+      (fcmp_function_block
+        name: (identifier)
+        params: (identifier)
+        (number)
+        (fcmp_return_statement
+          (identifier)))
+      (fcmp_subroutine_block
+        name: (identifier)
+        params: (identifier)
+        params: (identifier)
+        params: (identifier)
+        params: (identifier)
+        (fcmp_outargs_statement
+          (identifier))
+        (fcmp_return_statement
+          (identifier))))))
