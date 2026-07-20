@@ -1039,7 +1039,10 @@ module.exports = grammar({
       optional(choice(
         seq(alias($._while_keyword, 'while'), '(', $.expression, ')'),
         seq(alias($._until_keyword, 'until'), '(', $.expression, ')'),
-        seq($.identifier, '=', $.expression, alias($._to_keyword, 'to'), $.expression),
+        // Iterative range: do i = 1 to 10 [by 2];
+        seq($.identifier, '=', $.expression, alias($._to_keyword, 'to'), $.expression, optional(seq(alias($._by_keyword, 'by'), $.expression))),
+        // Item-list iterator: do pointnum = 1, 3, 5;  (comma-separated values)
+        seq($.identifier, '=', $.expression, repeat1(seq(',', $.expression))),
       )),
       ';',
       repeat($.statement),
@@ -1582,7 +1585,12 @@ module.exports = grammar({
       optional(seq('.', $.identifier)),
       choice(
         seq(alias($._as_keyword, 'as'), $._sql_select_query, repeat(seq(choice('union', 'intersect', 'except', 'outer union'), optional('all'), optional('corr'), $._sql_select_query))),
-        seq('(', repeat(seq($.identifier, optional($.identifier), optional(','))), ')')
+        seq('(', repeat(seq(
+          $.identifier,                                   // column name
+          optional($.identifier),                         // type: char, num, int, varchar
+          optional(seq('(', repeat(choice($.identifier, $.number, ',')), ')')),  // (width) or (width, dec)
+          optional(',')
+        )), ')')
       ),
       ';'
     ),
