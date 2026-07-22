@@ -867,6 +867,80 @@
     "fields": {}
   },
   {
+    "type": "contents_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "contents_option_key",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "contents_option_flag",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "contents_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "contents_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "contents_option",
+          "named": true
+        },
+        {
+          "type": "contents_option_flag",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "contents_out_statement",
     "named": true,
     "fields": {},
@@ -4486,6 +4560,32 @@
     }
   },
   {
+    "type": "proc_contents_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "contents_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "proc_copy_step",
     "named": true,
     "fields": {
@@ -4795,6 +4895,10 @@
         },
         {
           "type": "proc_cimport_step",
+          "named": true
+        },
+        {
+          "type": "proc_contents_step",
           "named": true
         },
         {
@@ -7631,6 +7735,10 @@
     "named": false
   },
   {
+    "type": "centiles",
+    "named": false
+  },
+  {
     "type": "change",
     "named": false
   },
@@ -7672,6 +7780,10 @@
   },
   {
     "type": "contents",
+    "named": false
+  },
+  {
+    "type": "contents_option_flag",
     "named": false
   },
   {
@@ -8251,6 +8363,10 @@
     "named": false
   },
   {
+    "type": "out2",
+    "named": false
+  },
+  {
     "type": "outargs",
     "named": false
   },
@@ -8637,6 +8753,10 @@
   },
   {
     "type": "vardef",
+    "named": false
+  },
+  {
+    "type": "varnum",
     "named": false
   },
   {

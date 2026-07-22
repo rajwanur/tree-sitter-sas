@@ -79,23 +79,6 @@ run;
           (identifier))))))
 
 ================================================================================
-PROC CONTENTS
-================================================================================
-proc contents;
-  data mydata;
-run;
---------------------------------------------------------------------------------
-
-(source_file
-  (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      body: (proc_body
-        (contents_data_statement
-          (identifier))))))
-
-================================================================================
 PROC IMPORT
 ================================================================================
 proc import datafile="test.csv" out=mydata dbms=csv replace;

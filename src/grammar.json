@@ -434,6 +434,14 @@
           }
         },
         {
+          "type": "PREC",
+          "value": 1,
+          "content": {
+            "type": "SYMBOL",
+            "name": "proc_contents_step"
+          }
+        },
+        {
           "type": "SYMBOL",
           "name": "proc_generic_step"
         }
@@ -3754,6 +3762,376 @@
           },
           "named": false,
           "value": "suffix"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "identifier"
+        }
+      ]
+    },
+    "proc_contents_step": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_proc_keyword"
+          },
+          "named": false,
+          "value": "proc"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_proc_contents_keyword"
+          },
+          "named": false,
+          "value": "contents"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "FIELD",
+              "name": "options",
+              "content": {
+                "type": "SYMBOL",
+                "name": "contents_options"
+              }
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": ";"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "FIELD",
+              "name": "body",
+              "content": {
+                "type": "SYMBOL",
+                "name": "proc_body"
+              }
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "ALIAS",
+                      "content": {
+                        "type": "SYMBOL",
+                        "name": "_run_keyword"
+                      },
+                      "named": false,
+                      "value": "run"
+                    },
+                    {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "CHOICE",
+                          "members": [
+                            {
+                              "type": "STRING",
+                              "value": "cancel"
+                            },
+                            {
+                              "type": "STRING",
+                              "value": "CANCEL"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "BLANK"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "STRING",
+                      "value": ";"
+                    }
+                  ]
+                },
+                {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "ALIAS",
+                      "content": {
+                        "type": "SYMBOL",
+                        "name": "_quit_keyword"
+                      },
+                      "named": false,
+                      "value": "quit"
+                    },
+                    {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "CHOICE",
+                          "members": [
+                            {
+                              "type": "STRING",
+                              "value": "cancel"
+                            },
+                            {
+                              "type": "STRING",
+                              "value": "CANCEL"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "BLANK"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "STRING",
+                      "value": ";"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
+    },
+    "contents_options": {
+      "type": "REPEAT1",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "contents_option"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "contents_option_flag"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "identifier"
+          }
+        ]
+      }
+    },
+    "contents_option": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "contents_option_key"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "proc_option_args"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "="
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "catalog_path"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "expression"
+                    }
+                  ]
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "data_set_option"
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
+    },
+    "contents_option_flag": {
+      "type": "ALIAS",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_details_keyword"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_directory_keyword"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_nodetails_keyword"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_nods_keyword"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_noprint_keyword"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_short_keyword"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_fmtlen_keyword"
+          }
+        ]
+      },
+      "named": false,
+      "value": "contents_option_flag"
+    },
+    "contents_option_key": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_centiles_keyword"
+          },
+          "named": false,
+          "value": "centiles"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_data_keyword"
+          },
+          "named": false,
+          "value": "data"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_encryptkey_keyword"
+          },
+          "named": false,
+          "value": "encryptkey"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_memtype_keyword"
+          },
+          "named": false,
+          "value": "memtype"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_mt_keyword"
+          },
+          "named": false,
+          "value": "mt"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_mtype_keyword"
+          },
+          "named": false,
+          "value": "mtype"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_order_keyword"
+          },
+          "named": false,
+          "value": "order"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_out_keyword"
+          },
+          "named": false,
+          "value": "out"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_out2_keyword"
+          },
+          "named": false,
+          "value": "out2"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_varnum_keyword"
+          },
+          "named": false,
+          "value": "varnum"
         },
         {
           "type": "SYMBOL",
@@ -19403,6 +19781,10 @@
       "type": "PATTERN",
       "value": "[tT][rR][aA][nN][sS][pP][oO][sS][eE]"
     },
+    "_proc_contents_keyword": {
+      "type": "PATTERN",
+      "value": "[cC][oO][nN][tT][eE][nN][tT][sS]"
+    },
     "_run_keyword": {
       "type": "PATTERN",
       "value": "[rR][uU][nN]"
@@ -20202,6 +20584,38 @@
       "type": "PATTERN",
       "value": "[lL][eE][tT]"
     },
+    "_centiles_keyword": {
+      "type": "PATTERN",
+      "value": "[cC][eE][nN][tT][iI][lL][eE][sS]"
+    },
+    "_order_keyword": {
+      "type": "PATTERN",
+      "value": "[oO][rR][dD][eE][rR]"
+    },
+    "_out2_keyword": {
+      "type": "PATTERN",
+      "value": "[oO][uU][tT]2"
+    },
+    "_varnum_keyword": {
+      "type": "PATTERN",
+      "value": "[vV][aA][rR][nN][uU][mM]"
+    },
+    "_directory_keyword": {
+      "type": "PATTERN",
+      "value": "[dD][iI][rR][eE][cC][tT][oO][rR][yY]"
+    },
+    "_nods_keyword": {
+      "type": "PATTERN",
+      "value": "[nN][oO][dD][sS]"
+    },
+    "_short_keyword": {
+      "type": "PATTERN",
+      "value": "[sS][hH][oO][rR][tT]"
+    },
+    "_fmtlen_keyword": {
+      "type": "PATTERN",
+      "value": "[fF][mM][tT][lL][eE][nN]"
+    },
     "_semicolon": {
       "type": "STRING",
       "value": ";"
@@ -20412,6 +20826,10 @@
       "transpose_option_key"
     ],
     [
+      "contents_options",
+      "contents_option_key"
+    ],
+    [
       "proc_body"
     ],
     [
@@ -20440,6 +20858,9 @@
     ],
     [
       "proc_transpose_step"
+    ],
+    [
+      "proc_contents_step"
     ],
     [
       "proc_generic_step"

@@ -1,0 +1,120 @@
+================================================================================
+PROC CONTENTS data=/out=/out2=/memtype= value-options
+================================================================================
+proc contents data=work.in out=work.out out2=work.out2 memtype=data;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_contents_step
+      options: (contents_options
+        (contents_option
+          (contents_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (contents_option
+          (contents_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (contents_option
+          (contents_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (contents_option
+          (contents_option_key)
+          (identifier))))))
+
+================================================================================
+PROC CONTENTS centiles=/order=/varnum + boolean flags
+================================================================================
+proc contents data=work.in centiles=4 order=varnum details nodetails nods noprint short fmtlen;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_contents_step
+      options: (contents_options
+        (contents_option
+          (contents_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (contents_option
+          (contents_option_key)
+          (number))
+        (contents_option
+          (contents_option_key)
+          (identifier))
+        (contents_option_flag)
+        (contents_option_flag)
+        (contents_option_flag)
+        (contents_option_flag)
+        (contents_option_flag)
+        (contents_option_flag)))))
+
+================================================================================
+PROC CONTENTS mt=/mtype= short value-options terminated by quit
+================================================================================
+proc contents data=work.in mt=view mtype=catalog directory;
+quit;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_contents_step
+      options: (contents_options
+        (contents_option
+          (contents_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (contents_option
+          (contents_option_key)
+          (identifier))
+        (contents_option
+          (contents_option_key)
+          (identifier))
+        (contents_option_flag)))))
+
+================================================================================
+PROC CONTENTS no options (bare header)
+================================================================================
+proc contents;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_contents_step)))
+
+================================================================================
+PROC CONTENTS header options + body statements (out/flag preserved)
+================================================================================
+proc contents data=work.in varnum;
+out=contents_out;
+noprint;
+short;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_contents_step
+      options: (contents_options
+        (contents_option
+          (contents_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (contents_option
+          (contents_option_key)))
+      body: (proc_body
+        (contents_out_statement
+          (identifier))
+        (contents_flag_statement)
+        (contents_flag_statement)))))

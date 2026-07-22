@@ -145,6 +145,9 @@ module.exports = grammar({
     // transpose_options vs transpose_option_key: same family as the copy/cport/cimport/
     // sort/datasets/append/standard/printto option conflicts above (Phase 3 C3 / Task 16).
     [$.transpose_options, $.transpose_option_key],
+    // contents_options vs contents_option_key: same family as the copy/cport/cimport/
+    // sort/datasets/append/standard/printto/transpose option conflicts above (Phase 3 C3 / Task 17).
+    [$.contents_options, $.contents_option_key],
     // proc_body: repeat1(choice(...)) cannot tell whether an identifier
     // starts a new statement inside the proc body or is a new step outside.
     // Also, run/quit can match as bare_statement or as the step terminator.
@@ -176,6 +179,9 @@ module.exports = grammar({
     // proc_transpose_step: same optional-body ambiguity as proc_copy/cport/cimport/
     // sort/datasets/append/standard/printto (Phase 3 C3 / Task 16).
     [$.proc_transpose_step],
+    // proc_contents_step: same optional-body ambiguity as proc_copy/cport/cimport/
+    // sort/datasets/append/standard/printto/transpose (Phase 3 C3 / Task 17).
+    [$.proc_contents_step],
     // proc_generic_step: the optional proc_body now lives here (the original
     // proc_step body, moved when proc_step became a dispatcher).
     [$.proc_generic_step],
@@ -431,6 +437,7 @@ module.exports = grammar({
       prec(1, $.proc_standard_step), // Phase C3 (Task 14)
       prec(1, $.proc_printto_step), // Phase C3 (Task 15)
       prec(1, $.proc_transpose_step), // Phase C3 (Task 16)
+      prec(1, $.proc_contents_step), // Phase C3 (Task 17)
       $.proc_generic_step,
     ),
 
@@ -1049,6 +1056,92 @@ module.exports = grammar({
       alias($._out_keyword, 'out'),
       alias($._prefix_keyword, 'prefix'),
       alias($._suffix_keyword, 'suffix'),
+      $.identifier,
+    ),
+
+    // PROC CONTENTS: centiles=/data=/encryptkey=/memtype=/mt=/mtype=/order=/out=/
+    // out2=/varnum= value options plus boolean flags (details, directory,
+    // nodetails, nods, noprint, short, fmtlen). Same shape as proc_copy/cport/
+    // cimport/sort/datasets/append/standard/printto/transpose_step; the proc name
+    // is emitted as the alias($._proc_contents_keyword,'contents') token (no
+    // field('name')) and the linter reads the name via inferProcNameFromStep
+    // (Phase 3 C3 / Task 17).
+    //
+    // HEADER-only struct (like DATASETS/TRANSPOSE): this wraps the options on the
+    // 'proc contents ...;' header line ONLY. CONTENTS's pre-existing BODY
+    // statement rules (contents_data_statement, contents_out_statement,
+    // contents_flag_statement) live in proc_body's choice() and are UNCHANGED —
+    // proc_contents_step references $.proc_body for the body, exactly like
+    // proc_datasets_step. The header options terminate at the first ';' and the
+    // body begins after it (same boundary as every per-proc step), so a header
+    // flag like 'noprint'/'details' never collides with contents_flag_statement
+    // (which itself only matches inside the body, terminated by its own ';').
+    //
+    // CONTENTS's value-option keys are all multi-letter (centiles, data,
+    // encryptkey, memtype, mt, mtype, order, out, out2, varnum), so tree-sitter's
+    // longest-match resolves each ahead of the generic identifier token at the
+    // option-key boundary; the $.identifier fallback in contents_option_key still
+    // catches unknown keys. 'mt' (2 letters) is below the single-letter threshold
+    // and is already a shared keyword token (_mt_keyword, CIMPORT), so it routes
+    // cleanly here too.
+    proc_contents_step: $ => seq(
+      alias($._proc_keyword, 'proc'),
+      alias($._proc_contents_keyword, 'contents'),
+      optional(field('options', $.contents_options)),
+      ';',
+      optional(field('body', $.proc_body)),
+      optional(choice(
+        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
+        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
+      )),
+    ),
+
+    contents_options: $ => repeat1(choice(
+      $.contents_option,
+      $.contents_option_flag,
+      $.identifier,
+    )),
+
+    // key = value (e.g. data=work.in, out=work.out, out2=work.out2,
+    // memtype=data, mt=view, order=varnum, centiles=4, encryptkey='key',
+    // varnum, mtype=catalog) OR key with a parenthesized arg group. Mirrors
+    // proc_option/copy/.../transpose_option's shape.
+    contents_option: $ => seq(
+      $.contents_option_key,
+      optional($.proc_option_args),
+      optional(seq('=',
+        choice($.catalog_path, $.expression),
+        optional($.data_set_option),
+      )),
+    ),
+
+    // A CONTENTS option keyword with no value (boolean flag). Aliased to a named
+    // node for highlighting/linting. Covers the CONTENTS flags: details,
+    // directory, nodetails, nods, noprint, short, fmtlen.
+    contents_option_flag: $ => alias(choice(
+      $._details_keyword,
+      $._directory_keyword,
+      $._nodetails_keyword,
+      $._nods_keyword,
+      $._noprint_keyword,
+      $._short_keyword,
+      $._fmtlen_keyword,
+    ), 'contents_option_flag'),
+
+    // Option key: known CONTENTS value-option keywords (aliased so they appear as
+    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
+    // key, which the linter may flag as invalid for CONTENTS).
+    contents_option_key: $ => choice(
+      alias($._centiles_keyword, 'centiles'),
+      alias($._data_keyword, 'data'),
+      alias($._encryptkey_keyword, 'encryptkey'),
+      alias($._memtype_keyword, 'memtype'),
+      alias($._mt_keyword, 'mt'),
+      alias($._mtype_keyword, 'mtype'),
+      alias($._order_keyword, 'order'),
+      alias($._out_keyword, 'out'),
+      alias($._out2_keyword, 'out2'),
+      alias($._varnum_keyword, 'varnum'),
       $.identifier,
     ),
 
@@ -3199,6 +3292,9 @@ module.exports = grammar({
     // PROC TRANSPOSE proc-name token (dispatched on by proc_step). Distinct from a
     // bare identifier so the dispatcher can route to proc_transpose_step (Phase 3 C3 / Task 16).
     _proc_transpose_keyword: $ => /[tT][rR][aA][nN][sS][pP][oO][sS][eE]/,
+    // PROC CONTENTS proc-name token (dispatched on by proc_step). Distinct from a
+    // bare identifier so the dispatcher can route to proc_contents_step (Phase 3 C3 / Task 17).
+    _proc_contents_keyword: $ => /[cC][oO][nN][tT][eE][nN][tT][sS]/,
     // PROC SORT reuses the _sort_keyword token (defined further below, shared
     // with CIMPORT's sort= option) as its proc-name token — see the proc_sort_step
     // comment above for why no distinct _proc_sort_keyword is defined (Phase 3 C1).
@@ -3500,6 +3596,24 @@ module.exports = grammar({
     _suffix_keyword: $ => /[sS][uU][fF][fF][iI][xX]/,
     // Boolean flag (no '= value') used by transpose_option_flag:
     _let_keyword: $ => /[lL][eE][tT]/,
+
+    // --- PROC CONTENTS option keywords (Phase 3 C3 / Task 17) ---
+    // CONTENTS-specific option keys/flags. _data_keyword/_out_keyword (global)/
+    // _memtype_keyword/_mt_keyword/_mtype_keyword (CIMPORT/global)/
+    // _encryptkey_keyword (COPY/global)/_noprint_keyword/_details_keyword/
+    // _nodetails_keyword (DATASETS/global) are reused by contents_option_key /
+    // contents_option_flag. The rest are CONTENTS-only. CONTENTS's options are
+    // all multi-letter, so no single-letter-key concern here.
+    // Value-option keys (used by contents_option_key):
+    _centiles_keyword: $ => /[cC][eE][nN][tT][iI][lL][eE][sS]/,
+    _order_keyword: $ => /[oO][rR][dD][eE][rR]/,
+    _out2_keyword: $ => /[oO][uU][tT]2/,
+    _varnum_keyword: $ => /[vV][aA][rR][nN][uU][mM]/,
+    // Boolean flags (no '= value') used by contents_option_flag:
+    _directory_keyword: $ => /[dD][iI][rR][eE][cC][tT][oO][rR][yY]/,
+    _nods_keyword: $ => /[nN][oO][dD][sS]/,
+    _short_keyword: $ => /[sS][hH][oO][rR][tT]/,
+    _fmtlen_keyword: $ => /[fF][mM][tT][lL][eE][nN]/,
 
     // --- Operators and punctuation ---
     _semicolon: $ => ';',
