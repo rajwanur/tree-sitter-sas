@@ -1,0 +1,72 @@
+================================================================================
+PROC CPORT with library/file/memtype options
+================================================================================
+proc cport library=work file=xptfile memtype=data;
+  select sales;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_cport_step
+      options: (cport_options
+        (cport_option
+          (cport_option_key)
+          (identifier))
+        (cport_option
+          (cport_option_key)
+          (identifier))
+        (cport_option
+          (cport_option_key)
+          (identifier)))
+      body: (proc_body
+        (sql_select_statement
+          (sql_select_list
+            (sql_expression
+              (identifier))))))))
+
+================================================================================
+PROC CPORT with boolean flags (asis, noedit, translate, tape)
+================================================================================
+proc cport library=work asis noedit translate tape;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_cport_step
+      options: (cport_options
+        (cport_option
+          (cport_option_key)
+          (identifier))
+        (cport_option_flag)
+        (cport_option_flag)
+        (cport_option_flag)
+        (cport_option_flag)))))
+
+================================================================================
+PROC CPORT with no options
+================================================================================
+proc cport;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_cport_step)))
+
+================================================================================
+PROC CPORT with unknown option key (linter fallback)
+================================================================================
+proc cport bogusopt=x;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_cport_step
+      options: (cport_options
+        (cport_option
+          (cport_option_key
+            (identifier))
+          (identifier))))))

@@ -115,6 +115,9 @@ module.exports = grammar({
     // the value of the first (e.g. 'proc copy in out' = two flags vs in=out-shape).
     // GLR explores both; the '= value' presence decides (Phase 3 B1).
     [$.copy_options, $.copy_option_key],
+    // cport_options vs cport_option_key: same family as the copy_options
+    // conflict above (Phase 3 B2).
+    [$.cport_options, $.cport_option_key],
     // proc_body: repeat1(choice(...)) cannot tell whether an identifier
     // starts a new statement inside the proc body or is a new step outside.
     // Also, run/quit can match as bare_statement or as the step terminator.
@@ -125,6 +128,8 @@ module.exports = grammar({
     // (proc_generic_step) and proc_copy_step each carry the same bounded
     // single-rule optional-body ambiguity.
     [$.proc_copy_step],
+    // proc_cport_step: same optional-body ambiguity as proc_copy_step (Phase 3 B2).
+    [$.proc_cport_step],
     // proc_generic_step: the optional proc_body now lives here (the original
     // proc_step body, moved when proc_step became a dispatcher).
     [$.proc_generic_step],
@@ -372,7 +377,7 @@ module.exports = grammar({
     // per-proc struct would never be produced.
     proc_step: $ => choice(
       prec(1, $.proc_copy_step),
-      // $.proc_cport_step,   // Phase B2
+      prec(1, $.proc_cport_step),
       // $.proc_cimport_step, // Phase B3
       $.proc_generic_step,
     ),
@@ -433,6 +438,71 @@ module.exports = grammar({
       alias($._encryptkey_keyword, 'encryptkey'),
       alias($._override_keyword, 'override'),
       alias($._alter_keyword, 'alter'),
+      $.identifier,
+    ),
+
+    // PROC CPORT: library=/file=/memtype=/catalog=/data=/index=/constraint=/
+    // after=/eet=/et=/generation=/intype=/outlib=/outtype= value options plus
+    // boolean flags (asis, nocompress, noedit, nosrc, tape, translate, datecopy).
+    // Same shape as proc_copy_step; the proc name is emitted as the
+    // alias($._proc_cport_keyword,'cport') token (no field('name')) and the
+    // linter reads the name via inferProcNameFromStep (Phase 3 B2).
+    proc_cport_step: $ => seq(
+      alias($._proc_keyword, 'proc'),
+      alias($._proc_cport_keyword, 'cport'),
+      optional(field('options', $.cport_options)),
+      ';',
+      optional(field('body', $.proc_body)),
+      optional(choice(
+        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
+        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
+      )),
+    ),
+
+    cport_options: $ => repeat1(choice(
+      $.cport_option,
+      $.cport_option_flag,
+      $.identifier,
+    )),
+
+    // key = value (e.g. library=work, file=x, memtype=data, catalog=...) OR key
+    // with a parenthesized arg group. Mirrors proc_option/copy_option's shape.
+    cport_option: $ => seq(
+      $.cport_option_key,
+      optional($.proc_option_args),
+      optional(seq('=',
+        choice($.catalog_path, $.expression),
+        optional($.data_set_option),
+      )),
+    ),
+
+    // A CPORT option keyword with no value (boolean flag), e.g. asis / tape /
+    // translate / noedit / nosrc / nocompress / datecopy. Aliased to a named
+    // node for highlighting/linting.
+    cport_option_flag: $ => alias(choice(
+      $._asis_keyword, $._nocompress_keyword, $._noedit_keyword,
+      $._nosrc_keyword, $._tape_keyword, $._translate_keyword,
+      $._datecopy_keyword,
+    ), 'cport_option_flag'),
+
+    // Option key: known CPORT keywords (aliased so they appear as anonymous
+    // keyword nodes for highlighting) OR a generic identifier (unknown key,
+    // which the linter may flag as invalid for CPORT).
+    cport_option_key: $ => choice(
+      alias($._library_keyword, 'library'),
+      alias($._file_keyword, 'file'),
+      alias($._data_keyword, 'data'),
+      alias($._catalog_keyword, 'catalog'),
+      alias($._memtype_keyword, 'memtype'),
+      alias($._index_keyword, 'index'),
+      alias($._constraint_keyword, 'constraint'),
+      alias($._after_keyword, 'after'),
+      alias($._eet_keyword, 'eet'),
+      alias($._et_keyword, 'et'),
+      alias($._generation_keyword, 'generation'),
+      alias($._intype_keyword, 'intype'),
+      alias($._outlib_keyword, 'outlib'),
+      alias($._outtype_keyword, 'outtype'),
       $.identifier,
     ),
 
@@ -2562,6 +2632,9 @@ module.exports = grammar({
     // PROC COPY proc-name token (dispatched on by proc_step). Distinct from a
     // bare identifier so the dispatcher can route to proc_copy_step.
     _proc_copy_keyword: $ => /[cC][oO][pP][yY]/,
+    // PROC CPORT proc-name token (dispatched on by proc_step). Distinct from a
+    // bare identifier so the dispatcher can route to proc_cport_step (Phase 3 B2).
+    _proc_cport_keyword: $ => /[cC][pP][oO][rR][tT]/,
     _run_keyword: $ => /[rR][uU][nN]/,
     _quit_keyword: $ => /[qQ][uU][iI][tT]/,
     _do_keyword: $ => /[dD][oO]/,
@@ -2709,6 +2782,28 @@ module.exports = grammar({
     _override_keyword: $ => /[oO][vV][eE][rR][rR][iI][dD][eE]/,
     _alter_keyword: $ => /[aA][lL][tT][eE][rR]/,
     _index_keyword: $ => /[iI][nN][dD][eE][xX]/,
+
+    // --- PROC CPORT option keywords (Phase 3 B2) ---
+    // CPORT-specific option keys/flags. _library_keyword/_file_keyword/
+    // _memtype_keyword/_data_keyword/_index_keyword/_constraint_keyword above are
+    // reused by cport_option_key; _datecopy_keyword (B1) is reused as a CPORT
+    // flag too. The rest are CPORT-only.
+    // Value-option keys (used by cport_option_key):
+    _catalog_keyword: $ => /[cC][aA][tT][aA][lL][oO][gG]/,
+    _after_keyword: $ => /[aA][fF][tT][eE][rR]/,
+    _eet_keyword: $ => /[eE][eE][tT]/,
+    _et_keyword: $ => /[eE][tT]/,
+    _generation_keyword: $ => /[gG][eE][nN][eE][rR][aA][tT][iI][oO][nN]/,
+    _intype_keyword: $ => /[iI][nN][tT][yY][pP][eE]/,
+    _outlib_keyword: $ => /[oO][uU][tT][lL][iI][bB]/,
+    _outtype_keyword: $ => /[oO][uU][tT][tT][yY][pP][eE]/,
+    // Boolean flags (no '= value') used by cport_option_flag:
+    _asis_keyword: $ => /[aA][sS][iI][sS]/,
+    _nocompress_keyword: $ => /[nN][oO][cC][oO][mM][pP][rR][eE][sS][sS]/,
+    _noedit_keyword: $ => /[nN][oO][eE][dD][iI][tT]/,
+    _nosrc_keyword: $ => /[nN][oO][sS][rR][cC]/,
+    _tape_keyword: $ => /[tT][aA][pP][eE]/,
+    _translate_keyword: $ => /[tT][rR][aA][nN][sS][lL][aA][tT][eE]/,
 
     // --- Operators and punctuation ---
     _semicolon: $ => ';',

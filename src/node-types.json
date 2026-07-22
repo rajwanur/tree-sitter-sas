@@ -808,6 +808,80 @@
     }
   },
   {
+    "type": "cport_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "cport_option_key",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "cport_option_flag",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "cport_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "cport_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "cport_option",
+          "named": true
+        },
+        {
+          "type": "cport_option_flag",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "data_name",
     "named": true,
     "fields": {
@@ -4090,6 +4164,32 @@
     }
   },
   {
+    "type": "proc_cport_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "cport_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "proc_generic_step",
     "named": true,
     "fields": {
@@ -4239,6 +4339,10 @@
       "types": [
         {
           "type": "proc_copy_step",
+          "named": true
+        },
+        {
+          "type": "proc_cport_step",
           "named": true
         },
         {
@@ -6775,6 +6879,10 @@
     "named": false
   },
   {
+    "type": "catalog",
+    "named": false
+  },
+  {
     "type": "cdfplot",
     "named": false
   },
@@ -6820,6 +6928,14 @@
   },
   {
     "type": "corr",
+    "named": false
+  },
+  {
+    "type": "cport",
+    "named": false
+  },
+  {
+    "type": "cport_option_flag",
     "named": false
   },
   {
@@ -6903,6 +7019,10 @@
     "named": false
   },
   {
+    "type": "eet",
+    "named": false
+  },
+  {
     "type": "else",
     "named": false
   },
@@ -6924,6 +7044,10 @@
   },
   {
     "type": "eq",
+    "named": false
+  },
+  {
+    "type": "et",
     "named": false
   },
   {
@@ -6976,6 +7100,10 @@
   },
   {
     "type": "ge",
+    "named": false
+  },
+  {
+    "type": "generation",
     "named": false
   },
   {
@@ -7072,6 +7200,10 @@
   },
   {
     "type": "into",
+    "named": false
+  },
+  {
+    "type": "intype",
     "named": false
   },
   {
@@ -7295,6 +7427,10 @@
     "named": false
   },
   {
+    "type": "outlib",
+    "named": false
+  },
+  {
     "type": "outnoequal",
     "named": false
   },
@@ -7304,6 +7440,10 @@
   },
   {
     "type": "output",
+    "named": false
+  },
+  {
+    "type": "outtype",
     "named": false
   },
   {
