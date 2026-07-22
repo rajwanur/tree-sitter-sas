@@ -788,6 +788,42 @@
           "type": "ALIAS",
           "content": {
             "type": "SYMBOL",
+            "name": "_in_keyword"
+          },
+          "named": false,
+          "value": "in"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_library_keyword"
+          },
+          "named": false,
+          "value": "library"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_file_keyword"
+          },
+          "named": false,
+          "value": "file"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_memtype_keyword"
+          },
+          "named": false,
+          "value": "memtype"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
             "name": "_data_keyword"
           },
           "named": false,
@@ -16339,6 +16375,22 @@
       "type": "PATTERN",
       "value": "[oO][uU][tT][eE][sS][tT]"
     },
+    "_in_keyword": {
+      "type": "PATTERN",
+      "value": "[iI][nN]"
+    },
+    "_library_keyword": {
+      "type": "PATTERN",
+      "value": "[lL][iI][bB][rR][aA][rR][yY]"
+    },
+    "_file_keyword": {
+      "type": "PATTERN",
+      "value": "[fF][iI][lL][eE]"
+    },
+    "_memtype_keyword": {
+      "type": "PATTERN",
+      "value": "[mM][eE][mM][tT][yY][pP][eE]"
+    },
     "_semicolon": {
       "type": "STRING",
       "value": ";"
@@ -16568,6 +16620,13 @@
       "logistic_class_statement"
     ],
     [
+      "tabulate_class_statement",
+      "univariate_class_statement"
+    ],
+    [
+      "logistic_class_statement"
+    ],
+    [
       "logistic_model_statement",
       "reg_model_statement"
     ],
@@ -16646,14 +16705,6 @@
       "gplot_plot_statement",
       "expression",
       "function_call"
-    ],
-    [
-      "ttest_paired_statement",
-      "expression"
-    ],
-    [
-      "lifetest_time_statement",
-      "expression"
     ],
     [
       "macro_definition",

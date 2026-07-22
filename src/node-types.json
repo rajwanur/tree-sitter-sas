@@ -1446,11 +1446,7 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "macro_variable_reference",
+          "type": "expression",
           "named": true
         }
       ]
@@ -2121,6 +2117,40 @@
         },
         {
           "type": "quoted_string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "lifetest_strata_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "lifetest_time_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "number",
           "named": true
         }
       ]
@@ -3613,6 +3643,14 @@
           "named": true
         },
         {
+          "type": "lifetest_strata_statement",
+          "named": true
+        },
+        {
+          "type": "lifetest_time_statement",
+          "named": true
+        },
+        {
           "type": "line_comment",
           "named": true
         },
@@ -3894,6 +3932,10 @@
         },
         {
           "type": "transpose_var_statement",
+          "named": true
+        },
+        {
+          "type": "ttest_paired_statement",
           "named": true
         },
         {
@@ -5179,6 +5221,10 @@
           "named": true
         },
         {
+          "type": "number",
+          "named": true
+        },
+        {
           "type": "sql_from_clause",
           "named": true
         },
@@ -5939,6 +5985,21 @@
     }
   },
   {
+    "type": "ttest_paired_statement",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "unary_expression",
     "named": true,
     "fields": {
@@ -5985,11 +6046,7 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "macro_variable_reference",
+          "type": "expression",
           "named": true
         }
       ]
@@ -6038,11 +6095,7 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "macro_variable_reference",
+          "type": "expression",
           "named": true
         }
       ]
@@ -6114,11 +6167,7 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "macro_variable_reference",
+          "type": "expression",
           "named": true
         }
       ]
@@ -6133,11 +6182,7 @@
       "required": true,
       "types": [
         {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "macro_variable_reference",
+          "type": "expression",
           "named": true
         }
       ]
@@ -6759,6 +6804,10 @@
     "named": false
   },
   {
+    "type": "file",
+    "named": false
+  },
+  {
     "type": "filename",
     "named": false
   },
@@ -6947,6 +6996,10 @@
     "named": false
   },
   {
+    "type": "library",
+    "named": false
+  },
+  {
     "type": "line",
     "named": false
   },
@@ -6977,6 +7030,10 @@
   {
     "type": "macro_text_token",
     "named": true
+  },
+  {
+    "type": "memtype",
+    "named": false
   },
   {
     "type": "merge",
@@ -7116,6 +7173,10 @@
   },
   {
     "type": "pageby",
+    "named": false
+  },
+  {
+    "type": "paired",
     "named": false
   },
   {
@@ -7280,6 +7341,10 @@
     "named": false
   },
   {
+    "type": "strata",
+    "named": false
+  },
+  {
     "type": "style",
     "named": false
   },
@@ -7309,6 +7374,10 @@
   },
   {
     "type": "then",
+    "named": false
+  },
+  {
+    "type": "time",
     "named": false
   },
   {

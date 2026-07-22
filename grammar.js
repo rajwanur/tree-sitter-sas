@@ -143,6 +143,12 @@ module.exports = grammar({
     // Multiple *_class_statement rules all match 'class' + identifiers
     [$.means_class_statement, $.tabulate_class_statement, $.univariate_class_statement],
     [$.means_class_statement, $.tabulate_class_statement, $.univariate_class_statement, $.logistic_class_statement],
+    // tabulate vs univariate have identical rule shapes (seq('class', repeat1, optional slash, ';'))
+    // and the 3/4-way groups above don't cover their pairwise continuation conflict after ';'.
+    [$.tabulate_class_statement, $.univariate_class_statement],
+    // logistic_class_statement's repeat1 (parenthesized option group) collides with itself
+    // at the continuation after the group; single-element conflict declaration resolves it.
+    [$.logistic_class_statement],
     // logistic_model_statement vs reg_model_statement: both match "model identifier = ..."
     [$.logistic_model_statement, $.reg_model_statement],
     // Multiple *_freq_statement rules match 'freq' + identifier
@@ -178,10 +184,9 @@ module.exports = grammar({
     // gplot_plot_statement: repeat1 of expr*expr creates boundary ambiguity
     [$.gplot_plot_statement, $.expression],
     [$.gplot_plot_statement, $.expression, $.function_call],
-    // ttest_paired_statement: 'var * var' is ambiguous with expression (a * b)
-    [$.ttest_paired_statement, $.expression],
-    // lifetest_time_statement: 'var * var' is ambiguous with expression
-    [$.lifetest_time_statement, $.expression],
+    // (Removed [ttest_paired_statement, expression] and [lifetest_time_statement, expression] —
+    // tree-sitter reports them unnecessary: the expression supertype's binary '*' arm already
+    // subsumes the var*var forms these guarded against.)
     // macro_definition body: statement and macro_statement both contain
     // macro_statement via the statement supertype, creating LR(1) conflict.
     [$.macro_definition, $.statement],
@@ -434,6 +439,10 @@ module.exports = grammar({
       alias($._guessingrows_keyword, 'guessingrows'),
       alias($._outfile_keyword, 'outfile'),
       alias($._outest_keyword, 'outest'),
+      alias($._in_keyword, 'in'),
+      alias($._library_keyword, 'library'),
+      alias($._file_keyword, 'file'),
+      alias($._memtype_keyword, 'memtype'),
       alias($._data_keyword, 'data'),
       alias($._base_keyword, 'base'),
       alias($._compare_keyword, 'compare'),
@@ -2574,6 +2583,15 @@ module.exports = grammar({
     _base_keyword: $ => /[bB][aA][sS][eE]/,
     _compare_keyword: $ => /[cC][oO][mM][pP][aA][rR][eE]/,
     _outest_keyword: $ => /[oO][uU][tT][eE][sS][tT]/,
+
+    // --- Shared PROC option keywords (Phase 3 — appear across many PROCs) ---
+    // Added so these highlight via proc_option_key regardless of which PROC
+    // they appear on (Phase A baseline; per-proc rules in Phases B-D refine
+    // which keys are valid for which proc, but highlighting is uniform).
+    _in_keyword: $ => /[iI][nN]/,
+    _library_keyword: $ => /[lL][iI][bB][rR][aA][rR][yY]/,
+    _file_keyword: $ => /[fF][iI][lL][eE]/,
+    _memtype_keyword: $ => /[mM][eE][mM][tT][yY][pP][eE]/,
 
     // --- Operators and punctuation ---
     _semicolon: $ => ';',
