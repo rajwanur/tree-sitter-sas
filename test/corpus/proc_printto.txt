@@ -1,0 +1,81 @@
+================================================================================
+PROC PRINTTO print= value-option + new flag
+================================================================================
+proc printto print='out.prn' new;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_printto_step
+      options: (printto_options
+        (printto_option
+          (printto_option_key)
+          (quoted_string
+            (single_quoted_string)))
+        (printto_option_flag)))))
+
+================================================================================
+PROC PRINTTO log=/file= value-options (quoted paths)
+================================================================================
+proc printto log='out.log' file='out.lst';
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_printto_step
+      options: (printto_options
+        (printto_option
+          (printto_option_key)
+          (quoted_string
+            (single_quoted_string)))
+        (printto_option
+          (printto_option_key)
+          (quoted_string
+            (single_quoted_string)))))))
+
+================================================================================
+PROC PRINTTO unit= value-option (numeric) terminated by quit
+================================================================================
+proc printto unit=2;
+quit;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_printto_step
+      options: (printto_options
+        (printto_option
+          (printto_option_key)
+          (number))))))
+
+================================================================================
+PROC PRINTTO name=/label= value-options (identifier + quoted)
+================================================================================
+proc printto name=foo label='run1';
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_printto_step
+      options: (printto_options
+        (printto_option
+          (printto_option_key)
+          (identifier))
+        (printto_option
+          (printto_option_key)
+          (quoted_string
+            (single_quoted_string)))))))
+
+================================================================================
+PROC PRINTTO no options (bare header)
+================================================================================
+proc printto;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_printto_step)))

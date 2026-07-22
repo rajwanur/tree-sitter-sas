@@ -139,6 +139,9 @@ module.exports = grammar({
     // standard_options vs standard_option_key: same family as the copy/cport/
     // cimport/sort/datasets/append option conflicts above (Phase 3 C3 / Task 14).
     [$.standard_options, $.standard_option_key],
+    // printto_options vs printto_option_key: same family as the copy/cport/cimport/
+    // sort/datasets/append/standard option conflicts above (Phase 3 C3 / Task 15).
+    [$.printto_options, $.printto_option_key],
     // proc_body: repeat1(choice(...)) cannot tell whether an identifier
     // starts a new statement inside the proc body or is a new step outside.
     // Also, run/quit can match as bare_statement or as the step terminator.
@@ -164,6 +167,9 @@ module.exports = grammar({
     // proc_standard_step: same optional-body ambiguity as proc_copy/cport/cimport/
     // sort/datasets/append (Phase 3 C3 / Task 14).
     [$.proc_standard_step],
+    // proc_printto_step: same optional-body ambiguity as proc_copy/cport/cimport/
+    // sort/datasets/append/standard (Phase 3 C3 / Task 15).
+    [$.proc_printto_step],
     // proc_generic_step: the optional proc_body now lives here (the original
     // proc_step body, moved when proc_step became a dispatcher).
     [$.proc_generic_step],
@@ -417,6 +423,7 @@ module.exports = grammar({
       prec(1, $.proc_datasets_step), // Phase C2 (Task 12)
       prec(1, $.proc_append_step), // Phase C3 (Task 13)
       prec(1, $.proc_standard_step), // Phase C3 (Task 14)
+      prec(1, $.proc_printto_step), // Phase C3 (Task 15)
       $.proc_generic_step,
     ),
 
@@ -905,6 +912,65 @@ module.exports = grammar({
       alias($._vardef_keyword, 'vardef'),
       alias($._m_keyword, 'm'),
       alias($._preserverawbyvalues_keyword, 'preserverawbyvalues'),
+      $.identifier,
+    ),
+
+    // PROC PRINTTO: file=/label=/log=/name=/print=/unit= value options plus a
+    // single boolean flag (new). Same shape as proc_copy/cport/cimport/sort/
+    // datasets/append/standard_step; the proc name is emitted as the
+    // alias($._proc_printto_keyword,'printto') token (no field('name')) and the
+    // linter reads the name via inferProcNameFromStep (Phase 3 C3 / Task 15).
+    //
+    // PRINTTO's value-option keys are all multi-letter (file, label, log, name,
+    // print, unit), so tree-sitter's longest-match resolves each ahead of the
+    // generic identifier token at the option-key boundary; the $.identifier
+    // fallback in printto_option_key still catches unknown keys.
+    proc_printto_step: $ => seq(
+      alias($._proc_keyword, 'proc'),
+      alias($._proc_printto_keyword, 'printto'),
+      optional(field('options', $.printto_options)),
+      ';',
+      optional(field('body', $.proc_body)),
+      optional(choice(
+        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
+        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
+      )),
+    ),
+
+    printto_options: $ => repeat1(choice(
+      $.printto_option,
+      $.printto_option_flag,
+      $.identifier,
+    )),
+
+    // key = value (e.g. file='out.lst', label='run1', log='out.log',
+    // name=foo, print='out.prn', unit=2) OR key with a parenthesized arg group.
+    // Mirrors proc_option/copy/.../standard_option's shape.
+    printto_option: $ => seq(
+      $.printto_option_key,
+      optional($.proc_option_args),
+      optional(seq('=',
+        choice($.catalog_path, $.expression),
+        optional($.data_set_option),
+      )),
+    ),
+
+    // A PRINTTO option keyword with no value (boolean flag). Aliased to a named
+    // node for highlighting/linting. Covers the single PRINTTO flag: new.
+    printto_option_flag: $ => alias(choice(
+      $._new_keyword,
+    ), 'printto_option_flag'),
+
+    // Option key: known PRINTTO value-option keywords (aliased so they appear as
+    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
+    // key, which the linter may flag as invalid for PRINTTO).
+    printto_option_key: $ => choice(
+      alias($._file_keyword, 'file'),
+      alias($._label_keyword, 'label'),
+      alias($._log_keyword, 'log'),
+      alias($._name_keyword, 'name'),
+      alias($._print_keyword, 'print'),
+      alias($._unit_keyword, 'unit'),
       $.identifier,
     ),
 
@@ -3049,6 +3115,9 @@ module.exports = grammar({
     // PROC STANDARD proc-name token (dispatched on by proc_step). Distinct from a
     // bare identifier so the dispatcher can route to proc_standard_step (Phase 3 C3 / Task 14).
     _proc_standard_keyword: $ => /[sS][tT][aA][nN][dD][aA][rR][dD]/,
+    // PROC PRINTTO proc-name token (dispatched on by proc_step). Distinct from a
+    // bare identifier so the dispatcher can route to proc_printto_step (Phase 3 C3 / Task 15).
+    _proc_printto_keyword: $ => /[pP][rR][iI][nN][tT][tT][oO]/,
     // PROC SORT reuses the _sort_keyword token (defined further below, shared
     // with CIMPORT's sort= option) as its proc-name token — see the proc_sort_step
     // comment above for why no distinct _proc_sort_keyword is defined (Phase 3 C1).
@@ -3326,6 +3395,17 @@ module.exports = grammar({
     _exclnpwgt_keyword: $ => /[eE][xX][cC][lL][nN][pP][wW][gG][tT]/,
     _exclnpwgts_keyword: $ => /[eE][xX][cC][lL][nN][pP][wW][gG][tT][sS]/,
     _print_keyword: $ => /[pP][rR][iI][nN][tT]/,
+
+    // --- PROC PRINTTO option keywords (Phase 3 C3 / Task 15) ---
+    // PRINTTO-specific option keys/flags. _file_keyword (shared/global)/
+    // _new_keyword (CIMPORT/global)/_print_keyword (STANDARD/global)/
+    // _label_keyword (COPY/global) are reused by printto_option_key/_flag.
+    // The rest are PRINTTO-only. PRINTTO's options are all multi-letter, so no
+    // single-letter-key concern here.
+    // Value-option keys (used by printto_option_key):
+    _log_keyword: $ => /[lL][oO][gG]/,
+    _name_keyword: $ => /[nN][aA][mM][eE]/,
+    _unit_keyword: $ => /[uU][nN][iI][tT]/,
 
     // --- Operators and punctuation ---
     _semicolon: $ => ';',
