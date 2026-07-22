@@ -4656,6 +4656,32 @@
     }
   },
   {
+    "type": "proc_standard_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "standard_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "proc_step",
     "named": true,
     "fields": {},
@@ -4689,6 +4715,10 @@
         },
         {
           "type": "proc_sort_step",
+          "named": true
+        },
+        {
+          "type": "proc_standard_step",
           "named": true
         }
       ]
@@ -6393,6 +6423,80 @@
     }
   },
   {
+    "type": "standard_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        },
+        {
+          "type": "standard_option_key",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "standard_option_flag",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "standard_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "standard_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "standard_option",
+          "named": true
+        },
+        {
+          "type": "standard_option_flag",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "sum_statement",
     "named": true,
     "fields": {
@@ -7783,6 +7887,10 @@
     "named": false
   },
   {
+    "type": "m",
+    "named": false
+  },
+  {
     "type": "macro_comment",
     "named": true
   },
@@ -7797,6 +7905,10 @@
   {
     "type": "macro_text_token",
     "named": true
+  },
+  {
+    "type": "mean",
+    "named": false
   },
   {
     "type": "memtype",
@@ -7991,6 +8103,10 @@
     "named": false
   },
   {
+    "type": "preserverawbyvalues",
+    "named": false
+  },
+  {
     "type": "probplot",
     "named": false
   },
@@ -8083,6 +8199,10 @@
     "named": false
   },
   {
+    "type": "s",
+    "named": false
+  },
+  {
     "type": "save",
     "named": false
   },
@@ -8152,7 +8272,19 @@
     "named": false
   },
   {
+    "type": "standard",
+    "named": false
+  },
+  {
+    "type": "standard_option_flag",
+    "named": false
+  },
+  {
     "type": "statgraph",
+    "named": false
+  },
+  {
+    "type": "std",
     "named": false
   },
   {
@@ -8245,6 +8377,10 @@
   },
   {
     "type": "var",
+    "named": false
+  },
+  {
+    "type": "vardef",
     "named": false
   },
   {

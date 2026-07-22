@@ -1,0 +1,104 @@
+================================================================================
+PROC STANDARD data=/mean=/std=/out= value-options (dotted dataset path)
+================================================================================
+proc standard data=sashelp.class mean=100 std=15 out=z;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_standard_step
+      options: (standard_options
+        (standard_option
+          (standard_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (standard_option
+          (standard_option_key)
+          (number))
+        (standard_option
+          (standard_option_key)
+          (number))
+        (standard_option
+          (standard_option_key)
+          (identifier))))))
+
+================================================================================
+PROC STANDARD value-options + boolean flags (replace, noprint)
+================================================================================
+proc standard data=x mean=50 std=10 replace noprint;
+quit;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_standard_step
+      options: (standard_options
+        (standard_option
+          (standard_option_key)
+          (identifier))
+        (standard_option
+          (standard_option_key)
+          (number))
+        (standard_option
+          (standard_option_key)
+          (number))
+        (standard_option_flag)
+        (standard_option_flag)))))
+
+================================================================================
+PROC STANDARD single-letter shorthand value-options (m=, s=)
+================================================================================
+proc standard data=x m=50 s=10;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_standard_step
+      options: (standard_options
+        (standard_option
+          (standard_option_key)
+          (identifier))
+        (standard_option
+          (standard_option_key)
+          (number))
+        (standard_option
+          (standard_option_key)
+          (number))))))
+
+================================================================================
+PROC STANDARD vardef=/preserverawbyvalues= + exclnpwgt/exclnpwgts/print flags
+================================================================================
+proc standard data=x vardef=DF preserverawbyvalues=YES exclnpwgt exclnpwgts print;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_standard_step
+      options: (standard_options
+        (standard_option
+          (standard_option_key)
+          (identifier))
+        (standard_option
+          (standard_option_key)
+          (identifier))
+        (standard_option
+          (standard_option_key)
+          (identifier))
+        (standard_option_flag)
+        (standard_option_flag)
+        (standard_option_flag)))))
+
+================================================================================
+PROC STANDARD no options (bare header)
+================================================================================
+proc standard;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_standard_step)))

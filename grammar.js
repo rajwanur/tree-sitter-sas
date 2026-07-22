@@ -136,6 +136,9 @@ module.exports = grammar({
     // append_options vs append_option_key: same family as the copy/cport/cimport/
     // sort/datasets option conflicts above (Phase 3 C3 / Task 13).
     [$.append_options, $.append_option_key],
+    // standard_options vs standard_option_key: same family as the copy/cport/
+    // cimport/sort/datasets/append option conflicts above (Phase 3 C3 / Task 14).
+    [$.standard_options, $.standard_option_key],
     // proc_body: repeat1(choice(...)) cannot tell whether an identifier
     // starts a new statement inside the proc body or is a new step outside.
     // Also, run/quit can match as bare_statement or as the step terminator.
@@ -158,6 +161,9 @@ module.exports = grammar({
     // proc_append_step: same optional-body ambiguity as proc_copy/cport/cimport/
     // sort/datasets (Phase 3 C3 / Task 13).
     [$.proc_append_step],
+    // proc_standard_step: same optional-body ambiguity as proc_copy/cport/cimport/
+    // sort/datasets/append (Phase 3 C3 / Task 14).
+    [$.proc_standard_step],
     // proc_generic_step: the optional proc_body now lives here (the original
     // proc_step body, moved when proc_step became a dispatcher).
     [$.proc_generic_step],
@@ -410,6 +416,7 @@ module.exports = grammar({
       prec(1, $.proc_sort_step), // Phase C1
       prec(1, $.proc_datasets_step), // Phase C2 (Task 12)
       prec(1, $.proc_append_step), // Phase C3 (Task 13)
+      prec(1, $.proc_standard_step), // Phase C3 (Task 14)
       $.proc_generic_step,
     ),
 
@@ -832,6 +839,72 @@ module.exports = grammar({
       alias($._out_keyword, 'out'),
       alias($._appendver_keyword, 'appendver'),
       alias($._encryptkey_keyword, 'encryptkey'),
+      $.identifier,
+    ),
+
+    // PROC STANDARD: data=/mean=/out=/s=/std=/vardef=/m=/preserverawbyvalues=
+    // value options plus boolean flags (exclnpwgt, exclnpwgts, noprint, print,
+    // replace). Same shape as proc_copy/cport/cimport/sort/datasets/append_step;
+    // the proc name is emitted as the alias($._proc_standard_keyword,'standard')
+    // token (no field('name')) and the linter reads the name via
+    // inferProcNameFromStep (Phase 3 C3 / Task 14).
+    //
+    // Single-letter value-option keys 'm' and 's' (mean/std shorthand) use
+    // dedicated _m_keyword/_s_keyword char-class tokens. tree-sitter's longest-
+    // match rule makes them win over the generic identifier (length 1 vs N) at
+    // the exact token boundary, and the $.identifier fallback in
+    // standard_option_key still catches unknown single-letter keys.
+    proc_standard_step: $ => seq(
+      alias($._proc_keyword, 'proc'),
+      alias($._proc_standard_keyword, 'standard'),
+      optional(field('options', $.standard_options)),
+      ';',
+      optional(field('body', $.proc_body)),
+      optional(choice(
+        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
+        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
+      )),
+    ),
+
+    standard_options: $ => repeat1(choice(
+      $.standard_option,
+      $.standard_option_flag,
+      $.identifier,
+    )),
+
+    // key = value (e.g. data=sashelp.class, mean=100, out=standardized,
+    // s=15, std=1, vardef=DF, m=50, preserverawbyvalues=YES) OR key with a
+    // parenthesized arg group. Mirrors proc_option/copy/.../append_option's shape.
+    standard_option: $ => seq(
+      $.standard_option_key,
+      optional($.proc_option_args),
+      optional(seq('=',
+        choice($.catalog_path, $.expression),
+        optional($.data_set_option),
+      )),
+    ),
+
+    // A STANDARD option keyword with no value (boolean flag). Aliased to a named
+    // node for highlighting/linting. Covers the 5 STANDARD flags: exclnpwgt,
+    // exclnpwgts, noprint, print, replace.
+    standard_option_flag: $ => alias(choice(
+      $._exclnpwgt_keyword, $._exclnpwgts_keyword,
+      $._noprint_keyword, $._print_keyword,
+      $._replace_keyword,
+    ), 'standard_option_flag'),
+
+    // Option key: known STANDARD value-option keywords (aliased so they appear as
+    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
+    // key, which the linter may flag as invalid for STANDARD).
+    standard_option_key: $ => choice(
+      alias($._data_keyword, 'data'),
+      alias($._mean_keyword, 'mean'),
+      alias($._out_keyword, 'out'),
+      alias($._s_keyword, 's'),
+      alias($._std_keyword, 'std'),
+      alias($._vardef_keyword, 'vardef'),
+      alias($._m_keyword, 'm'),
+      alias($._preserverawbyvalues_keyword, 'preserverawbyvalues'),
       $.identifier,
     ),
 
@@ -2973,6 +3046,9 @@ module.exports = grammar({
     // PROC APPEND proc-name token (dispatched on by proc_step). Distinct from a
     // bare identifier so the dispatcher can route to proc_append_step (Phase 3 C3 / Task 13).
     _proc_append_keyword: $ => /[aA][pP][pP][eE][nN][dD]/,
+    // PROC STANDARD proc-name token (dispatched on by proc_step). Distinct from a
+    // bare identifier so the dispatcher can route to proc_standard_step (Phase 3 C3 / Task 14).
+    _proc_standard_keyword: $ => /[sS][tT][aA][nN][dD][aA][rR][dD]/,
     // PROC SORT reuses the _sort_keyword token (defined further below, shared
     // with CIMPORT's sort= option) as its proc-name token — see the proc_sort_step
     // comment above for why no distinct _proc_sort_keyword is defined (Phase 3 C1).
@@ -3231,6 +3307,25 @@ module.exports = grammar({
     _appendver_keyword: $ => /[aA][pP][pP][eE][nN][dD][vV][eE][rR]/,
     // Boolean flag (no '= value') used by append_option_flag:
     _getsort_keyword: $ => /[gG][eE][tT][sS][oO][rR][tT]/,
+
+    // --- PROC STANDARD option keywords (Phase 3 C3 / Task 14) ---
+    // STANDARD-specific option keys/flags. _data_keyword/_out_keyword (global)/
+    // _noprint_keyword (DATASETS/global)/_replace_keyword (global) are reused by
+    // standard_option_key/_flag. The rest are STANDARD-only.
+    // Value-option keys (used by standard_option_key):
+    _mean_keyword: $ => /[mM][eE][aA][nN]/,
+    _std_keyword: $ => /[sS][tT][dD]/,
+    _vardef_keyword: $ => /[vV][aA][rR][dD][eE][fF]/,
+    _preserverawbyvalues_keyword: $ => /[pP][rR][eE][sS][eE][rR][vV][eE][rR][aA][wW][bB][yY][vV][aA][lL][uU][eE][sS]/,
+    // Single-letter mean/std shorthand value-option keys. Char-class regexes of
+    // length 1; tree-sitter longest-match resolves them ahead of the generic
+    // identifier token at the option-key boundary. See standard_option_key.
+    _m_keyword: $ => /[mM]/,
+    _s_keyword: $ => /[sS]/,
+    // Boolean flags (no '= value') used by standard_option_flag:
+    _exclnpwgt_keyword: $ => /[eE][xX][cC][lL][nN][pP][wW][gG][tT]/,
+    _exclnpwgts_keyword: $ => /[eE][xX][cC][lL][nN][pP][wW][gG][tT][sS]/,
+    _print_keyword: $ => /[pP][rR][iI][nN][tT]/,
 
     // --- Operators and punctuation ---
     _semicolon: $ => ';',
