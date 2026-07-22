@@ -261,12 +261,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      (proc_name
-        (identifier))
-      (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_sort_step
+      (sort_options
+        (sort_option
+          (sort_option_key)
           (identifier)))
       (proc_body
         (by_statement

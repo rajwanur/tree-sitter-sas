@@ -127,6 +127,9 @@ module.exports = grammar({
     // GLR cannot tell whether 'compress' is a flag (ident is the next option) or
     // a key (ident is its value). Same family as the option conflicts above.
     [$.cimport_option_flag, $.cimport_option_key],
+    // sort_options vs sort_option_key: same family as the copy/cport/cimport
+    // option conflicts above (Phase 3 C1).
+    [$.sort_options, $.sort_option_key],
     // proc_body: repeat1(choice(...)) cannot tell whether an identifier
     // starts a new statement inside the proc body or is a new step outside.
     // Also, run/quit can match as bare_statement or as the step terminator.
@@ -141,6 +144,8 @@ module.exports = grammar({
     [$.proc_cport_step],
     // proc_cimport_step: same optional-body ambiguity as proc_copy/cport (Phase 3 B3).
     [$.proc_cimport_step],
+    // proc_sort_step: same optional-body ambiguity as proc_copy/cport/cimport (Phase 3 C1).
+    [$.proc_sort_step],
     // proc_generic_step: the optional proc_body now lives here (the original
     // proc_step body, moved when proc_step became a dispatcher).
     [$.proc_generic_step],
@@ -390,6 +395,7 @@ module.exports = grammar({
       prec(1, $.proc_copy_step),
       prec(1, $.proc_cport_step),
       prec(1, $.proc_cimport_step), // Phase B3
+      prec(1, $.proc_sort_step), // Phase C1
       $.proc_generic_step,
     ),
 
@@ -600,6 +606,82 @@ module.exports = grammar({
       alias($._sort_keyword, 'sort'),
       alias($._upcase_keyword, 'upcase'),
       alias($._nsrc_keyword, 'nsrc'),
+      $.identifier,
+    ),
+
+    // PROC SORT: data=/out=/dupout=/sortseq=/sortsize=/uniqueout= value options
+    // plus boolean flags (ascii, danish, ebcdic, finnish, national, norwegian,
+    // swedish, reverse, datecopy, force, equals, noequals, nodupkey,
+    // nouniquekey, nothreads, threads, tagsort, presorted, overwrite).
+    // Same shape as proc_copy/cport/cimport_step; the proc name is emitted as the
+    // alias($._sort_keyword,'sort') token (no field('name')) and the
+    // linter reads the name via inferProcNameFromStep (Phase 3 C1).
+    //
+    // NOTE on token reuse: SORT reuses the existing _sort_keyword token (defined
+    // earlier for CIMPORT's sort= option key) rather than a distinct
+    // _proc_sort_keyword. The two would have identical /[sS][oO][rR][tT]/
+    // regexes; duplicate token regexes create an unstable lexer conflict (the
+    // parser could match 'sort' as either token, and the generic-step identifier
+    // path won the tie during testing). Reusing the single _sort_keyword token
+    // and aliasing it to 'sort' here is the correct, stable choice — the alias
+    // controls the emitted node text and the step routing is decided by the
+    // prec(1) dispatcher arm, not by the token identity.
+    proc_sort_step: $ => seq(
+      alias($._proc_keyword, 'proc'),
+      alias($._sort_keyword, 'sort'),
+      optional(field('options', $.sort_options)),
+      ';',
+      optional(field('body', $.proc_body)),
+      optional(choice(
+        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
+        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
+      )),
+    ),
+
+    sort_options: $ => repeat1(choice(
+      $.sort_option,
+      $.sort_option_flag,
+      $.identifier,
+    )),
+
+    // key = value (e.g. data=work.a, out=sorted, dupout=dups, sortsize=100M) OR
+    // key with a parenthesized arg group. Mirrors proc_option/copy/cport/
+    // cimport_option's shape.
+    sort_option: $ => seq(
+      $.sort_option_key,
+      optional($.proc_option_args),
+      optional(seq('=',
+        choice($.catalog_path, $.expression),
+        optional($.data_set_option),
+      )),
+    ),
+
+    // A SORT option keyword with no value (boolean flag). Aliased to a named
+    // node for highlighting/linting. Covers the 19 SORT flags: locale collation
+    // order keywords (ascii/danish/ebcdic/finnish/national/norwegian/swedish),
+    // reverse, datecopy, force, equals/noequals, nodupkey/nouniquekey,
+    // nothreads/threads, tagsort, presorted, overwrite.
+    sort_option_flag: $ => alias(choice(
+      $._ascii_keyword, $._danish_keyword, $._ebcdic_keyword,
+      $._finnish_keyword, $._national_keyword, $._norwegian_keyword,
+      $._swedish_keyword, $._reverse_keyword,
+      $._datecopy_keyword, $._force_keyword,
+      $._equals_keyword, $._noequals_keyword,
+      $._nodupkey_keyword, $._nouniquekey_keyword,
+      $._nothreads_keyword, $._threads_keyword,
+      $._tagsort_keyword, $._presorted_keyword, $._overwrite_keyword,
+    ), 'sort_option_flag'),
+
+    // Option key: known SORT value-option keywords (aliased so they appear as
+    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
+    // key, which the linter may flag as invalid for SORT).
+    sort_option_key: $ => choice(
+      alias($._data_keyword, 'data'),
+      alias($._out_keyword, 'out'),
+      alias($._dupout_keyword, 'dupout'),
+      alias($._sortseq_keyword, 'sortseq'),
+      alias($._sortsize_keyword, 'sortsize'),
+      alias($._uniqueout_keyword, 'uniqueout'),
       $.identifier,
     ),
 
@@ -2735,6 +2817,9 @@ module.exports = grammar({
     // PROC CIMPORT proc-name token (dispatched on by proc_step). Distinct from a
     // bare identifier so the dispatcher can route to proc_cimport_step (Phase 3 B3).
     _proc_cimport_keyword: $ => /[cC][iI][mM][pP][oO][rR][tT]/,
+    // PROC SORT reuses the _sort_keyword token (defined further below, shared
+    // with CIMPORT's sort= option) as its proc-name token — see the proc_sort_step
+    // comment above for why no distinct _proc_sort_keyword is defined (Phase 3 C1).
     _run_keyword: $ => /[rR][uU][nN]/,
     _quit_keyword: $ => /[qQ][uU][iI][tT]/,
     _do_keyword: $ => /[dD][oO]/,
@@ -2932,6 +3017,34 @@ module.exports = grammar({
     // CPORT boolean nosrc flag). Kept distinct from _nosrc_keyword (longest-match
     // lexer prefers the 5-char nosrc over the 4-char nsrc when both could apply).
     _nsrc_keyword: $ => /[nN][sS][rR][cC]/,
+
+    // --- PROC SORT option keywords (Phase 3 C1) ---
+    // SORT-specific option keys/flags. _data_keyword/_out_keyword (global) and
+    // _force_keyword/_datecopy_keyword (COPY/global) are reused by
+    // sort_option_key/_flag. The rest are SORT-only.
+    // Value-option keys (used by sort_option_key):
+    _dupout_keyword: $ => /[dD][uU][pP][oO][uU][tT]/,
+    _sortseq_keyword: $ => /[sS][oO][rR][tT][sS][eE][qQ]/,
+    _sortsize_keyword: $ => /[sS][oO][rR][tT][sS][iI][zZ][eE]/,
+    _uniqueout_keyword: $ => /[uU][nN][iI][qQ][uU][eE][oO][uU][tT]/,
+    // Boolean flags (no '= value') used by sort_option_flag:
+    _ascii_keyword: $ => /[aA][sS][cC][iI][iI]/,
+    _danish_keyword: $ => /[dD][aA][nN][iI][sS][hH]/,
+    _ebcdic_keyword: $ => /[eE][bB][cC][dD][iI][cC]/,
+    _finnish_keyword: $ => /[fF][iI][nN][nN][iI][sS][hH]/,
+    _national_keyword: $ => /[nN][aA][tT][iI][oO][nN][aA][lL]/,
+    _norwegian_keyword: $ => /[nN][oO][rR][wW][eE][gG][iI][aA][nN]/,
+    _swedish_keyword: $ => /[sS][wW][eE][dD][iI][sS][hH]/,
+    _reverse_keyword: $ => /[rR][eE][vV][eE][rR][sS][eE]/,
+    _equals_keyword: $ => /[eE][qQ][uU][aA][lL][sS]/,
+    _noequals_keyword: $ => /[nN][oO][eE][qQ][uU][aA][lL][sS]/,
+    _nodupkey_keyword: $ => /[nN][oO][dD][uU][pP][kK][eE][yY]/,
+    _nouniquekey_keyword: $ => /[nN][oO][uU][nN][iI][qQ][uU][eE][kK][eE][yY]/,
+    _nothreads_keyword: $ => /[nN][oO][tT][hH][rR][eE][aA][dD][sS]/,
+    _threads_keyword: $ => /[tT][hH][rR][eE][aA][dD][sS]/,
+    _tagsort_keyword: $ => /[tT][aA][gG][sS][oO][rR][tT]/,
+    _presorted_keyword: $ => /[pP][rR][eE][sS][oO][rR][tT][eE][dD]/,
+    _overwrite_keyword: $ => /[oO][vV][eE][rR][wW][rR][iI][tT][eE]/,
 
     // --- Operators and punctuation ---
     _semicolon: $ => ';',

@@ -4430,6 +4430,32 @@
     }
   },
   {
+    "type": "proc_sort_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "sort_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "proc_step",
     "named": true,
     "fields": {},
@@ -4451,6 +4477,10 @@
         },
         {
           "type": "proc_generic_step",
+          "named": true
+        },
+        {
+          "type": "proc_sort_step",
           "named": true
         }
       ]
@@ -5451,6 +5481,80 @@
         },
         {
           "type": "sgplot_option_list",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "sort_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        },
+        {
+          "type": "sort_option_key",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "sort_option_flag",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "sort_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "sort_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "sort_option",
+          "named": true
+        },
+        {
+          "type": "sort_option_flag",
           "named": true
         }
       ]
@@ -7143,6 +7247,10 @@
     "named": false
   },
   {
+    "type": "dupout",
+    "named": false
+  },
+  {
     "type": "eet",
     "named": false
   },
@@ -7780,6 +7888,18 @@
     "named": false
   },
   {
+    "type": "sort_option_flag",
+    "named": false
+  },
+  {
+    "type": "sortseq",
+    "named": false
+  },
+  {
+    "type": "sortsize",
+    "named": false
+  },
+  {
     "type": "statgraph",
     "named": false
   },
@@ -7841,6 +7961,10 @@
   },
   {
     "type": "union",
+    "named": false
+  },
+  {
+    "type": "uniqueout",
     "named": false
   },
   {

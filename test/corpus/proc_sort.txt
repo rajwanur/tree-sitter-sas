@@ -8,12 +8,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_sort_step
+      options: (sort_options
+        (sort_option
+          (sort_option_key)
           (identifier)))
       body: (proc_body
         (by_statement
@@ -30,12 +28,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_sort_step
+      options: (sort_options
+        (sort_option
+          (sort_option_key)
           (identifier)))
       body: (proc_body
         (where_statement
@@ -55,15 +51,13 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_sort_step
+      options: (sort_options
+        (sort_option
+          (sort_option_key)
           (identifier))
-        (proc_option
-          (proc_option_key)
+        (sort_option
+          (sort_option_key)
           (identifier)))
       body: (proc_body
         (by_statement
@@ -79,14 +73,54 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_sort_step
+      options: (sort_options
+        (sort_option
+          (sort_option_key)
           (identifier))
-        (identifier))
+        (sort_option_flag))
       body: (proc_body
         (by_statement
+          (identifier))))))
+
+================================================================================
+PROC SORT with value options and boolean flags
+================================================================================
+proc sort data=mydata out=sorted dupout=dups nodupkey force equals threads tagsort;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_sort_step
+      options: (sort_options
+        (sort_option
+          (sort_option_key)
+          (identifier))
+        (sort_option
+          (sort_option_key)
+          (identifier))
+        (sort_option
+          (sort_option_key)
+          (identifier))
+        (sort_option_flag)
+        (sort_option_flag)
+        (sort_option_flag)
+        (sort_option_flag)
+        (sort_option_flag)))))
+
+================================================================================
+PROC SORT with unknown option key (linter fallback)
+================================================================================
+proc sort bogusopt=x;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_sort_step
+      options: (sort_options
+        (sort_option
+          (sort_option_key
+            (identifier))
           (identifier))))))
