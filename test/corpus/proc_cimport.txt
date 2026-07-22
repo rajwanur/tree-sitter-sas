@@ -1,0 +1,101 @@
+================================================================================
+PROC CIMPORT with library/file/memtype options
+================================================================================
+proc cimport library=work file=x.ptx memtype=data;
+  select sales;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_cimport_step
+      options: (cimport_options
+        (cimport_option
+          (cimport_option_key)
+          (identifier))
+        (cimport_option
+          (cimport_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (cimport_option
+          (cimport_option_key)
+          (identifier)))
+      body: (proc_body
+        (sql_select_statement
+          (sql_select_list
+            (sql_expression
+              (identifier))))))))
+
+================================================================================
+PROC CIMPORT with boolean flags (force, noedit, nosrc, tape)
+================================================================================
+proc cimport library=work force noedit nosrc tape;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_cimport_step
+      options: (cimport_options
+        (cimport_option
+          (cimport_option_key)
+          (identifier))
+        (cimport_option_flag)
+        (cimport_option_flag)
+        (cimport_option_flag)
+        (cimport_option_flag)))))
+
+================================================================================
+PROC CIMPORT with no options
+================================================================================
+proc cimport;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_cimport_step)))
+
+================================================================================
+PROC CIMPORT with unknown option key (linter fallback)
+================================================================================
+proc cimport bogusopt=x;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_cimport_step
+      options: (cimport_options
+        (cimport_option
+          (cimport_option_key
+            (identifier))
+          (identifier))))))
+
+================================================================================
+PROC CIMPORT with abbreviation keywords (lib/cat/ds/mt/nsrc)
+================================================================================
+proc cimport lib=work cat=catalog ds=data mt=data nsrc=yes;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_cimport_step
+      options: (cimport_options
+        (cimport_option
+          (cimport_option_key)
+          (identifier))
+        (cimport_option
+          (cimport_option_key)
+          (identifier))
+        (cimport_option
+          (cimport_option_key)
+          (identifier))
+        (cimport_option
+          (cimport_option_key)
+          (identifier))
+        (cimport_option
+          (cimport_option_key)
+          (identifier))))))

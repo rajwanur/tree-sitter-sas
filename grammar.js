@@ -118,6 +118,15 @@ module.exports = grammar({
     // cport_options vs cport_option_key: same family as the copy_options
     // conflict above (Phase 3 B2).
     [$.cport_options, $.cport_option_key],
+    // cimport_options vs cimport_option_key: same family as the copy/cport
+    // conflicts above (Phase 3 B3).
+    [$.cimport_options, $.cimport_option_key],
+    // cimport_option_flag vs cimport_option_key: several CIMPORT options are
+    // valid both as a bare flag (force/upcase/new/sort/compress) and as a
+    // key=value (compress=/new=/sort=/upcase=). At 'proc cimport compress ident'
+    // GLR cannot tell whether 'compress' is a flag (ident is the next option) or
+    // a key (ident is its value). Same family as the option conflicts above.
+    [$.cimport_option_flag, $.cimport_option_key],
     // proc_body: repeat1(choice(...)) cannot tell whether an identifier
     // starts a new statement inside the proc body or is a new step outside.
     // Also, run/quit can match as bare_statement or as the step terminator.
@@ -130,6 +139,8 @@ module.exports = grammar({
     [$.proc_copy_step],
     // proc_cport_step: same optional-body ambiguity as proc_copy_step (Phase 3 B2).
     [$.proc_cport_step],
+    // proc_cimport_step: same optional-body ambiguity as proc_copy/cport (Phase 3 B3).
+    [$.proc_cimport_step],
     // proc_generic_step: the optional proc_body now lives here (the original
     // proc_step body, moved when proc_step became a dispatcher).
     [$.proc_generic_step],
@@ -378,7 +389,7 @@ module.exports = grammar({
     proc_step: $ => choice(
       prec(1, $.proc_copy_step),
       prec(1, $.proc_cport_step),
-      // $.proc_cimport_step, // Phase B3
+      prec(1, $.proc_cimport_step), // Phase B3
       $.proc_generic_step,
     ),
 
@@ -503,6 +514,92 @@ module.exports = grammar({
       alias($._intype_keyword, 'intype'),
       alias($._outlib_keyword, 'outlib'),
       alias($._outtype_keyword, 'outtype'),
+      $.identifier,
+    ),
+
+    // PROC CIMPORT: library=/file=/data=/catalog=/memtype=/eet=/et=/lib=/
+    // libref=/cat=/ds=/mt=/compress=/encodinginfo=/extendformat=/extendsn=/
+    // extendvar=/infile=/isfileutf8=/new=/sort=/ upcase= value options plus
+    // boolean flags (force, noedit, nosrc, tape, upcase, new, sort, compress).
+    // Same shape as proc_copy/cport_step; the proc name is emitted as the
+    // alias($._proc_cimport_keyword,'cimport') token (no field('name')) and the
+    // linter reads the name via inferProcNameFromStep (Phase 3 B3).
+    //
+    // NOTE on single-letter abbreviations (c/d/l/n/y): CIMPORT legitimately
+    // accepts these one-char option aliases. A /[cC]/ regex would shadow the
+    // first character of every identifier-led option and create unbounded lexical
+    // conflict with $.identifier. They are therefore intentionally left out of
+    // cimport_option_key's named-keyword arms: a bare 'c' / 'd' / 'l' / 'n' /
+    // 'y' parses via the $.identifier fallback (still a cimport_option_key node,
+    // still validated by the linter against the CIMPORT schema) — it just does
+    // not receive an anonymous keyword token for highlighting. Pragmatic over
+    // exhaustive (Phase 3 B3 brief guidance).
+    proc_cimport_step: $ => seq(
+      alias($._proc_keyword, 'proc'),
+      alias($._proc_cimport_keyword, 'cimport'),
+      optional(field('options', $.cimport_options)),
+      ';',
+      optional(field('body', $.proc_body)),
+      optional(choice(
+        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
+        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
+      )),
+    ),
+
+    cimport_options: $ => repeat1(choice(
+      $.cimport_option,
+      $.cimport_option_flag,
+      $.identifier,
+    )),
+
+    // key = value (e.g. library=work, file=x.ptx, memtype=data) OR key with a
+    // parenthesized arg group. Mirrors proc_option/copy/cport_option's shape.
+    cimport_option: $ => seq(
+      $.cimport_option_key,
+      optional($.proc_option_args),
+      optional(seq('=',
+        choice($.catalog_path, $.expression),
+        optional($.data_set_option),
+      )),
+    ),
+
+    // A CIMPORT option keyword with no value (boolean flag), e.g. force / tape /
+    // noedit / nosrc / upcase / new / sort / compress. Aliased to a named node
+    // for highlighting/linting.
+    cimport_option_flag: $ => alias(choice(
+      $._force_keyword, $._noedit_keyword, $._nosrc_keyword,
+      $._tape_keyword, $._upcase_keyword, $._new_keyword,
+      $._sort_keyword, $._compress_keyword,
+    ), 'cimport_option_flag'),
+
+    // Option key: known CIMPORT keywords (aliased so they appear as anonymous
+    // keyword nodes for highlighting) OR a generic identifier (unknown key OR a
+    // single-letter alias c/d/l/n/y, which the linter may flag as invalid for
+    // CIMPORT).
+    cimport_option_key: $ => choice(
+      alias($._library_keyword, 'library'),
+      alias($._file_keyword, 'file'),
+      alias($._data_keyword, 'data'),
+      alias($._catalog_keyword, 'catalog'),
+      alias($._memtype_keyword, 'memtype'),
+      alias($._eet_keyword, 'eet'),
+      alias($._et_keyword, 'et'),
+      alias($._lib_keyword, 'lib'),
+      alias($._libref_keyword, 'libref'),
+      alias($._cat_keyword, 'cat'),
+      alias($._ds_keyword, 'ds'),
+      alias($._mt_keyword, 'mt'),
+      alias($._compress_keyword, 'compress'),
+      alias($._encodinginfo_keyword, 'encodinginfo'),
+      alias($._extendformat_keyword, 'extendformat'),
+      alias($._extendsn_keyword, 'extendsn'),
+      alias($._extendvar_keyword, 'extendvar'),
+      alias($._infile_keyword, 'infile'),
+      alias($._isfileutf8_keyword, 'isfileutf8'),
+      alias($._new_keyword, 'new'),
+      alias($._sort_keyword, 'sort'),
+      alias($._upcase_keyword, 'upcase'),
+      alias($._nsrc_keyword, 'nsrc'),
       $.identifier,
     ),
 
@@ -2635,6 +2732,9 @@ module.exports = grammar({
     // PROC CPORT proc-name token (dispatched on by proc_step). Distinct from a
     // bare identifier so the dispatcher can route to proc_cport_step (Phase 3 B2).
     _proc_cport_keyword: $ => /[cC][pP][oO][rR][tT]/,
+    // PROC CIMPORT proc-name token (dispatched on by proc_step). Distinct from a
+    // bare identifier so the dispatcher can route to proc_cimport_step (Phase 3 B3).
+    _proc_cimport_keyword: $ => /[cC][iI][mM][pP][oO][rR][tT]/,
     _run_keyword: $ => /[rR][uU][nN]/,
     _quit_keyword: $ => /[qQ][uU][iI][tT]/,
     _do_keyword: $ => /[dD][oO]/,
@@ -2804,6 +2904,34 @@ module.exports = grammar({
     _nosrc_keyword: $ => /[nN][oO][sS][rR][cC]/,
     _tape_keyword: $ => /[tT][aA][pP][eE]/,
     _translate_keyword: $ => /[tT][rR][aA][nN][sS][lL][aA][tT][eE]/,
+
+    // --- PROC CIMPORT option keywords (Phase 3 B3) ---
+    // CIMPORT-specific option keys/flags. _library_keyword/_file_keyword/
+    // _data_keyword/_catalog_keyword/_memtype_keyword/_eet_keyword/_et_keyword
+    // (CPORT/global) and _noedit_keyword/_nosrc_keyword/_tape_keyword (CPORT flags)
+    // and _force_keyword (COPY) are reused by cimport_option_key/_flag. The rest
+    // are CIMPORT-only. Single-letter aliases (c/d/l/n/y) are intentionally NOT
+    // tokenized here — see the proc_cimport_step comment above (Phase 3 B3).
+    // Value-option keys (used by cimport_option_key):
+    _lib_keyword: $ => /[lL][iI][bB]/,
+    _libref_keyword: $ => /[lL][iI][bB][rR][eE][fF]/,
+    _cat_keyword: $ => /[cC][aA][tT]/,
+    _ds_keyword: $ => /[dD][sS]/,
+    _mt_keyword: $ => /[mM][tT]/,
+    _compress_keyword: $ => /[cC][oO][mM][pP][rR][eE][sS][sS]/,
+    _encodinginfo_keyword: $ => /[eE][nN][cC][oO][dD][iI][nN][gG][iI][nN][fF][oO]/,
+    _extendformat_keyword: $ => /[eE][xX][tT][eE][nN][dD][fF][oO][rR][mM][aA][tT]/,
+    _extendsn_keyword: $ => /[eE][xX][tT][eE][nN][dD][sS][nN]/,
+    _extendvar_keyword: $ => /[eE][xX][tT][eE][nN][dD][vV][aA][rR]/,
+    _infile_keyword: $ => /[iI][nN][fF][iI][lL][eE]/,
+    _isfileutf8_keyword: $ => /[iI][sS][fF][iI][lL][eE][uU][tT][fF]8/,
+    _new_keyword: $ => /[nN][eE][wW]/,
+    _sort_keyword: $ => /[sS][oO][rR][tT]/,
+    _upcase_keyword: $ => /[uU][pP][cC][aA][sS][eE]/,
+    // nsrc: CIMPORT abbreviation of nosrc (a value-taking option here, unlike the
+    // CPORT boolean nosrc flag). Kept distinct from _nosrc_keyword (longest-match
+    // lexer prefers the 5-char nosrc over the 4-char nsrc when both could apply).
+    _nsrc_keyword: $ => /[nN][sS][rR][cC]/,
 
     // --- Operators and punctuation ---
     _semicolon: $ => ';',

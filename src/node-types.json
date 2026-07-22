@@ -592,6 +592,80 @@
     }
   },
   {
+    "type": "cimport_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "cimport_option_key",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "cimport_option_flag",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "cimport_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "cimport_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "cimport_option",
+          "named": true
+        },
+        {
+          "type": "cimport_option_flag",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "compare_base_statement",
     "named": true,
     "fields": {},
@@ -4138,6 +4212,32 @@
     }
   },
   {
+    "type": "proc_cimport_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "cimport_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "proc_copy_step",
     "named": true,
     "fields": {
@@ -4337,6 +4437,10 @@
       "multiple": false,
       "required": true,
       "types": [
+        {
+          "type": "proc_cimport_step",
+          "named": true
+        },
         {
           "type": "proc_copy_step",
           "named": true
@@ -6879,6 +6983,10 @@
     "named": false
   },
   {
+    "type": "cat",
+    "named": false
+  },
+  {
     "type": "catalog",
     "named": false
   },
@@ -6888,6 +6996,14 @@
   },
   {
     "type": "change",
+    "named": false
+  },
+  {
+    "type": "cimport",
+    "named": false
+  },
+  {
+    "type": "cimport_option_flag",
     "named": false
   },
   {
@@ -6904,6 +7020,10 @@
   },
   {
     "type": "compare",
+    "named": false
+  },
+  {
+    "type": "compress",
     "named": false
   },
   {
@@ -7019,11 +7139,19 @@
     "named": false
   },
   {
+    "type": "ds",
+    "named": false
+  },
+  {
     "type": "eet",
     "named": false
   },
   {
     "type": "else",
+    "named": false
+  },
+  {
+    "type": "encodinginfo",
     "named": false
   },
   {
@@ -7060,6 +7188,18 @@
   },
   {
     "type": "exclude",
+    "named": false
+  },
+  {
+    "type": "extendformat",
+    "named": false
+  },
+  {
+    "type": "extendsn",
+    "named": false
+  },
+  {
+    "type": "extendvar",
     "named": false
   },
   {
@@ -7175,6 +7315,10 @@
     "named": false
   },
   {
+    "type": "infile",
+    "named": false
+  },
+  {
     "type": "informat",
     "named": false
   },
@@ -7212,6 +7356,10 @@
   },
   {
     "type": "is",
+    "named": false
+  },
+  {
+    "type": "isfileutf8",
     "named": false
   },
   {
@@ -7264,6 +7412,10 @@
   },
   {
     "type": "library",
+    "named": false
+  },
+  {
+    "type": "libref",
     "named": false
   },
   {
@@ -7327,6 +7479,10 @@
     "named": false
   },
   {
+    "type": "mt",
+    "named": false
+  },
+  {
     "type": "name_literal",
     "named": true
   },
@@ -7336,6 +7492,10 @@
   },
   {
     "type": "needle",
+    "named": false
+  },
+  {
+    "type": "new",
     "named": false
   },
   {
@@ -7356,6 +7516,10 @@
   },
   {
     "type": "note",
+    "named": false
+  },
+  {
+    "type": "nsrc",
     "named": false
   },
   {
@@ -7612,6 +7776,10 @@
     "named": true
   },
   {
+    "type": "sort",
+    "named": false
+  },
+  {
     "type": "statgraph",
     "named": false
   },
@@ -7677,6 +7845,10 @@
   },
   {
     "type": "until",
+    "named": false
+  },
+  {
+    "type": "upcase",
     "named": false
   },
   {
