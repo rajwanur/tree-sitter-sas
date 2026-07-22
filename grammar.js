@@ -142,6 +142,9 @@ module.exports = grammar({
     // printto_options vs printto_option_key: same family as the copy/cport/cimport/
     // sort/datasets/append/standard option conflicts above (Phase 3 C3 / Task 15).
     [$.printto_options, $.printto_option_key],
+    // transpose_options vs transpose_option_key: same family as the copy/cport/cimport/
+    // sort/datasets/append/standard/printto option conflicts above (Phase 3 C3 / Task 16).
+    [$.transpose_options, $.transpose_option_key],
     // proc_body: repeat1(choice(...)) cannot tell whether an identifier
     // starts a new statement inside the proc body or is a new step outside.
     // Also, run/quit can match as bare_statement or as the step terminator.
@@ -170,6 +173,9 @@ module.exports = grammar({
     // proc_printto_step: same optional-body ambiguity as proc_copy/cport/cimport/
     // sort/datasets/append/standard (Phase 3 C3 / Task 15).
     [$.proc_printto_step],
+    // proc_transpose_step: same optional-body ambiguity as proc_copy/cport/cimport/
+    // sort/datasets/append/standard/printto (Phase 3 C3 / Task 16).
+    [$.proc_transpose_step],
     // proc_generic_step: the optional proc_body now lives here (the original
     // proc_step body, moved when proc_step became a dispatcher).
     [$.proc_generic_step],
@@ -424,6 +430,7 @@ module.exports = grammar({
       prec(1, $.proc_append_step), // Phase C3 (Task 13)
       prec(1, $.proc_standard_step), // Phase C3 (Task 14)
       prec(1, $.proc_printto_step), // Phase C3 (Task 15)
+      prec(1, $.proc_transpose_step), // Phase C3 (Task 16)
       $.proc_generic_step,
     ),
 
@@ -971,6 +978,77 @@ module.exports = grammar({
       alias($._name_keyword, 'name'),
       alias($._print_keyword, 'print'),
       alias($._unit_keyword, 'unit'),
+      $.identifier,
+    ),
+
+    // PROC TRANSPOSE: data=/delim=/delimiter=/label=/name=/out=/prefix=/suffix=
+    // value options plus a single boolean flag (let). Same shape as proc_copy/
+    // cport/cimport/sort/datasets/append/standard/printto_step; the proc name is
+    // emitted as the alias($._proc_transpose_keyword,'transpose') token (no
+    // field('name')) and the linter reads the name via inferProcNameFromStep
+    // (Phase 3 C3 / Task 16).
+    //
+    // HEADER-only struct (like DATASETS): this wraps the options on the
+    // 'proc transpose ...;' header line ONLY. TRANSPOSE's pre-existing BODY
+    // statement rules (transpose_var_statement, transpose_id_statement,
+    // transpose_idlabel_statement, transpose_copy_statement) live in proc_body's
+    // choice() and are UNCHANGED — proc_transpose_step references $.proc_body for
+    // the body, exactly like proc_datasets_step. The header options terminate at
+    // the first ';' and the body begins after it (same boundary as every per-proc
+    // step), so 'let' as a header flag never collides with body statements.
+    //
+    // TRANSPOSE's value-option keys are all multi-letter (data, delim, delimiter,
+    // label, name, out, prefix, suffix), so tree-sitter's longest-match resolves
+    // each ahead of the generic identifier token at the option-key boundary; the
+    // $.identifier fallback in transpose_option_key still catches unknown keys.
+    proc_transpose_step: $ => seq(
+      alias($._proc_keyword, 'proc'),
+      alias($._proc_transpose_keyword, 'transpose'),
+      optional(field('options', $.transpose_options)),
+      ';',
+      optional(field('body', $.proc_body)),
+      optional(choice(
+        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
+        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
+      )),
+    ),
+
+    transpose_options: $ => repeat1(choice(
+      $.transpose_option,
+      $.transpose_option_flag,
+      $.identifier,
+    )),
+
+    // key = value (e.g. data=work.in, out=work.out, prefix=col, suffix=_val,
+    // name=varname, label='row label', delim=',', delimiter='|') OR key with a
+    // parenthesized arg group. Mirrors proc_option/copy/.../printto_option's shape.
+    transpose_option: $ => seq(
+      $.transpose_option_key,
+      optional($.proc_option_args),
+      optional(seq('=',
+        choice($.catalog_path, $.expression),
+        optional($.data_set_option),
+      )),
+    ),
+
+    // A TRANSPOSE option keyword with no value (boolean flag). Aliased to a named
+    // node for highlighting/linting. Covers the single TRANSPOSE flag: let.
+    transpose_option_flag: $ => alias(choice(
+      $._let_keyword,
+    ), 'transpose_option_flag'),
+
+    // Option key: known TRANSPOSE value-option keywords (aliased so they appear as
+    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
+    // key, which the linter may flag as invalid for TRANSPOSE).
+    transpose_option_key: $ => choice(
+      alias($._data_keyword, 'data'),
+      alias($._delim_keyword, 'delim'),
+      alias($._delimiter_keyword, 'delimiter'),
+      alias($._label_keyword, 'label'),
+      alias($._name_keyword, 'name'),
+      alias($._out_keyword, 'out'),
+      alias($._prefix_keyword, 'prefix'),
+      alias($._suffix_keyword, 'suffix'),
       $.identifier,
     ),
 
@@ -3118,6 +3196,9 @@ module.exports = grammar({
     // PROC PRINTTO proc-name token (dispatched on by proc_step). Distinct from a
     // bare identifier so the dispatcher can route to proc_printto_step (Phase 3 C3 / Task 15).
     _proc_printto_keyword: $ => /[pP][rR][iI][nN][tT][tT][oO]/,
+    // PROC TRANSPOSE proc-name token (dispatched on by proc_step). Distinct from a
+    // bare identifier so the dispatcher can route to proc_transpose_step (Phase 3 C3 / Task 16).
+    _proc_transpose_keyword: $ => /[tT][rR][aA][nN][sS][pP][oO][sS][eE]/,
     // PROC SORT reuses the _sort_keyword token (defined further below, shared
     // with CIMPORT's sort= option) as its proc-name token — see the proc_sort_step
     // comment above for why no distinct _proc_sort_keyword is defined (Phase 3 C1).
@@ -3406,6 +3487,19 @@ module.exports = grammar({
     _log_keyword: $ => /[lL][oO][gG]/,
     _name_keyword: $ => /[nN][aA][mM][eE]/,
     _unit_keyword: $ => /[uU][nN][iI][tT]/,
+
+    // --- PROC TRANSPOSE option keywords (Phase 3 C3 / Task 16) ---
+    // TRANSPOSE-specific option keys/flags. _data_keyword/_out_keyword (global)/
+    // _label_keyword (COPY/global)/_name_keyword (PRINTTO/global) are reused by
+    // transpose_option_key. The rest are TRANSPOSE-only. TRANSPOSE's options are
+    // all multi-letter, so no single-letter-key concern here.
+    // Value-option keys (used by transpose_option_key):
+    _delim_keyword: $ => /[dD][eE][lL][iI][mM]/,
+    _delimiter_keyword: $ => /[dD][eE][lL][iI][mM][iI][tT][eE][rR]/,
+    _prefix_keyword: $ => /[pP][rR][eE][fF][iI][xX]/,
+    _suffix_keyword: $ => /[sS][uU][fF][fF][iI][xX]/,
+    // Boolean flag (no '= value') used by transpose_option_flag:
+    _let_keyword: $ => /[lL][eE][tT]/,
 
     // --- Operators and punctuation ---
     _semicolon: $ => ';',

@@ -9,15 +9,13 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_transpose_step
+      options: (transpose_options
+        (transpose_option
+          (transpose_option_key)
           (identifier))
-        (proc_option
-          (proc_option_key)
+        (transpose_option
+          (transpose_option_key)
           (identifier)))
       body: (proc_body
         (tabulate_var_statement
@@ -489,24 +487,21 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_transpose_step
+      options: (transpose_options
+        (transpose_option
+          (transpose_option_key)
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (proc_option
-          (proc_option_key)
+        (transpose_option
+          (transpose_option_key)
           (dotted_identifier
             base: (identifier)
             member: (identifier))
           (data_set_option
             (identifier)
             (identifier)))
-        (proc_option
-          (proc_option_key
-            (identifier))
+        (transpose_option
+          (transpose_option_key)
           (identifier))))))

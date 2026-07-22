@@ -4824,8 +4824,38 @@
         {
           "type": "proc_standard_step",
           "named": true
+        },
+        {
+          "type": "proc_transpose_step",
+          "named": true
         }
       ]
+    }
+  },
+  {
+    "type": "proc_transpose_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "transpose_options",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -6813,6 +6843,80 @@
     }
   },
   {
+    "type": "transpose_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        },
+        {
+          "type": "transpose_option_key",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "transpose_option_flag",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "transpose_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "transpose_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "transpose_option",
+          "named": true
+        },
+        {
+          "type": "transpose_option_flag",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "transpose_var_statement",
     "named": true,
     "fields": {},
@@ -7651,6 +7755,14 @@
     "named": false
   },
   {
+    "type": "delim",
+    "named": false
+  },
+  {
+    "type": "delimiter",
+    "named": false
+  },
+  {
     "type": "density",
     "named": false
   },
@@ -8215,6 +8327,10 @@
     "named": false
   },
   {
+    "type": "prefix",
+    "named": false
+  },
+  {
     "type": "preserverawbyvalues",
     "named": false
   },
@@ -8428,6 +8544,10 @@
     "named": false
   },
   {
+    "type": "suffix",
+    "named": false
+  },
+  {
     "type": "sum",
     "named": false
   },
@@ -8461,6 +8581,14 @@
   },
   {
     "type": "to",
+    "named": false
+  },
+  {
+    "type": "transpose",
+    "named": false
+  },
+  {
+    "type": "transpose_option_flag",
     "named": false
   },
   {

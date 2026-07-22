@@ -1,0 +1,121 @@
+================================================================================
+PROC TRANSPOSE data=/out=/prefix=/suffix= value-options
+================================================================================
+proc transpose data=work.in out=work.out prefix=col suffix=_val;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_transpose_step
+      options: (transpose_options
+        (transpose_option
+          (transpose_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (transpose_option
+          (transpose_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (transpose_option
+          (transpose_option_key)
+          (identifier))
+        (transpose_option
+          (transpose_option_key)
+          (identifier))))))
+
+================================================================================
+PROC TRANSPOSE name=/label= value-options + let flag
+================================================================================
+proc transpose data=work.in out=work.out name=varname label="row label" let;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_transpose_step
+      options: (transpose_options
+        (transpose_option
+          (transpose_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (transpose_option
+          (transpose_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (transpose_option
+          (transpose_option_key)
+          (identifier))
+        (transpose_option
+          (transpose_option_key)
+          (quoted_string
+            (double_quoted_string)))
+        (transpose_option_flag)))))
+
+================================================================================
+PROC TRANSPOSE delimiter= value-option (quoted) terminated by quit
+================================================================================
+proc transpose data=work.in delimiter="," prefix=p;
+quit;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_transpose_step
+      options: (transpose_options
+        (transpose_option
+          (transpose_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (transpose_option
+          (transpose_option_key)
+          (quoted_string
+            (double_quoted_string)))
+        (transpose_option
+          (transpose_option_key)
+          (identifier))))))
+
+================================================================================
+PROC TRANSPOSE no options (bare header)
+================================================================================
+proc transpose;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_transpose_step)))
+
+================================================================================
+PROC TRANSPOSE header options + body statements (id/copy preserved)
+================================================================================
+proc transpose data=work.in out=work.out;
+id idvar;
+copy z;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_transpose_step
+      options: (transpose_options
+        (transpose_option
+          (transpose_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (transpose_option
+          (transpose_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier))))
+      body: (proc_body
+        (means_id_statement
+          (identifier))
+        (transpose_copy_statement
+          (identifier))))))
