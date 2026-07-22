@@ -133,6 +133,9 @@ module.exports = grammar({
     // datasets_options vs datasets_option_key: same family as the copy/cport/
     // cimport/sort option conflicts above (Phase 3 C2 / Task 12).
     [$.datasets_options, $.datasets_option_key],
+    // append_options vs append_option_key: same family as the copy/cport/cimport/
+    // sort/datasets option conflicts above (Phase 3 C3 / Task 13).
+    [$.append_options, $.append_option_key],
     // proc_body: repeat1(choice(...)) cannot tell whether an identifier
     // starts a new statement inside the proc body or is a new step outside.
     // Also, run/quit can match as bare_statement or as the step terminator.
@@ -152,6 +155,9 @@ module.exports = grammar({
     // proc_datasets_step: same optional-body ambiguity as proc_copy/cport/cimport/
     // sort (Phase 3 C2 / Task 12).
     [$.proc_datasets_step],
+    // proc_append_step: same optional-body ambiguity as proc_copy/cport/cimport/
+    // sort/datasets (Phase 3 C3 / Task 13).
+    [$.proc_append_step],
     // proc_generic_step: the optional proc_body now lives here (the original
     // proc_step body, moved when proc_step became a dispatcher).
     [$.proc_generic_step],
@@ -403,6 +409,7 @@ module.exports = grammar({
       prec(1, $.proc_cimport_step), // Phase B3
       prec(1, $.proc_sort_step), // Phase C1
       prec(1, $.proc_datasets_step), // Phase C2 (Task 12)
+      prec(1, $.proc_append_step), // Phase C3 (Task 13)
       $.proc_generic_step,
     ),
 
@@ -769,6 +776,61 @@ module.exports = grammar({
       alias($._alter_keyword, 'alter'),
       alias($._pw_keyword, 'pw'),
       alias($._read_keyword, 'read'),
+      alias($._encryptkey_keyword, 'encryptkey'),
+      $.identifier,
+    ),
+
+    // PROC APPEND: base=/data=/out=/appendver=/encryptkey= value options plus
+    // boolean flags (force, getsort, new, nowarn). Same shape as proc_copy/cport/
+    // cimport/sort/datasets_step; the proc name is emitted as the
+    // alias($._proc_append_keyword,'append') token (no field('name')) and the
+    // linter reads the name via inferProcNameFromStep (Phase 3 C3 / Task 13).
+    proc_append_step: $ => seq(
+      alias($._proc_keyword, 'proc'),
+      alias($._proc_append_keyword, 'append'),
+      optional(field('options', $.append_options)),
+      ';',
+      optional(field('body', $.proc_body)),
+      optional(choice(
+        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
+        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
+      )),
+    ),
+
+    append_options: $ => repeat1(choice(
+      $.append_option,
+      $.append_option_flag,
+      $.identifier,
+    )),
+
+    // key = value (e.g. base=work.master, data=work.adds, out=merged,
+    // appendver=V9, encryptkey=key) OR key with a parenthesized arg group.
+    // Mirrors proc_option/copy/cport/cimport/sort/datasets_option's shape.
+    append_option: $ => seq(
+      $.append_option_key,
+      optional($.proc_option_args),
+      optional(seq('=',
+        choice($.catalog_path, $.expression),
+        optional($.data_set_option),
+      )),
+    ),
+
+    // An APPEND option keyword with no value (boolean flag). Aliased to a named
+    // node for highlighting/linting. Covers the 4 APPEND flags: force, getsort,
+    // new, nowarn.
+    append_option_flag: $ => alias(choice(
+      $._force_keyword, $._getsort_keyword,
+      $._new_keyword, $._nowarn_keyword,
+    ), 'append_option_flag'),
+
+    // Option key: known APPEND value-option keywords (aliased so they appear as
+    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
+    // key, which the linter may flag as invalid for APPEND).
+    append_option_key: $ => choice(
+      alias($._base_keyword, 'base'),
+      alias($._data_keyword, 'data'),
+      alias($._out_keyword, 'out'),
+      alias($._appendver_keyword, 'appendver'),
       alias($._encryptkey_keyword, 'encryptkey'),
       $.identifier,
     ),
@@ -2908,6 +2970,9 @@ module.exports = grammar({
     // PROC DATASETS proc-name token (dispatched on by proc_step). Distinct from a
     // bare identifier so the dispatcher can route to proc_datasets_step (Phase 3 C2 / Task 12).
     _proc_datasets_keyword: $ => /[dD][aA][tT][aA][sS][eE][tT][sS]/,
+    // PROC APPEND proc-name token (dispatched on by proc_step). Distinct from a
+    // bare identifier so the dispatcher can route to proc_append_step (Phase 3 C3 / Task 13).
+    _proc_append_keyword: $ => /[aA][pP][pP][eE][nN][dD]/,
     // PROC SORT reuses the _sort_keyword token (defined further below, shared
     // with CIMPORT's sort= option) as its proc-name token — see the proc_sort_step
     // comment above for why no distinct _proc_sort_keyword is defined (Phase 3 C1).
@@ -3156,6 +3221,16 @@ module.exports = grammar({
     _nowarn_keyword: $ => /[nN][oO][wW][aA][rR][nN]/,
     _details_keyword: $ => /[dD][eE][tT][aA][iI][lL][sS]/,
     _nodetails_keyword: $ => /[nN][oO][dD][eE][tT][aA][iI][lL][sS]/,
+
+    // --- PROC APPEND option keywords (Phase 3 C3 / Task 13) ---
+    // APPEND-specific option keys/flags. _base_keyword/_data_keyword/_out_keyword
+    // (global)/_force_keyword (COPY/global)/_encryptkey_keyword (COPY/global)/
+    // _new_keyword (CIMPORT/global)/_nowarn_keyword (DATASETS/global) are reused by
+    // append_option_key/_flag. The rest are APPEND-only.
+    // Value-option key (used by append_option_key):
+    _appendver_keyword: $ => /[aA][pP][pP][eE][nN][dD][vV][eE][rR]/,
+    // Boolean flag (no '= value') used by append_option_flag:
+    _getsort_keyword: $ => /[gG][eE][tT][sS][oO][rR][tT]/,
 
     // --- Operators and punctuation ---
     _semicolon: $ => ';',

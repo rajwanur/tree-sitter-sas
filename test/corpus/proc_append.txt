@@ -1,0 +1,99 @@
+================================================================================
+PROC APPEND base/data value-options (dotted dataset paths)
+================================================================================
+proc append base=work.master data=work.adds;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_append_step
+      options: (append_options
+        (append_option
+          (append_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (append_option
+          (append_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))))))
+
+================================================================================
+PROC APPEND value-options + boolean flags (force, nowarn, new, getsort)
+================================================================================
+proc append base=work.master data=work.adds force nowarn;
+quit;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_append_step
+      options: (append_options
+        (append_option
+          (append_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (append_option
+          (append_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (append_option_flag)
+        (append_option_flag)))))
+
+================================================================================
+PROC APPEND all value-options (base/data/out/appendver/encryptkey)
+================================================================================
+proc append base=m out=out appendver=V9 encryptkey=k;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_append_step
+      options: (append_options
+        (append_option
+          (append_option_key)
+          (identifier))
+        (append_option
+          (append_option_key)
+          (identifier))
+        (append_option
+          (append_option_key)
+          (identifier))
+        (append_option
+          (append_option_key)
+          (identifier))))))
+
+================================================================================
+PROC APPEND data= + new/getsort flags
+================================================================================
+proc append data=work.adds new getsort;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_append_step
+      options: (append_options
+        (append_option
+          (append_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (append_option_flag)
+        (append_option_flag)))))
+
+================================================================================
+PROC APPEND no options (bare header)
+================================================================================
+proc append;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_append_step)))
