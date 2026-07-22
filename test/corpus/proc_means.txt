@@ -7,12 +7,13 @@ run;
 
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    options: (proc_options
-      (proc_option
-        (proc_option_key)
-        (identifier)))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key)
+          (identifier))))))
 
 ================================================================================
 PROC MEANS with VAR
@@ -24,16 +25,17 @@ run;
 
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    options: (proc_options
-      (proc_option
-        (proc_option_key)
-        (identifier)))
-    body: (proc_body
-      (tabulate_var_statement
-        (identifier)
-        (identifier)))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key)
+          (identifier)))
+      body: (proc_body
+        (tabulate_var_statement
+          (identifier)
+          (identifier))))))
 
 ================================================================================
 PROC MEANS with CLASS and BY
@@ -46,17 +48,18 @@ run;
 
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    options: (proc_options
-      (proc_option
-        (proc_option_key)
-        (identifier)))
-    body: (proc_body
-      (means_class_statement
+    (proc_generic_step
+      name: (proc_name
         (identifier))
-      (by_statement
-        (identifier)))))
+      options: (proc_options
+        (proc_option
+          (proc_option_key)
+          (identifier)))
+      body: (proc_body
+        (means_class_statement
+          (identifier))
+        (by_statement
+          (identifier))))))
 
 ================================================================================
 PROC MEANS with OUTPUT
@@ -69,20 +72,21 @@ run;
 
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    options: (proc_options
-      (proc_option
-        (proc_option_key)
-        (identifier)))
-    body: (proc_body
-      (tabulate_var_statement
+    (proc_generic_step
+      name: (proc_name
         (identifier))
-      (freq_output_statement
-        (data_reference
+      options: (proc_options
+        (proc_option
+          (proc_option_key)
+          (identifier)))
+      body: (proc_body
+        (tabulate_var_statement
           (identifier))
-        (identifier)
-        (identifier)))))
+        (freq_output_statement
+          (data_reference
+            (identifier))
+          (identifier)
+          (identifier))))))
 
 ================================================================================
 PROC SUMMARY same as MEANS
@@ -95,15 +99,16 @@ run;
 
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    options: (proc_options
-      (proc_option
-        (proc_option_key)
-        (identifier)))
-    body: (proc_body
-      (tabulate_var_statement
+    (proc_generic_step
+      name: (proc_name
         (identifier))
-      (means_output_statement
-        (data_reference
-          (identifier))))))
+      options: (proc_options
+        (proc_option
+          (proc_option_key)
+          (identifier)))
+      body: (proc_body
+        (tabulate_var_statement
+          (identifier))
+        (means_output_statement
+          (data_reference
+            (identifier)))))))

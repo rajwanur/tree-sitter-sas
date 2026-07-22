@@ -39,8 +39,9 @@ proc print; run;
 
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier)))))
 
 ================================================================================
 Keywords are case insensitive - PROC
@@ -50,8 +51,9 @@ PROC PRINT; RUN;
 
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier)))))
 
 ================================================================================
 Keywords are case insensitive - set

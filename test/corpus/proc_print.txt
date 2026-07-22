@@ -7,12 +7,13 @@ run;
 
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    options: (proc_options
-      (proc_option
-        (proc_option_key)
-        (identifier)))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key)
+          (identifier))))))
 
 ================================================================================
 PROC PRINT with VAR
@@ -24,16 +25,17 @@ run;
 
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    options: (proc_options
-      (proc_option
-        (proc_option_key)
-        (identifier)))
-    body: (proc_body
-      (tabulate_var_statement
-        (identifier)
-        (identifier)))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key)
+          (identifier)))
+      body: (proc_body
+        (tabulate_var_statement
+          (identifier)
+          (identifier))))))
 
 ================================================================================
 PROC PRINT with WHERE and VAR
@@ -46,16 +48,17 @@ run;
 
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    options: (proc_options
-      (proc_option
-        (proc_option_key)
-        (identifier)))
-    body: (proc_body
-      (where_statement
-        (binary_expression
-          left: (identifier)
-          right: (number)))
-      (tabulate_var_statement
-        (identifier)))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key)
+          (identifier)))
+      body: (proc_body
+        (where_statement
+          (binary_expression
+            left: (identifier)
+            right: (number)))
+        (tabulate_var_statement
+          (identifier))))))

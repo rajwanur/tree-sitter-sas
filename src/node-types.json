@@ -734,6 +734,80 @@
     }
   },
   {
+    "type": "copy_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "copy_option_key",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "copy_option_flag",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "copy_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "copy_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "copy_option",
+          "named": true
+        },
+        {
+          "type": "copy_option_flag",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "data_name",
     "named": true,
     "fields": {
@@ -3990,6 +4064,68 @@
     }
   },
   {
+    "type": "proc_copy_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "copy_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "proc_generic_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "name": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "proc_name",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "proc_name",
     "named": true,
     "fields": {},
@@ -4096,37 +4232,20 @@
   {
     "type": "proc_step",
     "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "name": {
-        "multiple": false,
-        "required": true,
-        "types": [
-          {
-            "type": "proc_name",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_options",
-            "named": true
-          }
-        ]
-      }
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "proc_copy_step",
+          "named": true
+        },
+        {
+          "type": "proc_generic_step",
+          "named": true
+        }
+      ]
     }
   },
   {
@@ -6567,6 +6686,10 @@
     "named": false
   },
   {
+    "type": "alter",
+    "named": false
+  },
+  {
     "type": "and",
     "named": false
   },
@@ -6680,11 +6803,19 @@
     "named": false
   },
   {
+    "type": "constraint",
+    "named": false
+  },
+  {
     "type": "contents",
     "named": false
   },
   {
     "type": "copy",
+    "named": false
+  },
+  {
+    "type": "copy_option_flag",
     "named": false
   },
   {
@@ -6773,6 +6904,10 @@
   },
   {
     "type": "else",
+    "named": false
+  },
+  {
+    "type": "encryptkey",
     "named": false
   },
   {
@@ -7169,6 +7304,10 @@
   },
   {
     "type": "output",
+    "named": false
+  },
+  {
+    "type": "override",
     "named": false
   },
   {

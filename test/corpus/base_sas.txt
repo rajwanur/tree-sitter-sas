@@ -186,13 +186,14 @@ run;
 
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    body: (proc_body
-      (where_statement
-        (binary_expression
-          left: (identifier)
-          right: (number))))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      body: (proc_body
+        (where_statement
+          (binary_expression
+            left: (identifier)
+            right: (number)))))))
 
 ================================================================================
 PROC step with QUIT
@@ -204,11 +205,12 @@ quit;
 
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    body: (proc_body
-      (datasets_delete_statement
-        (identifier)))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      body: (proc_body
+        (datasets_delete_statement
+          (identifier))))))
 
 ================================================================================
 Multiple steps in one file
@@ -228,8 +230,9 @@ run;
       target: (identifier)
       value: (number)))
   (proc_step
-    name: (proc_name
-      (identifier))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier)))))
 
 ================================================================================
 LIBNAME statement
@@ -632,6 +635,7 @@ data work.out;
   set work.dm(rename=(arm=trt01p rfstdtc=trtsdt));
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (data_step
     name: (data_name
@@ -655,6 +659,7 @@ data work.out;
   set work.'weird names'n end=eof;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (data_step
     name: (data_name
@@ -676,6 +681,7 @@ data work.d;
   array off{-2:2} _temporary_ (10 20 30 40 50);
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (data_step
     name: (data_name
@@ -711,6 +717,7 @@ data work.d;
   if h.find() ne 0 then x = 1;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (data_step
     name: (data_name
@@ -739,6 +746,7 @@ data work.d;
   put 'x' country= grid{r,c}=;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (data_step
     name: (data_name

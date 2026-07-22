@@ -5,19 +5,21 @@ proc sql;
   select name from sashelp.class;
 quit;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    body: (proc_body
-      (sql_select_statement
-        (sql_select_list
-          (sql_expression
-            (identifier)))
-        (sql_from_clause
-          (sql_table_ref
-            (identifier)
-            (identifier)))))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      body: (proc_body
+        (sql_select_statement
+          (sql_select_list
+            (sql_expression
+              (identifier)))
+          (sql_from_clause
+            (sql_table_ref
+              (identifier)
+              (identifier))))))))
 
 ================================================================================
 PROC SQL SELECT with WHERE
@@ -26,23 +28,25 @@ proc sql;
   select name from students where age > 12;
 quit;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    body: (proc_body
-      (sql_select_statement
-        (sql_select_list
-          (sql_expression
-            (identifier)))
-        (sql_from_clause
-          (sql_table_ref
-            (identifier)))
-        (sql_where_clause
-          (sql_expression
-            (binary_expression
-              left: (identifier)
-              right: (number))))))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      body: (proc_body
+        (sql_select_statement
+          (sql_select_list
+            (sql_expression
+              (identifier)))
+          (sql_from_clause
+            (sql_table_ref
+              (identifier)))
+          (sql_where_clause
+            (sql_expression
+              (binary_expression
+                left: (identifier)
+                right: (number)))))))))
 
 ================================================================================
 PROC SQL SELECT with JOIN
@@ -51,24 +55,26 @@ proc sql;
   select name from students left join scores on id = sid;
 quit;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    body: (proc_body
-      (sql_select_statement
-        (sql_select_list
-          (sql_expression
-            (identifier)))
-        (sql_from_clause
-          (sql_table_ref
-            (identifier)))
-        (sql_join_clause
-          (sql_table_ref
-            (identifier))
-          (binary_expression
-            left: (identifier)
-            right: (identifier)))))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      body: (proc_body
+        (sql_select_statement
+          (sql_select_list
+            (sql_expression
+              (identifier)))
+          (sql_from_clause
+            (sql_table_ref
+              (identifier)))
+          (sql_join_clause
+            (sql_table_ref
+              (identifier))
+            (binary_expression
+              left: (identifier)
+              right: (identifier))))))))
 
 ================================================================================
 PROC SQL SELECT with GROUP BY and HAVING
@@ -77,25 +83,27 @@ proc sql;
   select name from students group by name having score > 1;
 quit;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    body: (proc_body
-      (sql_select_statement
-        (sql_select_list
-          (sql_expression
-            (identifier)))
-        (sql_from_clause
-          (sql_table_ref
-            (identifier)))
-        (sql_group_by_clause
-          (identifier))
-        (sql_having_clause
-          (sql_expression
-            (binary_expression
-              left: (identifier)
-              right: (number))))))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      body: (proc_body
+        (sql_select_statement
+          (sql_select_list
+            (sql_expression
+              (identifier)))
+          (sql_from_clause
+            (sql_table_ref
+              (identifier)))
+          (sql_group_by_clause
+            (identifier))
+          (sql_having_clause
+            (sql_expression
+              (binary_expression
+                left: (identifier)
+                right: (number)))))))))
 
 ================================================================================
 PROC SQL SELECT with ORDER BY
@@ -104,20 +112,22 @@ proc sql;
   select name from students order by name;
 quit;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    body: (proc_body
-      (sql_select_statement
-        (sql_select_list
-          (sql_expression
-            (identifier)))
-        (sql_from_clause
-          (sql_table_ref
-            (identifier)))
-        (sql_order_by_clause
-          (identifier))))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      body: (proc_body
+        (sql_select_statement
+          (sql_select_list
+            (sql_expression
+              (identifier)))
+          (sql_from_clause
+            (sql_table_ref
+              (identifier)))
+          (sql_order_by_clause
+            (identifier)))))))
 
 ================================================================================
 PROC SQL CREATE TABLE AS SELECT
@@ -126,18 +136,20 @@ proc sql;
   create table output as select * from input;
 quit;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    body: (proc_body
-      (sql_create_table
-        (identifier)
-        (sql_select_list
-          (sql_expression))
-        (sql_from_clause
-          (sql_table_ref
-            (identifier)))))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      body: (proc_body
+        (sql_create_table
+          (identifier)
+          (sql_select_list
+            (sql_expression))
+          (sql_from_clause
+            (sql_table_ref
+              (identifier))))))))
 
 ================================================================================
 PROC SQL CREATE VIEW
@@ -146,18 +158,20 @@ proc sql;
   create view myview as select * from input;
 quit;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    body: (proc_body
-      (sql_create_view
-        (identifier)
-        (sql_select_list
-          (sql_expression))
-        (sql_from_clause
-          (sql_table_ref
-            (identifier)))))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      body: (proc_body
+        (sql_create_view
+          (identifier)
+          (sql_select_list
+            (sql_expression))
+          (sql_from_clause
+            (sql_table_ref
+              (identifier))))))))
 
 ================================================================================
 PROC SQL INSERT INTO VALUES
@@ -166,15 +180,17 @@ proc sql;
   insert into output values(1, 2);
 quit;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    body: (proc_body
-      (sql_insert_into
-        (identifier)
-        (number)
-        (number)))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      body: (proc_body
+        (sql_insert_into
+          (identifier)
+          (number)
+          (number))))))
 
 ================================================================================
 PROC SQL subquery in FROM
@@ -183,27 +199,29 @@ proc sql;
   select name from (select * from students) where age > 12;
 quit;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    body: (proc_body
-      (sql_select_statement
-        (sql_select_list
-          (sql_expression
-            (identifier)))
-        (sql_from_clause
-          (sql_table_ref
-            (sql_select_list
-              (sql_expression))
-            (sql_from_clause
-              (sql_table_ref
-                (identifier)))))
-        (sql_where_clause
-          (sql_expression
-            (binary_expression
-              left: (identifier)
-              right: (number))))))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      body: (proc_body
+        (sql_select_statement
+          (sql_select_list
+            (sql_expression
+              (identifier)))
+          (sql_from_clause
+            (sql_table_ref
+              (sql_select_list
+                (sql_expression))
+              (sql_from_clause
+                (sql_table_ref
+                  (identifier)))))
+          (sql_where_clause
+            (sql_expression
+              (binary_expression
+                left: (identifier)
+                right: (number)))))))))
 
 ================================================================================
 PROC SQL multiple JOINs
@@ -212,30 +230,32 @@ proc sql;
   select name from a join b on x = y join c on y = z;
 quit;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    body: (proc_body
-      (sql_select_statement
-        (sql_select_list
-          (sql_expression
-            (identifier)))
-        (sql_from_clause
-          (sql_table_ref
-            (identifier)))
-        (sql_join_clause
-          (sql_table_ref
-            (identifier))
-          (binary_expression
-            left: (identifier)
-            right: (identifier)))
-        (sql_join_clause
-          (sql_table_ref
-            (identifier))
-          (binary_expression
-            left: (identifier)
-            right: (identifier)))))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      body: (proc_body
+        (sql_select_statement
+          (sql_select_list
+            (sql_expression
+              (identifier)))
+          (sql_from_clause
+            (sql_table_ref
+              (identifier)))
+          (sql_join_clause
+            (sql_table_ref
+              (identifier))
+            (binary_expression
+              left: (identifier)
+              right: (identifier)))
+          (sql_join_clause
+            (sql_table_ref
+              (identifier))
+            (binary_expression
+              left: (identifier)
+              right: (identifier))))))))
 
 ================================================================================
 PROC SQL column alias with AS
@@ -244,19 +264,21 @@ proc sql;
   select name as student_name from students;
 quit;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    body: (proc_body
-      (sql_select_statement
-        (sql_select_list
-          (sql_expression
-            (identifier)
-            (identifier)))
-        (sql_from_clause
-          (sql_table_ref
-            (identifier)))))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      body: (proc_body
+        (sql_select_statement
+          (sql_select_list
+            (sql_expression
+              (identifier)
+              (identifier)))
+          (sql_from_clause
+            (sql_table_ref
+              (identifier))))))))
 
 ================================================================================
 PROC SQL DROP TABLE
@@ -265,13 +287,15 @@ proc sql;
   drop table oldtable;
 quit;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    body: (proc_body
-      (sql_drop_statement
-        (identifier)))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      body: (proc_body
+        (sql_drop_statement
+          (identifier))))))
 
 ================================================================================
 PROC SQL DISCONNECT
@@ -280,13 +304,15 @@ proc sql;
   disconnect myconn;
 quit;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    body: (proc_body
-      (sql_disconnect
-        (identifier)))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      body: (proc_body
+        (sql_disconnect
+          (identifier))))))
 
 ================================================================================
 PROC SQL RESET
@@ -295,13 +321,15 @@ proc sql;
   reset outobs;
 quit;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    body: (proc_body
-      (sql_reset
-        (identifier)))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      body: (proc_body
+        (sql_reset
+          (identifier))))))
 
 ================================================================================
 PROC SQL SELECT multiple columns
@@ -310,21 +338,22 @@ proc sql;
   select name, age from students;
 quit;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    body: (proc_body
-      (sql_select_statement
-        (sql_select_list
-          (sql_expression
-            (identifier))
-          (sql_expression
-            (identifier)))
-        (sql_from_clause
-          (sql_table_ref
-            (identifier)))))))
-
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      body: (proc_body
+        (sql_select_statement
+          (sql_select_list
+            (sql_expression
+              (identifier))
+            (sql_expression
+              (identifier)))
+          (sql_from_clause
+            (sql_table_ref
+              (identifier))))))))
 
 ================================================================================
 PROC SQL qualified-star (a.*)
@@ -333,24 +362,26 @@ proc sql;
   select a.*, b, age from work.t;
 quit;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    body: (proc_body
-      (sql_select_statement
-        (sql_select_list
-          (sql_expression
-            (sql_qualified_star
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      body: (proc_body
+        (sql_select_statement
+          (sql_select_list
+            (sql_expression
+              (sql_qualified_star
+                (identifier)))
+            (sql_expression
+              (identifier))
+            (sql_expression
               (identifier)))
-          (sql_expression
-            (identifier))
-          (sql_expression
-            (identifier)))
-        (sql_from_clause
-          (sql_table_ref
-            (identifier)
-            (identifier)))))))
+          (sql_from_clause
+            (sql_table_ref
+              (identifier)
+              (identifier))))))))
 
 ================================================================================
 PROC SQL mixed select list: a.* qualified-star, b.x qualified-column, c plain
@@ -359,23 +390,25 @@ proc sql;
   select a.*, b.x, c from t;
 quit;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    body: (proc_body
-      (sql_select_statement
-        (sql_select_list
-          (sql_expression
-            (sql_qualified_star
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      body: (proc_body
+        (sql_select_statement
+          (sql_select_list
+            (sql_expression
+              (sql_qualified_star
+                (identifier)))
+            (sql_qualified_column
+              base: (identifier))
+            (sql_expression
               (identifier)))
-          (sql_qualified_column
-            base: (identifier))
-          (sql_expression
-            (identifier)))
-        (sql_from_clause
-          (sql_table_ref
-            (identifier)))))))
+          (sql_from_clause
+            (sql_table_ref
+              (identifier))))))))
 
 ================================================================================
 SQL count(*), into :macrovar separated by, and having count(*)
@@ -384,32 +417,34 @@ proc sql noprint;
   select count(*) as n into :clist separated by ', ' from d having count(*) >= 1;
 quit;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    options: (proc_options
-      (identifier))
-    body: (proc_body
-      (sql_select_statement
-        (sql_select_list
-          (sql_expression
-            (function_call
-              name: (identifier))
-            (identifier)))
-        (sql_into_clause
-          (identifier)
-          (quoted_string
-            (single_quoted_string)))
-        (sql_from_clause
-          (sql_table_ref
-            (identifier)))
-        (sql_having_clause
-          (sql_expression
-            (binary_expression
-              left: (function_call
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (identifier))
+      body: (proc_body
+        (sql_select_statement
+          (sql_select_list
+            (sql_expression
+              (function_call
                 name: (identifier))
-              right: (number))))))))
+              (identifier)))
+          (sql_into_clause
+            (identifier)
+            (quoted_string
+              (single_quoted_string)))
+          (sql_from_clause
+            (sql_table_ref
+              (identifier)))
+          (sql_having_clause
+            (sql_expression
+              (binary_expression
+                left: (function_call
+                  name: (identifier))
+                right: (number)))))))))
 
 ================================================================================
 SQL CASE WHEN expression and scalar subquery
@@ -419,39 +454,41 @@ proc sql;
   where x > (select avg(z) from e);
 quit;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    body: (proc_body
-      (sql_select_statement
-        (sql_select_list
-          (sql_expression
-            (sql_case_expression
-              (sql_expression
-                (binary_expression
-                  left: (identifier)
-                  right: (number)))
-              (sql_expression
-                (quoted_string
-                  (single_quoted_string)))
-              (sql_expression
-                (quoted_string
-                  (single_quoted_string)))))
-          (identifier))
-        (sql_from_clause
-          (sql_table_ref
-            (identifier)))
-        (sql_where_clause
-          (sql_expression
-            (binary_expression
-              left: (identifier)
-              right: (parenthesized_expression
-                (sql_select_list
-                  (sql_expression
-                    (function_call
-                      name: (identifier)
-                      (identifier))))
-                (sql_from_clause
-                  (sql_table_ref
-                    (identifier)))))))))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      body: (proc_body
+        (sql_select_statement
+          (sql_select_list
+            (sql_expression
+              (sql_case_expression
+                (sql_expression
+                  (binary_expression
+                    left: (identifier)
+                    right: (number)))
+                (sql_expression
+                  (quoted_string
+                    (single_quoted_string)))
+                (sql_expression
+                  (quoted_string
+                    (single_quoted_string)))))
+            (identifier))
+          (sql_from_clause
+            (sql_table_ref
+              (identifier)))
+          (sql_where_clause
+            (sql_expression
+              (binary_expression
+                left: (identifier)
+                right: (parenthesized_expression
+                  (sql_select_list
+                    (sql_expression
+                      (function_call
+                        name: (identifier)
+                        (identifier))))
+                  (sql_from_clause
+                    (sql_table_ref
+                      (identifier))))))))))))

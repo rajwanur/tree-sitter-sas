@@ -1,0 +1,75 @@
+================================================================================
+PROC COPY with in/out/memtype options
+================================================================================
+proc copy in=work out=staging memtype=data;
+  select sales;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_copy_step
+      options: (copy_options
+        (copy_option
+          (copy_option_key)
+          (identifier))
+        (copy_option
+          (copy_option_key)
+          (identifier))
+        (copy_option
+          (copy_option_key)
+          (identifier)))
+      body: (proc_body
+        (sql_select_statement
+          (sql_select_list
+            (sql_expression
+              (identifier))))))))
+
+================================================================================
+PROC COPY with boolean flags (move, force, clone, noaccel)
+================================================================================
+proc copy in=work out=staging move force clone noaccel;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_copy_step
+      options: (copy_options
+        (copy_option
+          (copy_option_key)
+          (identifier))
+        (copy_option
+          (copy_option_key)
+          (identifier))
+        (copy_option_flag)
+        (copy_option_flag)
+        (copy_option_flag)
+        (copy_option_flag)))))
+
+================================================================================
+PROC COPY with no options
+================================================================================
+proc copy;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_copy_step)))
+
+================================================================================
+PROC COPY with unknown option key (linter fallback)
+================================================================================
+proc copy bogusopt=x;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_copy_step
+      options: (copy_options
+        (copy_option
+          (copy_option_key
+            (identifier))
+          (identifier))))))

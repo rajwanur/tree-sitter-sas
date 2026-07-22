@@ -13,33 +13,34 @@ run;
 
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    options: (proc_options
-      (proc_option
-        (proc_option_key)
-        (identifier)))
-    body: (proc_body
-      (report_column_statement
-        (identifier)
+    (proc_generic_step
+      name: (proc_name
         (identifier))
-      (report_define_statement
-        (identifier)
-        (report_usage_keyword))
-      (report_define_statement
-        (identifier)
-        (report_usage_keyword)
-        (identifier))
-      (report_define_statement
-        (identifier)
-        (report_usage_keyword)
-        (report_usage_keyword))
-      (report_define_statement
-        (identifier)
-        (report_usage_keyword))
-      (report_define_statement
-        (identifier)
-        (report_usage_keyword)))))
+      options: (proc_options
+        (proc_option
+          (proc_option_key)
+          (identifier)))
+      body: (proc_body
+        (report_column_statement
+          (identifier)
+          (identifier))
+        (report_define_statement
+          (identifier)
+          (report_usage_keyword))
+        (report_define_statement
+          (identifier)
+          (report_usage_keyword)
+          (identifier))
+        (report_define_statement
+          (identifier)
+          (report_usage_keyword)
+          (report_usage_keyword))
+        (report_define_statement
+          (identifier)
+          (report_usage_keyword))
+        (report_define_statement
+          (identifier)
+          (report_usage_keyword))))))
 
 ================================================================================
 PROC REPORT compute block with LINE statement
@@ -56,37 +57,38 @@ run;
 
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    options: (proc_options
-      (proc_option
-        (proc_option_key)
-        (identifier)))
-    body: (proc_body
-      (report_column_statement
-        (identifier)
+    (proc_generic_step
+      name: (proc_name
         (identifier))
-      (report_define_statement
-        (identifier)
-        (report_usage_keyword))
-      (report_compute_statement
-        (identifier)
-        (report_line_statement
-          (number)
-          (quoted_string
-            (double_quoted_string))
+      options: (proc_options
+        (proc_option
+          (proc_option_key)
+          (identifier)))
+      body: (proc_body
+        (report_column_statement
+          (identifier)
           (identifier))
-        (if_statement
-          condition: (binary_expression
-            left: (identifier)
-            right: (number))
-          consequence: (call_statement
-            (identifier)
-            (identifier)
+        (report_define_statement
+          (identifier)
+          (report_usage_keyword))
+        (report_compute_statement
+          (identifier)
+          (report_line_statement
+            (number)
             (quoted_string
-              (single_quoted_string))
-            (quoted_string
-              (single_quoted_string))))))))
+              (double_quoted_string))
+            (identifier))
+          (if_statement
+            condition: (binary_expression
+              left: (identifier)
+              right: (number))
+            consequence: (call_statement
+              (identifier)
+              (identifier)
+              (quoted_string
+                (single_quoted_string))
+              (quoted_string
+                (single_quoted_string)))))))))
 
 ================================================================================
 PROC REPORT style attributes and compute slash-options
@@ -98,31 +100,33 @@ proc report data=work.d;
   rbreak after / summarize style=[fontweight=bold];
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (proc_step
-    name: (proc_name
-      (identifier))
-    options: (proc_options
-      (proc_option
-        (proc_option_key)
-        (dotted_identifier
-          base: (identifier)
-          member: (identifier))))
-    body: (proc_body
-      (report_define_statement
-        (identifier)
-        (report_usage_keyword)
-        (quoted_string
-          (single_quoted_string))
-        (identifier)
-        (identifier)
+    (proc_generic_step
+      name: (proc_name
         (identifier))
-      (report_compute_statement
-        (identifier)
-        (identifier)
-        (identifier)
-        (number))
-      (report_rbreak_statement
-        (identifier)
-        (identifier)
-        (identifier)))))
+      options: (proc_options
+        (proc_option
+          (proc_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier))))
+      body: (proc_body
+        (report_define_statement
+          (identifier)
+          (report_usage_keyword)
+          (quoted_string
+            (single_quoted_string))
+          (identifier)
+          (identifier)
+          (identifier))
+        (report_compute_statement
+          (identifier)
+          (identifier)
+          (identifier)
+          (number))
+        (report_rbreak_statement
+          (identifier)
+          (identifier)
+          (identifier))))))

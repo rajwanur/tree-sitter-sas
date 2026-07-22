@@ -109,13 +109,25 @@ module.exports = grammar({
     // 'identifier identifier' is ambiguous (two bare flags vs flag+value). GLR
     // explores both (G13).
     [$.proc_options, $.proc_option_key],
+    // copy_options vs copy_option_key: same family as the proc_options conflict
+    // above. With copy_option's '= value' optional, after 'proc copy ident' the
+    // parser cannot tell whether a following identifier is a second bare flag or
+    // the value of the first (e.g. 'proc copy in out' = two flags vs in=out-shape).
+    // GLR explores both; the '= value' presence decides (Phase 3 B1).
+    [$.copy_options, $.copy_option_key],
     // proc_body: repeat1(choice(...)) cannot tell whether an identifier
     // starts a new statement inside the proc body or is a new step outside.
     // Also, run/quit can match as bare_statement or as the step terminator.
     [$.proc_body],
-    // proc_step: optional proc_body creates ambiguity -- parser cannot tell if next
-    // token starts a proc_body statement or is a top-level item after an empty proc.
-    [$.proc_step],
+    // proc_step was a single rule with an optional proc_body (the original
+    // [$.proc_step] conflict). proc_step is now a choice() dispatcher, so the
+    // ambiguity moved into each per-proc *_step rule below. The generic fallback
+    // (proc_generic_step) and proc_copy_step each carry the same bounded
+    // single-rule optional-body ambiguity.
+    [$.proc_copy_step],
+    // proc_generic_step: the optional proc_body now lives here (the original
+    // proc_step body, moved when proc_step became a dispatcher).
+    [$.proc_generic_step],
     // Multiple PROC-specific *_id_statement rules start with 'id' + identifier.
     // All are in proc_body's choice(), creating lookahead conflicts.
     [$.means_id_statement, $.print_id_statement, $.transpose_id_statement, $.compare_id_statement, $.univariate_id_statement, $.reg_id_statement],
@@ -343,11 +355,96 @@ module.exports = grammar({
     // PROC step (PARSE-01, PARSE-03, PARSE-06, PARSE-07, PARSE-08)
     // ========================================================================
 
+    // --- Per-proc structs (Phase 3 B-D) ---
+    // proc_step dispatches on the proc-name token to a per-proc *_step rule.
+    // Each per-proc rule has its own typed *_option_key (that proc's valid
+    // options only), falling back to $.identifier for unknown keys. The body
+    // (proc_body) stays shared across all PROCs.
+
+    // Dispatcher: routes on the proc-name token. Each per-proc *_step rule has
+    // typed options; proc_generic_step is the fallback preserving the original
+    // shared-proc_options behavior for any PROC not yet converted.
+    //
+    // The per-proc arms carry prec(1) so they win the GLR tie at 'proc <name>'
+    // where <name> is both a valid keyword token (e.g. _proc_copy_keyword) and a
+    // valid identifier (proc_generic_step's proc_name -> identifier). Without
+    // this, the generic arm (identifier matches 'copy') would win and the
+    // per-proc struct would never be produced.
+    proc_step: $ => choice(
+      prec(1, $.proc_copy_step),
+      // $.proc_cport_step,   // Phase B2
+      // $.proc_cimport_step, // Phase B3
+      $.proc_generic_step,
+    ),
+
+    // PROC COPY: in=/out=/memtype= options plus boolean flags (move, force, ...).
+    // The proc name is emitted as the alias($._proc_copy_keyword,'copy') token;
+    // it is NOT also captured as field('name',...) to avoid a redundant alias
+    // conflicting with the generic proc_name path. The linter reads the name
+    // from the step node type (proc_copy_step -> 'copy') via inferProcNameFromStep.
+    proc_copy_step: $ => seq(
+      alias($._proc_keyword, 'proc'),
+      alias($._proc_copy_keyword, 'copy'),
+      optional(field('options', $.copy_options)),
+      ';',
+      optional(field('body', $.proc_body)),
+      optional(choice(
+        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
+        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
+      )),
+    ),
+
+    copy_options: $ => repeat1(choice(
+      $.copy_option,
+      $.copy_option_flag,
+      $.identifier,
+    )),
+
+    // key = value  (e.g. in=work, out=staging, memtype=data) OR key with a
+    // parenthesized arg group. Mirrors proc_option's shape but with
+    // copy_option_key (the COPY-only keyword set).
+    copy_option: $ => seq(
+      $.copy_option_key,
+      optional($.proc_option_args),
+      optional(seq('=',
+        choice($.catalog_path, $.expression),
+        optional($.data_set_option),
+      )),
+    ),
+
+    // A COPY option keyword with no value (boolean flag), e.g. move / force /
+    // clone / noaccel. Aliased to a named node for highlighting/linting.
+    copy_option_flag: $ => alias(choice(
+      $._replace_keyword, $._label_keyword,
+      $._accel_keyword, $._noaccel_keyword,
+      $._clone_keyword, $._noclone_keyword,
+      $._force_keyword, $._move_keyword, $._datecopy_keyword,
+    ), 'copy_option_flag'),
+
+    // Option key: known COPY keywords (aliased so they appear as anonymous
+    // keyword nodes for highlighting) OR a generic identifier (unknown key,
+    // which the linter may flag as invalid for COPY).
+    copy_option_key: $ => choice(
+      alias($._in_keyword, 'in'),
+      alias($._out_keyword, 'out'),
+      alias($._memtype_keyword, 'memtype'),
+      alias($._index_keyword, 'index'),
+      alias($._constraint_keyword, 'constraint'),
+      alias($._encryptkey_keyword, 'encryptkey'),
+      alias($._override_keyword, 'override'),
+      alias($._alter_keyword, 'alter'),
+      $.identifier,
+    ),
+
     // proc_body is optional (via optional()) so that PROCs with no body statements
     // (e.g., "proc contents data=x; run;") don't have run; consumed as a
     // bare_statement. When proc_body IS present, it uses repeat1() internally
     // to satisfy tree-sitter's prohibition on empty-string-matching rules.
-    proc_step: $ => seq(
+    //
+    // proc_generic_step is the verbatim original proc_step body. It is the
+    // fallback for any PROC not yet converted to a per-proc *_step rule, so
+    // non-COPY PROC behavior is unchanged.
+    proc_generic_step: $ => seq(
       alias($._proc_keyword, 'proc'),
       field('name', $.proc_name),
       optional(field('options', $.proc_options)),
@@ -2462,6 +2559,9 @@ module.exports = grammar({
     // --- Control flow ---
     _data_keyword: $ => /[dD][aA][tT][aA]/,
     _proc_keyword: $ => /[pP][rR][oO][cC]/,
+    // PROC COPY proc-name token (dispatched on by proc_step). Distinct from a
+    // bare identifier so the dispatcher can route to proc_copy_step.
+    _proc_copy_keyword: $ => /[cC][oO][pP][yY]/,
     _run_keyword: $ => /[rR][uU][nN]/,
     _quit_keyword: $ => /[qQ][uU][iI][tT]/,
     _do_keyword: $ => /[dD][oO]/,
@@ -2592,6 +2692,23 @@ module.exports = grammar({
     _library_keyword: $ => /[lL][iI][bB][rR][aA][rR][yY]/,
     _file_keyword: $ => /[fF][iI][lL][eE]/,
     _memtype_keyword: $ => /[mM][eE][mM][tT][yY][pP][eE]/,
+
+    // --- PROC COPY option keywords (Phase 3 B1) ---
+    // These are COPY-specific option keys/flags. _in_keyword/_out_keyword/
+    // _memtype_keyword/_replace_keyword/_label_keyword above are reused by
+    // copy_option_key/copy_option_flag. The rest are COPY-only.
+    _accel_keyword: $ => /[aA][cC][cC][eE][lL]/,
+    _noaccel_keyword: $ => /[nN][oO][aA][cC][cC][eE][lL]/,
+    _clone_keyword: $ => /[cC][lL][oO][nN][eE]/,
+    _noclone_keyword: $ => /[nN][oO][cC][lL][oO][nN][eE]/,
+    _force_keyword: $ => /[fF][oO][rR][cC][eE]/,
+    _move_keyword: $ => /[mM][oO][vV][eE]/,
+    _datecopy_keyword: $ => /[dD][aA][tT][eE][cC][oO][pP][yY]/,
+    _constraint_keyword: $ => /[cC][oO][nN][sS][tT][rR][aA][iI][nN][tT]/,
+    _encryptkey_keyword: $ => /[eE][nN][cC][rR][yY][pP][tT][kK][eE][yY]/,
+    _override_keyword: $ => /[oO][vV][eE][rR][rR][iI][dD][eE]/,
+    _alter_keyword: $ => /[aA][lL][tT][eE][rR]/,
+    _index_keyword: $ => /[iI][nN][dD][eE][xX]/,
 
     // --- Operators and punctuation ---
     _semicolon: $ => ';',

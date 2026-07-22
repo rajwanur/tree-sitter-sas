@@ -62,7 +62,31 @@ Nested macro definition + call (G-03 Phase 1)
 %mend outer;
 --------------------------------------------------------------------------------
 
-
+(source_file
+  (macro_definition
+    (identifier)
+    (macro_parameters
+      (macro_parameter
+        (identifier)))
+    (macro_statement
+      (macro_definition
+        (identifier)
+        (macro_parameters
+          (macro_parameter
+            (identifier)))
+        (macro_statement
+          (macro_put_statement
+            (macro_text
+              (macro_text_token)
+              (macro_variable_reference
+                (identifier)))))
+        (identifier)))
+    (macro_statement
+      (macro_call_statement
+        (identifier)
+        (macro_expression
+          (identifier))))
+    (identifier)))
 
 ================================================================================
 %put at the top level (G-03 Phase 1 -- regression guard)
@@ -237,16 +261,17 @@ run;
 
 (source_file
   (proc_step
-    (proc_name
-      (identifier))
-    (proc_options
-      (proc_option
-        (proc_option_key)
-        (identifier)))
-    (proc_body
-      (by_statement
-        (macro_variable_reference
-          (identifier))))))
+    (proc_generic_step
+      (proc_name
+        (identifier))
+      (proc_options
+        (proc_option
+          (proc_option_key)
+          (identifier)))
+      (proc_body
+        (by_statement
+          (macro_variable_reference
+            (identifier)))))))
 
 ================================================================================
 LENGTH with macro variable name (G-04 Phase 3)
@@ -288,18 +313,19 @@ run;
 
 (source_file
   (proc_step
-    (proc_name
-      (identifier))
-    (proc_options
-      (proc_option
-        (proc_option_key)
-        (identifier)))
-    (proc_body
-      (means_class_statement
-        (macro_variable_reference
+    (proc_generic_step
+      (proc_name
+        (identifier))
+      (proc_options
+        (proc_option
+          (proc_option_key)
           (identifier)))
-      (tabulate_var_statement
-        (identifier)))))
+      (proc_body
+        (means_class_statement
+          (macro_variable_reference
+            (identifier)))
+        (tabulate_var_statement
+          (identifier))))))
 
 ================================================================================
 Keyword parameters with space-list and %str() defaults (G-06 Phase 4)
