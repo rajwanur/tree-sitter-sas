@@ -394,6 +394,14 @@
           }
         },
         {
+          "type": "PREC",
+          "value": 1,
+          "content": {
+            "type": "SYMBOL",
+            "name": "proc_datasets_step"
+          }
+        },
+        {
           "type": "SYMBOL",
           "name": "proc_generic_step"
         }
@@ -2031,6 +2039,394 @@
           },
           "named": false,
           "value": "uniqueout"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "identifier"
+        }
+      ]
+    },
+    "proc_datasets_step": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_proc_keyword"
+          },
+          "named": false,
+          "value": "proc"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_proc_datasets_keyword"
+          },
+          "named": false,
+          "value": "datasets"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "FIELD",
+              "name": "options",
+              "content": {
+                "type": "SYMBOL",
+                "name": "datasets_options"
+              }
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": ";"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "FIELD",
+              "name": "body",
+              "content": {
+                "type": "SYMBOL",
+                "name": "proc_body"
+              }
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "ALIAS",
+                      "content": {
+                        "type": "SYMBOL",
+                        "name": "_run_keyword"
+                      },
+                      "named": false,
+                      "value": "run"
+                    },
+                    {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "CHOICE",
+                          "members": [
+                            {
+                              "type": "STRING",
+                              "value": "cancel"
+                            },
+                            {
+                              "type": "STRING",
+                              "value": "CANCEL"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "BLANK"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "STRING",
+                      "value": ";"
+                    }
+                  ]
+                },
+                {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "ALIAS",
+                      "content": {
+                        "type": "SYMBOL",
+                        "name": "_quit_keyword"
+                      },
+                      "named": false,
+                      "value": "quit"
+                    },
+                    {
+                      "type": "CHOICE",
+                      "members": [
+                        {
+                          "type": "CHOICE",
+                          "members": [
+                            {
+                              "type": "STRING",
+                              "value": "cancel"
+                            },
+                            {
+                              "type": "STRING",
+                              "value": "CANCEL"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "BLANK"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "STRING",
+                      "value": ";"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
+    },
+    "datasets_options": {
+      "type": "REPEAT1",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "datasets_option"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "datasets_option_flag"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "identifier"
+          }
+        ]
+      }
+    },
+    "datasets_option": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "datasets_option_key"
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "proc_option_args"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "="
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "catalog_path"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "expression"
+                    }
+                  ]
+                },
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "data_set_option"
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
+        }
+      ]
+    },
+    "datasets_option_flag": {
+      "type": "ALIAS",
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_kill_keyword"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_force_keyword"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_nolist_keyword"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_noprint_keyword"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_nowarn_keyword"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_details_keyword"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_nodetails_keyword"
+          }
+        ]
+      },
+      "named": false,
+      "value": "datasets_option_flag"
+    },
+    "datasets_option_key": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_lib_keyword"
+          },
+          "named": false,
+          "value": "lib"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_library_keyword"
+          },
+          "named": false,
+          "value": "library"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_dd_keyword"
+          },
+          "named": false,
+          "value": "dd"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_ddname_keyword"
+          },
+          "named": false,
+          "value": "ddname"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_memtype_keyword"
+          },
+          "named": false,
+          "value": "memtype"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_mt_keyword"
+          },
+          "named": false,
+          "value": "mt"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_mtype_keyword"
+          },
+          "named": false,
+          "value": "mtype"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_gennum_keyword"
+          },
+          "named": false,
+          "value": "gennum"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_alter_keyword"
+          },
+          "named": false,
+          "value": "alter"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_pw_keyword"
+          },
+          "named": false,
+          "value": "pw"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_read_keyword"
+          },
+          "named": false,
+          "value": "read"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "_encryptkey_keyword"
+          },
+          "named": false,
+          "value": "encryptkey"
         },
         {
           "type": "SYMBOL",
@@ -17660,6 +18056,10 @@
       "type": "PATTERN",
       "value": "[cC][iI][mM][pP][oO][rR][tT]"
     },
+    "_proc_datasets_keyword": {
+      "type": "PATTERN",
+      "value": "[dD][aA][tT][aA][sS][eE][tT][sS]"
+    },
     "_run_keyword": {
       "type": "PATTERN",
       "value": "[rR][uU][nN]"
@@ -18335,6 +18735,54 @@
       "type": "PATTERN",
       "value": "[oO][vV][eE][rR][wW][rR][iI][tT][eE]"
     },
+    "_dd_keyword": {
+      "type": "PATTERN",
+      "value": "[dD][dD]"
+    },
+    "_ddname_keyword": {
+      "type": "PATTERN",
+      "value": "[dD][dD][nN][aA][mM][eE]"
+    },
+    "_mtype_keyword": {
+      "type": "PATTERN",
+      "value": "[mM][tT][yY][pP][eE]"
+    },
+    "_gennum_keyword": {
+      "type": "PATTERN",
+      "value": "[gG][eE][nN][nN][uU][mM]"
+    },
+    "_pw_keyword": {
+      "type": "PATTERN",
+      "value": "[pP][wW]"
+    },
+    "_read_keyword": {
+      "type": "PATTERN",
+      "value": "[rR][eE][aA][dD]"
+    },
+    "_kill_keyword": {
+      "type": "PATTERN",
+      "value": "[kK][iI][lL][lL]"
+    },
+    "_nolist_keyword": {
+      "type": "PATTERN",
+      "value": "[nN][oO][lL][iI][sS][tT]"
+    },
+    "_noprint_keyword": {
+      "type": "PATTERN",
+      "value": "[nN][oO][pP][rR][iI][nN][tT]"
+    },
+    "_nowarn_keyword": {
+      "type": "PATTERN",
+      "value": "[nN][oO][wW][aA][rR][nN]"
+    },
+    "_details_keyword": {
+      "type": "PATTERN",
+      "value": "[dD][eE][tT][aA][iI][lL][sS]"
+    },
+    "_nodetails_keyword": {
+      "type": "PATTERN",
+      "value": "[nN][oO][dD][eE][tT][aA][iI][lL][sS]"
+    },
     "_semicolon": {
       "type": "STRING",
       "value": ";"
@@ -18525,6 +18973,10 @@
       "sort_option_key"
     ],
     [
+      "datasets_options",
+      "datasets_option_key"
+    ],
+    [
       "proc_body"
     ],
     [
@@ -18538,6 +18990,9 @@
     ],
     [
       "proc_sort_step"
+    ],
+    [
+      "proc_datasets_step"
     ],
     [
       "proc_generic_step"

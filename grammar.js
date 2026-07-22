@@ -130,6 +130,9 @@ module.exports = grammar({
     // sort_options vs sort_option_key: same family as the copy/cport/cimport
     // option conflicts above (Phase 3 C1).
     [$.sort_options, $.sort_option_key],
+    // datasets_options vs datasets_option_key: same family as the copy/cport/
+    // cimport/sort option conflicts above (Phase 3 C2 / Task 12).
+    [$.datasets_options, $.datasets_option_key],
     // proc_body: repeat1(choice(...)) cannot tell whether an identifier
     // starts a new statement inside the proc body or is a new step outside.
     // Also, run/quit can match as bare_statement or as the step terminator.
@@ -146,6 +149,9 @@ module.exports = grammar({
     [$.proc_cimport_step],
     // proc_sort_step: same optional-body ambiguity as proc_copy/cport/cimport (Phase 3 C1).
     [$.proc_sort_step],
+    // proc_datasets_step: same optional-body ambiguity as proc_copy/cport/cimport/
+    // sort (Phase 3 C2 / Task 12).
+    [$.proc_datasets_step],
     // proc_generic_step: the optional proc_body now lives here (the original
     // proc_step body, moved when proc_step became a dispatcher).
     [$.proc_generic_step],
@@ -396,6 +402,7 @@ module.exports = grammar({
       prec(1, $.proc_cport_step),
       prec(1, $.proc_cimport_step), // Phase B3
       prec(1, $.proc_sort_step), // Phase C1
+      prec(1, $.proc_datasets_step), // Phase C2 (Task 12)
       $.proc_generic_step,
     ),
 
@@ -682,6 +689,87 @@ module.exports = grammar({
       alias($._sortseq_keyword, 'sortseq'),
       alias($._sortsize_keyword, 'sortsize'),
       alias($._uniqueout_keyword, 'uniqueout'),
+      $.identifier,
+    ),
+
+    // PROC DATASETS: lib=/library=/dd=/ddname=/memtype=/mt=/mtype=/gennum=/
+    // alter=/pw=/read=/encryptkey= value options plus boolean flags (kill, force,
+    // nolist, noprint, nowarn, details, nodetails). Same shape as proc_copy/cport/
+    // cimport/sort_step; the proc name is emitted as the
+    // alias($._proc_datasets_keyword,'datasets') token (no field('name')) and the
+    // linter reads the name via inferProcNameFromStep (Phase 3 C2 / Task 12).
+    //
+    // HEADER-only struct: this wraps the options on the 'proc datasets ...;' header
+    // line ONLY. The DATASETS body statements (datasets_lib_statement,
+    // datasets_kill_statement, datasets_copy_statement, datasets_delete_statement,
+    // datasets_change_statement, datasets_modify_statement, etc.) are pre-existing
+    // rules in proc_body's choice() and remain UNCHANGED — proc_datasets_step
+    // references $.proc_body for the body, exactly like proc_copy/cport/cimport/
+    // sort_step. The linter validates header options against the DATASETS schema;
+    // body statements are parsed/validated separately.
+    //
+    // NOTE on 'kill' and 'nolist': these keywords are ALSO legal DATASETS body
+    // statements (datasets_kill_statement: 'kill ;', datasets_nolist_statement:
+    // 'nolist ;'). On the HEADER line they are bare option flags; in the BODY they
+    // start their own statement. The two never collide because the header options
+    // terminate at the first ';' and the body begins after it — exactly the same
+    // boundary that already governs every per-proc step.
+    proc_datasets_step: $ => seq(
+      alias($._proc_keyword, 'proc'),
+      alias($._proc_datasets_keyword, 'datasets'),
+      optional(field('options', $.datasets_options)),
+      ';',
+      optional(field('body', $.proc_body)),
+      optional(choice(
+        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
+        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
+      )),
+    ),
+
+    datasets_options: $ => repeat1(choice(
+      $.datasets_option,
+      $.datasets_option_flag,
+      $.identifier,
+    )),
+
+    // key = value (e.g. lib=work, library=work, memtype=data, gennum=2, dd=foo,
+    // alter=secret, pw=secret, read=secret, encryptkey=key) OR key with a
+    // parenthesized arg group. Mirrors proc_option/copy/cport/cimport/sort_option's
+    // shape.
+    datasets_option: $ => seq(
+      $.datasets_option_key,
+      optional($.proc_option_args),
+      optional(seq('=',
+        choice($.catalog_path, $.expression),
+        optional($.data_set_option),
+      )),
+    ),
+
+    // A DATASETS option keyword with no value (boolean flag), e.g. kill / force /
+    // nolist / noprint / nowarn / details / nodetails. Aliased to a named node for
+    // highlighting/linting.
+    datasets_option_flag: $ => alias(choice(
+      $._kill_keyword, $._force_keyword, $._nolist_keyword,
+      $._noprint_keyword, $._nowarn_keyword,
+      $._details_keyword, $._nodetails_keyword,
+    ), 'datasets_option_flag'),
+
+    // Option key: known DATASETS value-option keywords (aliased so they appear as
+    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
+    // key, which the linter may flag as invalid for DATASETS).
+    datasets_option_key: $ => choice(
+      alias($._lib_keyword, 'lib'),
+      alias($._library_keyword, 'library'),
+      alias($._dd_keyword, 'dd'),
+      alias($._ddname_keyword, 'ddname'),
+      alias($._memtype_keyword, 'memtype'),
+      alias($._mt_keyword, 'mt'),
+      alias($._mtype_keyword, 'mtype'),
+      alias($._gennum_keyword, 'gennum'),
+      alias($._alter_keyword, 'alter'),
+      alias($._pw_keyword, 'pw'),
+      alias($._read_keyword, 'read'),
+      alias($._encryptkey_keyword, 'encryptkey'),
       $.identifier,
     ),
 
@@ -2817,6 +2905,9 @@ module.exports = grammar({
     // PROC CIMPORT proc-name token (dispatched on by proc_step). Distinct from a
     // bare identifier so the dispatcher can route to proc_cimport_step (Phase 3 B3).
     _proc_cimport_keyword: $ => /[cC][iI][mM][pP][oO][rR][tT]/,
+    // PROC DATASETS proc-name token (dispatched on by proc_step). Distinct from a
+    // bare identifier so the dispatcher can route to proc_datasets_step (Phase 3 C2 / Task 12).
+    _proc_datasets_keyword: $ => /[dD][aA][tT][aA][sS][eE][tT][sS]/,
     // PROC SORT reuses the _sort_keyword token (defined further below, shared
     // with CIMPORT's sort= option) as its proc-name token — see the proc_sort_step
     // comment above for why no distinct _proc_sort_keyword is defined (Phase 3 C1).
@@ -3045,6 +3136,26 @@ module.exports = grammar({
     _tagsort_keyword: $ => /[tT][aA][gG][sS][oO][rR][tT]/,
     _presorted_keyword: $ => /[pP][rR][eE][sS][oO][rR][tT][eE][dD]/,
     _overwrite_keyword: $ => /[oO][vV][eE][rR][wW][rR][iI][tT][eE]/,
+
+    // --- PROC DATASETS option keywords (Phase 3 C2 / Task 12) ---
+    // DATASETS-specific option keys/flags. _library_keyword/_memtype_keyword/
+    // _lib_keyword (global/CIMPORT)/_mt_keyword (CIMPORT)/_alter_keyword (COPY)/
+    // _encryptkey_keyword (COPY)/_force_keyword (COPY) are reused by
+    // datasets_option_key/_flag. The rest are DATASETS-only.
+    // Value-option keys (used by datasets_option_key):
+    _dd_keyword: $ => /[dD][dD]/,
+    _ddname_keyword: $ => /[dD][dD][nN][aA][mM][eE]/,
+    _mtype_keyword: $ => /[mM][tT][yY][pP][eE]/,
+    _gennum_keyword: $ => /[gG][eE][nN][nN][uU][mM]/,
+    _pw_keyword: $ => /[pP][wW]/,
+    _read_keyword: $ => /[rR][eE][aA][dD]/,
+    // Boolean flags (no '= value') used by datasets_option_flag:
+    _kill_keyword: $ => /[kK][iI][lL][lL]/,
+    _nolist_keyword: $ => /[nN][oO][lL][iI][sS][tT]/,
+    _noprint_keyword: $ => /[nN][oO][pP][rR][iI][nN][tT]/,
+    _nowarn_keyword: $ => /[nN][oO][wW][aA][rR][nN]/,
+    _details_keyword: $ => /[dD][eE][tT][aA][iI][lL][sS]/,
+    _nodetails_keyword: $ => /[nN][oO][dD][eE][tT][aA][iI][lL][sS]/,
 
     // --- Operators and punctuation ---
     _semicolon: $ => ';',

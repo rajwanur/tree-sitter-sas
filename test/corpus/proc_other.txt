@@ -228,13 +228,10 @@ quit;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key
-            (identifier))
+    (proc_datasets_step
+      options: (datasets_options
+        (datasets_option
+          (datasets_option_key)
           (identifier)))
       body: (proc_body
         (datasets_delete_statement

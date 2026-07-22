@@ -1202,6 +1202,80 @@
     "fields": {}
   },
   {
+    "type": "datasets_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "datasets_option_key",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "datasets_option_flag",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "datasets_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "datasets_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "datasets_option",
+          "named": true
+        },
+        {
+          "type": "datasets_option_flag",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "datasets_repair_statement",
     "named": true,
     "fields": {},
@@ -4290,6 +4364,32 @@
     }
   },
   {
+    "type": "proc_datasets_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "datasets_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "proc_generic_step",
     "named": true,
     "fields": {
@@ -4473,6 +4573,10 @@
         },
         {
           "type": "proc_cport_step",
+          "named": true
+        },
+        {
+          "type": "proc_datasets_step",
           "named": true
         },
         {
@@ -7191,7 +7295,23 @@
     "named": false
   },
   {
+    "type": "datasets",
+    "named": false
+  },
+  {
+    "type": "datasets_option_flag",
+    "named": false
+  },
+  {
     "type": "dbms",
+    "named": false
+  },
+  {
+    "type": "dd",
+    "named": false
+  },
+  {
+    "type": "ddname",
     "named": false
   },
   {
@@ -7352,6 +7472,10 @@
   },
   {
     "type": "generation",
+    "named": false
+  },
+  {
+    "type": "gennum",
     "named": false
   },
   {
@@ -7591,6 +7715,10 @@
     "named": false
   },
   {
+    "type": "mtype",
+    "named": false
+  },
+  {
     "type": "name_literal",
     "named": true
   },
@@ -7767,6 +7895,10 @@
     "named": false
   },
   {
+    "type": "pw",
+    "named": false
+  },
+  {
     "type": "qqplot",
     "named": false
   },
@@ -7780,6 +7912,10 @@
   },
   {
     "type": "rbreak",
+    "named": false
+  },
+  {
+    "type": "read",
     "named": false
   },
   {

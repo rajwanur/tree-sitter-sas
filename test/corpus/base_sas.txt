@@ -205,9 +205,7 @@ quit;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_datasets_step
       body: (proc_body
         (datasets_delete_statement
           (identifier))))))

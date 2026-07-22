@@ -1,0 +1,145 @@
+================================================================================
+PROC DATASETS header flags (kill, nolist, force, noprint, nowarn, details, nodetails)
+================================================================================
+proc datasets lib=work nolist kill;
+quit;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_datasets_step
+      options: (datasets_options
+        (datasets_option
+          (datasets_option_key)
+          (identifier))
+        (datasets_option_flag)
+        (datasets_option_flag)))))
+
+================================================================================
+PROC DATASETS comprehensive value-options
+================================================================================
+proc datasets library=work memtype=data gennum=2 alter=secret pw=secret read=secret encryptkey=key ddname=x dd=y mt=data mtype=data nowarn noprint details nodetails force;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_datasets_step
+      options: (datasets_options
+        (datasets_option
+          (datasets_option_key)
+          (identifier))
+        (datasets_option
+          (datasets_option_key)
+          (identifier))
+        (datasets_option
+          (datasets_option_key)
+          (number))
+        (datasets_option
+          (datasets_option_key)
+          (identifier))
+        (datasets_option
+          (datasets_option_key)
+          (identifier))
+        (datasets_option
+          (datasets_option_key)
+          (identifier))
+        (datasets_option
+          (datasets_option_key)
+          (identifier))
+        (datasets_option
+          (datasets_option_key)
+          (identifier))
+        (datasets_option
+          (datasets_option_key)
+          (identifier))
+        (datasets_option
+          (datasets_option_key)
+          (identifier))
+        (datasets_option
+          (datasets_option_key)
+          (identifier))
+        (datasets_option_flag)
+        (datasets_option_flag)
+        (datasets_option_flag)
+        (datasets_option_flag)
+        (datasets_option_flag)))))
+
+================================================================================
+PROC DATASETS header options + body statements (contents/delete/change/modify/save)
+================================================================================
+proc datasets library=work nolist;
+  contents data=old;
+  delete stale;
+  change old = new;
+  modify master;
+    rename age = years;
+  save master;
+quit;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_datasets_step
+      options: (datasets_options
+        (datasets_option
+          (datasets_option_key)
+          (identifier))
+        (datasets_option_flag))
+      body: (proc_body
+        (datasets_contents_statement
+          (identifier))
+        (datasets_delete_statement
+          (identifier))
+        (datasets_change_statement
+          (identifier)
+          (identifier))
+        (datasets_modify_statement
+          (identifier)
+          (identifier)
+          (identifier))
+        (datasets_save_statement
+          (identifier))))))
+
+================================================================================
+PROC DATASETS unknown header option (linter fallback via identifier)
+================================================================================
+proc datasets lib=work bogusopt=x;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_datasets_step
+      options: (datasets_options
+        (datasets_option
+          (datasets_option_key)
+          (identifier))
+        (datasets_option
+          (datasets_option_key
+            (identifier))
+          (identifier))))))
+
+================================================================================
+PROC DATASETS kill header flag + nolist/copy body statements (body-rule interaction)
+================================================================================
+proc datasets lib=work kill;
+  nolist;
+  copy out=backup;
+    select old;
+quit;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_datasets_step
+      options: (datasets_options
+        (datasets_option
+          (datasets_option_key)
+          (identifier))
+        (datasets_option_flag))
+      body: (proc_body
+        (datasets_nolist_statement)
+        (datasets_copy_statement
+          (identifier)
+          (identifier))))))
