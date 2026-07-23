@@ -160,6 +160,10 @@ module.exports = grammar({
     // sort/datasets/append/standard/printto/transpose/contents/compare/freq option
     // conflicts above (Phase 3 C3 / Task 19).
     [$.options_options, $.options_option_key],
+    // print_options vs print_option_key: same family as the copy/cport/cimport/
+    // sort/datasets/append/standard/printto/transpose/contents/compare/freq/options
+    // option conflicts above (Phase 3 C3 / Task 20).
+    [$.print_options, $.print_option_key],
     // proc_body: repeat1(choice(...)) cannot tell whether an identifier
     // starts a new statement inside the proc body or is a new step outside.
     // Also, run/quit can match as bare_statement or as the step terminator.
@@ -203,6 +207,9 @@ module.exports = grammar({
     // proc_options_step: same optional-body ambiguity as proc_copy/cport/cimport/
     // sort/datasets/append/standard/printto/transpose/contents/compare/freq (Phase 3 C3 / Task 19).
     [$.proc_options_step],
+    // proc_print_step: same optional-body ambiguity as proc_copy/cport/cimport/
+    // sort/datasets/append/standard/printto/transpose/contents/compare/freq/options (Phase 3 C3 / Task 20).
+    [$.proc_print_step],
     // proc_generic_step: the optional proc_body now lives here (the original
     // proc_step body, moved when proc_step became a dispatcher).
     [$.proc_generic_step],
@@ -462,6 +469,7 @@ module.exports = grammar({
       prec(1, $.proc_compare_step), // Phase C3 (Task 18)
       prec(1, $.proc_freq_step), // Phase C3 (Task 22)
       prec(1, $.proc_options_step), // Phase C3 (Task 19)
+      prec(1, $.proc_print_step), // Phase C3 (Task 20)
       $.proc_generic_step,
     ),
 
@@ -1426,6 +1434,119 @@ module.exports = grammar({
       alias($._option_keyword, 'option'),
       alias($._port_keyword, 'port'),
       alias($._value_keyword, 'value'),
+      $.identifier,
+    ),
+
+    // PROC PRINT: data=/double=/heading=/label=/n=/obs=/round=/rows=/split=/style=/
+    // uniform=/width=/blank=/blankline=/contents=/grand_label=/grandtot_label=/
+    // grandtotal_label=/gtot_label=/gtotal_label=/sumlabel=/nosumlabel= value-options
+    // plus boolean flags (noobs, plus the single-letter d/l/n/r/s shorthand).
+    // Same shape as proc_copy/cport/cimport/sort/datasets/append/standard/printto/
+    // transpose/contents/compare/freq/options; proc name is emitted as the
+    // alias($._proc_print_keyword, 'print') token (no field('name')) and the
+    // linter reads the name via inferProcNameFromStep (Phase 3 C3 / Task 20).
+    //
+    // HEADER-only struct (like DATASETS/TRANSPOSE/CONTENTS/FREQ/OPTIONS): this
+    // wraps the options on the 'proc print ...;' header line ONLY. PRINT's
+    // pre-existing BODY statement rules (print_var_statement starting with 'var',
+    // print_id_statement starting with 'id', print_sum_statement starting with
+    // 'sum', print_pageby_statement starting with 'pageby') live in proc_body's
+    // choice() and are UNCHANGED — proc_print_step references $.proc_body for the
+    // body, exactly like proc_freq_step/proc_options_step. The header options
+    // terminate at the first ';' and the body begins after it (same boundary as
+    // every per-proc step), so a header key never collides with any body
+    // statement (which only matches inside the body, terminated by its own ';').
+    //
+    // SINGLE-LETTER KEYS d/l/n/r/s: PRINT accepts single-letter option shorthand
+    // (d=double, l=label, n=number-of-obs, r=round, s=sum). s reuses _s_keyword
+    // (STANDARD/global). d/l/n/r get dedicated _d_keyword/_l_keyword/_n_keyword/
+    // _r_keyword char-class tokens (see their block comment above). Empirically
+    // (Task 20) all four route cleanly with no corpus regression — unlike
+    // COMPARE's b/c (Task 18), no fallback-to-identifier is needed. tree-sitter's
+    // longest-match still resolves e.g. 'data=' as the 4-char _data_keyword
+    // (never as 'd'+'ata'), 'label=' as the 5-char _label_keyword (never as
+    // 'l'+'abel'), 'round=' as 5-char _round_keyword (never 'r'+'ound'), and
+    // 'noobs' as the 5-char _noobs_keyword (never 'n'+'oops'); the $.identifier
+    // fallback in print_option_key catches any unknown single-letter key.
+    proc_print_step: $ => seq(
+      alias($._proc_keyword, 'proc'),
+      alias($._proc_print_keyword, 'print'),
+      optional(field('options', $.print_options)),
+      ';',
+      optional(field('body', $.proc_body)),
+      optional(choice(
+        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
+        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
+      )),
+    ),
+
+    print_options: $ => repeat1(choice(
+      $.print_option,
+      $.print_option_flag,
+      $.identifier,
+    )),
+
+    // key = value (e.g. data=sashelp.class, double=no, heading=both, label,
+    // n=5, obs=10, round=0.01, rows=page, split='*', style=[style...],
+    // uniform, width=full, blank, blankline, contents=yes,
+    // grand_label='Total', grandtot_label='Grand', grandtotal_label='All',
+    // gtot_label='GT', gtotal_label='GTotal', sumlabel='Sum', nosumlabel,
+    // d=foo, l, n=20, r, s) OR key with a parenthesized arg group. Mirrors
+    // proc_option/copy/.../options_option's shape.
+    print_option: $ => seq(
+      $.print_option_key,
+      optional($.proc_option_args),
+      optional(seq('=',
+        choice($.catalog_path, $.expression),
+        optional($.data_set_option),
+      )),
+    ),
+
+    // A PRINT option keyword with no value (boolean flag). Aliased to a named
+    // node for highlighting/linting. Covers the PRINT flags: noobs (reuses the
+    // COMPARE/global _noobs_keyword). The single-letter shorthand d/l/n/r/s are
+    // value-option keys (see print_option_key) NOT flags — matching the
+    // COMPARE/STANDARD precedent where _m_keyword lives only in *_option_key, so
+    // a bare 's' still parses via print_option (key with no '= value') and the
+    // option_flag list stays conflict-free.
+    print_option_flag: $ => alias(choice(
+      $._noobs_keyword,
+    ), 'print_option_flag'),
+
+    // Option key: known PRINT value-option keywords (aliased so they appear as
+    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
+    // key, which the linter may flag as invalid for PRINT). Includes the
+    // multi-letter keys (blank/blankline/contents/data/double/grand_label/
+    // grandtot_label/grandtotal_label/gtot_label/gtotal_label/heading/label/obs/
+    // round/rows/split/style/sumlabel/nosumlabel/uniform/width) and the
+    // single-letter d/l/n/r/s shorthand keys.
+    print_option_key: $ => choice(
+      alias($._blank_keyword, 'blank'),
+      alias($._blankline_keyword, 'blankline'),
+      alias($._contents_keyword, 'contents'),
+      alias($._data_keyword, 'data'),
+      alias($._double_keyword, 'double'),
+      alias($._grand_label_keyword, 'grand_label'),
+      alias($._grandtot_label_keyword, 'grandtot_label'),
+      alias($._grandtotal_label_keyword, 'grandtotal_label'),
+      alias($._gtot_label_keyword, 'gtot_label'),
+      alias($._gtotal_label_keyword, 'gtotal_label'),
+      alias($._heading_keyword, 'heading'),
+      alias($._label_keyword, 'label'),
+      alias($._obs_keyword, 'obs'),
+      alias($._round_keyword, 'round'),
+      alias($._rows_keyword, 'rows'),
+      alias($._split_keyword, 'split'),
+      alias($._style_keyword, 'style'),
+      alias($._sumlabel_keyword, 'sumlabel'),
+      alias($._nosumlabel_keyword, 'nosumlabel'),
+      alias($._uniform_keyword, 'uniform'),
+      alias($._width_keyword, 'width'),
+      alias($._d_keyword, 'd'),
+      alias($._l_keyword, 'l'),
+      alias($._n_keyword, 'n'),
+      alias($._r_keyword, 'r'),
+      alias($._s_keyword, 's'),
       $.identifier,
     ),
 
@@ -3588,6 +3709,10 @@ module.exports = grammar({
     // PROC OPTIONS proc-name token (dispatched on by proc_step). Distinct from a
     // bare identifier so the dispatcher can route to proc_options_step (Phase 3 C3 / Task 19).
     _proc_options_keyword: $ => /[oO][pP][tT][iI][oO][nN][sS]/,
+    // PROC PRINT proc-name token (dispatched on by proc_step). Distinct from a
+    // bare identifier (and from _proc_printto_keyword) so the dispatcher can
+    // route to proc_print_step (Phase 3 C3 / Task 20).
+    _proc_print_keyword: $ => /[pP][rR][iI][nN][tT]/,
     // PROC SORT reuses the _sort_keyword token (defined further below, shared
     // with CIMPORT's sort= option) as its proc-name token — see the proc_sort_step
     // comment above for why no distinct _proc_sort_keyword is defined (Phase 3 C1).
@@ -4031,6 +4156,50 @@ module.exports = grammar({
     _listrestrict_keyword: $ => /[lL][iI][sS][tT][rR][eE][sS][tT][rR][iI][cC][tT]/,
     _portable_keyword: $ => /[pP][oO][rR][tT][aA][bB][lL][eE]/,
     _restrict_keyword: $ => /[rR][eE][sS][tT][rR][iI][cC][tT]/,
+
+    // --- PROC PRINT option keywords (Phase 3 C3 / Task 20) ---
+    // PRINT-specific option keys/flags. _data_keyword/_label_keyword (global)/
+    // _s_keyword (STANDARD/global)/_noobs_keyword (COMPARE/global) are reused by
+    // print_option_key/print_option_flag. The rest are PRINT-only.
+    //
+    // SINGLE-LETTER KEYWORDS d/l/n/r: the PRINT spec lists d, l, n, r, s as
+    // single-letter option shorthand (s reuses _s_keyword from STANDARD). Per
+    // the Phase C template's single-letter guidance, d/l/n/r are given dedicated
+    // _d_keyword/_l_keyword/_n_keyword/_r_keyword char-class tokens. tree-sitter's
+    // longest-match rule makes them win over the generic identifier (length 1 vs
+    // N) at the exact option-key boundary, and the $.identifier fallback in
+    // print_option_key still catches unknown single-letter keys. See the
+    // print_option_key comment for the empirical conflict check (Task 20): all
+    // four route cleanly and do not regress any corpus test, so unlike
+    // COMPARE's b/c (Task 18) no fallback-to-identifier is needed here.
+    // Multi-letter value-option keys (used by print_option_key):
+    _blank_keyword: $ => /[bB][lL][aA][nN][kK]/,
+    _blankline_keyword: $ => /[bB][lL][aA][nN][kK][lL][iI][nN][eE]/,
+    _contents_keyword: $ => /[cC][oO][nN][tT][eE][nN][tT][sS]/,
+    _double_keyword: $ => /[dD][oO][uU][bB][lL][eE]/,
+    // grand_label/grandtot_label/grandtotal_label/gtot_label/gtotal_label: the
+    // underscore is a literal char in the regex char-class (no escape needed).
+    _grand_label_keyword: $ => /[gG][rR][aA][nN][dD][_][lL][aA][bB][eE][lL]/,
+    _grandtot_label_keyword: $ => /[gG][rR][aA][nN][dD][tT][oO][tT][_][lL][aA][bB][eE][lL]/,
+    _grandtotal_label_keyword: $ => /[gG][rR][aA][nN][dD][tT][oO][tT][aA][lL][_][lL][aA][bB][eE][lL]/,
+    _gtot_label_keyword: $ => /[gG][tT][oO][tT][_][lL][aA][bB][eE][lL]/,
+    _gtotal_label_keyword: $ => /[gG][tT][oO][tT][aA][lL][_][lL][aA][bB][eE][lL]/,
+    _heading_keyword: $ => /[hH][eE][aA][dD][iI][nN][gG]/,
+    _nosumlabel_keyword: $ => /[nN][oO][sS][uU][mM][lL][aA][bB][eE][lL]/,
+    _obs_keyword: $ => /[oO][bB][sS]/,
+    _round_keyword: $ => /[rR][oO][uU][nN][dD]/,
+    _rows_keyword: $ => /[rR][oO][wW][sS]/,
+    _split_keyword: $ => /[sS][pP][lL][iI][tT]/,
+    _style_keyword: $ => /[sS][tT][yY][lL][eE]/,
+    _sumlabel_keyword: $ => /[sS][uU][mM][lL][aA][bB][eE][lL]/,
+    _uniform_keyword: $ => /[uU][nN][iI][fF][oO][rR][mM]/,
+    _width_keyword: $ => /[wW][iI][dD][tT][hH]/,
+    // Single-letter value-option shorthand (d/l/n/r). See the block comment above
+    // for the longest-match rationale and the empirical no-regression check.
+    _d_keyword: $ => /[dD]/,
+    _l_keyword: $ => /[lL]/,
+    _n_keyword: $ => /[nN]/,
+    _r_keyword: $ => /[rR]/,
 
     // --- Operators and punctuation ---
     _semicolon: $ => ';',

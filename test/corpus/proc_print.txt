@@ -7,12 +7,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_print_step
+      options: (print_options
+        (print_option
+          (print_option_key)
           (identifier))))))
 
 ================================================================================
@@ -25,12 +23,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_print_step
+      options: (print_options
+        (print_option
+          (print_option_key)
           (identifier)))
       body: (proc_body
         (tabulate_var_statement
@@ -48,12 +44,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_print_step
+      options: (print_options
+        (print_option
+          (print_option_key)
           (identifier)))
       body: (proc_body
         (where_statement
@@ -62,3 +56,88 @@ run;
             right: (number)))
         (tabulate_var_statement
           (identifier))))))
+
+================================================================================
+PROC PRINT value-options (data=/n=/obs=) + label flag + noobs flag
+================================================================================
+proc print data=sashelp.class n=5 obs=10 label noobs;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_print_step
+      options: (print_options
+        (print_option
+          (print_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (print_option
+          (print_option_key)
+          (number))
+        (print_option
+          (print_option_key)
+          (number))
+        (print_option
+          (print_option_key))
+        (print_option_flag)))))
+
+================================================================================
+PROC PRINT single-letter shorthand keys (d=/l/r/s)
+================================================================================
+proc print d=foo l r s;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_print_step
+      options: (print_options
+        (print_option
+          (print_option_key)
+          (identifier))
+        (print_option
+          (print_option_key))
+        (print_option
+          (print_option_key))
+        (print_option
+          (print_option_key))))))
+
+================================================================================
+PROC PRINT underscore value-option keys (grand_label=/grandtot_label=/grandtotal_label=/gtot_label=/gtotal_label=/sumlabel=/nosumlabel)
+================================================================================
+proc print grand_label='Total' grandtot_label='Grand' grandtotal_label='All' gtot_label='GT' gtotal_label='GTotal' sumlabel='Sum' nosumlabel;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_print_step
+      options: (print_options
+        (print_option
+          (print_option_key)
+          (quoted_string
+            (single_quoted_string)))
+        (print_option
+          (print_option_key)
+          (quoted_string
+            (single_quoted_string)))
+        (print_option
+          (print_option_key)
+          (quoted_string
+            (single_quoted_string)))
+        (print_option
+          (print_option_key)
+          (quoted_string
+            (single_quoted_string)))
+        (print_option
+          (print_option_key)
+          (quoted_string
+            (single_quoted_string)))
+        (print_option
+          (print_option_key)
+          (quoted_string
+            (single_quoted_string)))
+        (print_option
+          (print_option_key))))))

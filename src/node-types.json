@@ -926,6 +926,11 @@
     }
   },
   {
+    "type": "contents",
+    "named": false,
+    "fields": {}
+  },
+  {
     "type": "contents_data_statement",
     "named": true,
     "fields": {},
@@ -4031,6 +4036,11 @@
     }
   },
   {
+    "type": "print",
+    "named": false,
+    "fields": {}
+  },
+  {
     "type": "print_id_statement",
     "named": true,
     "fields": {},
@@ -4044,6 +4054,80 @@
         },
         {
           "type": "macro_variable_reference",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "print_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "print_option_key",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "print_option_flag",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "print_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "print_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "print_option",
+          "named": true
+        },
+        {
+          "type": "print_option_flag",
           "named": true
         }
       ]
@@ -5114,6 +5198,32 @@
     }
   },
   {
+    "type": "proc_print_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "print_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "proc_printto_step",
     "named": true,
     "fields": {
@@ -5237,6 +5347,10 @@
         },
         {
           "type": "proc_options_step",
+          "named": true
+        },
+        {
+          "type": "proc_print_step",
           "named": true
         },
         {
@@ -8004,6 +8118,14 @@
     "named": false
   },
   {
+    "type": "blank",
+    "named": false
+  },
+  {
+    "type": "blankline",
+    "named": false
+  },
+  {
     "type": "block_comment",
     "named": true,
     "extra": true
@@ -8157,6 +8279,10 @@
     "named": false
   },
   {
+    "type": "d",
+    "named": false
+  },
+  {
     "type": "data",
     "named": false
   },
@@ -8242,6 +8368,10 @@
   },
   {
     "type": "do",
+    "named": false
+  },
+  {
+    "type": "double",
     "named": false
   },
   {
@@ -8393,11 +8523,31 @@
     "named": false
   },
   {
+    "type": "grand_label",
+    "named": false
+  },
+  {
+    "type": "grandtot_label",
+    "named": false
+  },
+  {
+    "type": "grandtotal_label",
+    "named": false
+  },
+  {
     "type": "group",
     "named": false
   },
   {
     "type": "gt",
+    "named": false
+  },
+  {
+    "type": "gtot_label",
+    "named": false
+  },
+  {
+    "type": "gtotal_label",
     "named": false
   },
   {
@@ -8414,6 +8564,10 @@
   },
   {
     "type": "hbar",
+    "named": false
+  },
+  {
+    "type": "heading",
     "named": false
   },
   {
@@ -8518,6 +8672,10 @@
   },
   {
     "type": "kill",
+    "named": false
+  },
+  {
+    "type": "l",
     "named": false
   },
   {
@@ -8649,6 +8807,10 @@
     "named": false
   },
   {
+    "type": "n",
+    "named": false
+  },
+  {
     "type": "name",
     "named": false
   },
@@ -8685,6 +8847,10 @@
     "named": false
   },
   {
+    "type": "nosumlabel",
+    "named": false
+  },
+  {
     "type": "not",
     "named": false
   },
@@ -8703,6 +8869,10 @@
   {
     "type": "number",
     "named": true
+  },
+  {
+    "type": "obs",
+    "named": false
   },
   {
     "type": "ods",
@@ -8849,7 +9019,7 @@
     "named": false
   },
   {
-    "type": "print",
+    "type": "print_option_flag",
     "named": false
   },
   {
@@ -8890,6 +9060,10 @@
   },
   {
     "type": "quit",
+    "named": false
+  },
+  {
+    "type": "r",
     "named": false
   },
   {
@@ -8946,6 +9120,14 @@
   },
   {
     "type": "right",
+    "named": false
+  },
+  {
+    "type": "round",
+    "named": false
+  },
+  {
+    "type": "rows",
     "named": false
   },
   {
@@ -9026,6 +9208,10 @@
     "named": false
   },
   {
+    "type": "split",
+    "named": false
+  },
+  {
     "type": "standard",
     "named": false
   },
@@ -9063,6 +9249,10 @@
   },
   {
     "type": "sum",
+    "named": false
+  },
+  {
+    "type": "sumlabel",
     "named": false
   },
   {
@@ -9107,6 +9297,10 @@
   },
   {
     "type": "types",
+    "named": false
+  },
+  {
+    "type": "uniform",
     "named": false
   },
   {
@@ -9183,6 +9377,10 @@
   },
   {
     "type": "while",
+    "named": false
+  },
+  {
+    "type": "width",
     "named": false
   },
   {

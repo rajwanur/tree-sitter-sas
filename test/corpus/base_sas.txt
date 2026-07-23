@@ -186,9 +186,7 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_print_step
       body: (proc_body
         (where_statement
           (binary_expression
@@ -228,9 +226,7 @@ run;
       target: (identifier)
       value: (number)))
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier)))))
+    (proc_print_step)))
 
 ================================================================================
 LIBNAME statement
