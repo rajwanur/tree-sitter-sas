@@ -152,6 +152,10 @@ module.exports = grammar({
     // sort/datasets/append/standard/printto/transpose/contents option conflicts above
     // (Phase 3 C3 / Task 18).
     [$.compare_options, $.compare_option_key],
+    // freq_options vs freq_option_key: same family as the copy/cport/cimport/
+    // sort/datasets/append/standard/printto/transpose/contents/compare option conflicts
+    // above (Phase 3 C3 / Task 22).
+    [$.freq_options, $.freq_option_key],
     // proc_body: repeat1(choice(...)) cannot tell whether an identifier
     // starts a new statement inside the proc body or is a new step outside.
     // Also, run/quit can match as bare_statement or as the step terminator.
@@ -189,6 +193,9 @@ module.exports = grammar({
     // proc_compare_step: same optional-body ambiguity as proc_copy/cport/cimport/
     // sort/datasets/append/standard/printto/transpose/contents (Phase 3 C3 / Task 18).
     [$.proc_compare_step],
+    // proc_freq_step: same optional-body ambiguity as proc_copy/cport/cimport/
+    // sort/datasets/append/standard/printto/transpose/contents/compare (Phase 3 C3 / Task 22).
+    [$.proc_freq_step],
     // proc_generic_step: the optional proc_body now lives here (the original
     // proc_step body, moved when proc_step became a dispatcher).
     [$.proc_generic_step],
@@ -446,6 +453,7 @@ module.exports = grammar({
       prec(1, $.proc_transpose_step), // Phase C3 (Task 16)
       prec(1, $.proc_contents_step), // Phase C3 (Task 17)
       prec(1, $.proc_compare_step), // Phase C3 (Task 18)
+      prec(1, $.proc_freq_step), // Phase C3 (Task 22)
       $.proc_generic_step,
     ),
 
@@ -1251,6 +1259,80 @@ module.exports = grammar({
       alias($._meth_keyword, 'meth'),
       alias($._method_keyword, 'method'),
       alias($._m_keyword, 'm'),
+      $.identifier,
+    ),
+
+    // PROC FREQ: compress=/data=/formchar=/nlevels=/order= value-options plus
+    // boolean flags (noprint, page). Same shape as proc_copy/cport/cimport/
+    // sort/datasets/append/standard/printto/transpose/contents/compare; proc name
+    // is emitted as the alias($._proc_freq_keyword, 'freq') token (no
+    // field('name')) and the linter reads the name via inferProcNameFromStep
+    // (Phase 3 C3 / Task 22).
+    //
+    // HEADER-only struct (like DATASETS/TRANSPOSE/CONTENTS): this wraps the
+    // options on the 'proc freq ...;' header line ONLY. FREQ's pre-existing BODY
+    // statement rules (freq_tables_statement, freq_exact_statement,
+    // freq_weight_statement, freq_test_statement, freq_output_statement) live in
+    // proc_body's choice() and are UNCHANGED — proc_freq_step references
+    // $.proc_body for the body, exactly like proc_contents_step. The header
+    // options terminate at the first ';' and the body begins after it (same
+    // boundary as every per-proc step), so a header flag like 'noprint'/'page'
+    // never collides with any body statement (which only matches inside the body,
+    // terminated by its own ';').
+    //
+    // FREQ's value-option keys are all multi-letter (compress, data, formchar,
+    // nlevels, order), so tree-sitter's longest-match resolves each ahead of the
+    // generic identifier token at the option-key boundary; the $.identifier
+    // fallback in freq_option_key still catches unknown keys. The 7-letter
+    // 'formchar' value-option is a long char string (e.g. formchar=|----|), but
+    // the value routes through $.expression / $.quoted_string so it parses
+    // cleanly without a dedicated value node.
+    proc_freq_step: $ => seq(
+      alias($._proc_keyword, 'proc'),
+      alias($._proc_freq_keyword, 'freq'),
+      optional(field('options', $.freq_options)),
+      ';',
+      optional(field('body', $.proc_body)),
+      optional(choice(
+        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
+        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
+      )),
+    ),
+
+    freq_options: $ => repeat1(choice(
+      $.freq_option,
+      $.freq_option_flag,
+      $.identifier,
+    )),
+
+    // key = value (e.g. data=work.in, order=freq, compress=yes, nlevels=10,
+    // formchar='|----|') OR key with a parenthesized arg group. Mirrors
+    // proc_option/copy/.../compare_option's shape.
+    freq_option: $ => seq(
+      $.freq_option_key,
+      optional($.proc_option_args),
+      optional(seq('=',
+        choice($.catalog_path, $.expression),
+        optional($.data_set_option),
+      )),
+    ),
+
+    // A FREQ option keyword with no value (boolean flag). Aliased to a named
+    // node for highlighting/linting. Covers the FREQ flags: noprint, page.
+    freq_option_flag: $ => alias(choice(
+      $._noprint_keyword,
+      $._page_keyword,
+    ), 'freq_option_flag'),
+
+    // Option key: known FREQ value-option keywords (aliased so they appear as
+    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
+    // key, which the linter may flag as invalid for FREQ).
+    freq_option_key: $ => choice(
+      alias($._compress_keyword, 'compress'),
+      alias($._data_keyword, 'data'),
+      alias($._formchar_keyword, 'formchar'),
+      alias($._nlevels_keyword, 'nlevels'),
+      alias($._order_keyword, 'order'),
       $.identifier,
     ),
 
@@ -3407,6 +3489,9 @@ module.exports = grammar({
     // PROC COMPARE proc-name token (dispatched on by proc_step). Distinct from a
     // bare identifier so the dispatcher can route to proc_compare_step (Phase 3 C3 / Task 18).
     _proc_compare_keyword: $ => /[cC][oO][mM][pP][aA][rR][eE]/,
+    // PROC FREQ proc-name token (dispatched on by proc_step). Distinct from a
+    // bare identifier so the dispatcher can route to proc_freq_step (Phase 3 C3 / Task 22).
+    _proc_freq_keyword: $ => /[fF][rR][eE][qQ]/,
     // PROC SORT reuses the _sort_keyword token (defined further below, shared
     // with CIMPORT's sort= option) as its proc-name token — see the proc_sort_step
     // comment above for why no distinct _proc_sort_keyword is defined (Phase 3 C1).
@@ -3808,6 +3893,18 @@ module.exports = grammar({
     _trans_keyword: $ => /[tT][rR][aA][nN][sS]/,
     _warn_keyword: $ => /[wW][aA][rR][nN]/,
     _warning_keyword: $ => /[wW][aA][rR][nN][iI][nN][gG]/,
+
+    // --- PROC FREQ option keywords (Phase 3 C3 / Task 22) ---
+    // FREQ-specific option keys/flags. _data_keyword (global)/
+    // _compress_keyword (SORT/global)/_noprint_keyword (DATASETS/global)/
+    // _order_keyword (CONTENTS/global) are reused by freq_option_key /
+    // freq_option_flag. The rest are FREQ-only. FREQ's options are all
+    // multi-letter, so no single-letter-key concern here.
+    // Value-option keys (used by freq_option_key):
+    _formchar_keyword: $ => /[fF][oO][rR][mM][cC][hH][aA][rR]/,
+    _nlevels_keyword: $ => /[nN][lL][eE][vV][eE][lL][sS]/,
+    // Boolean flag (no '= value') used by freq_option_flag:
+    _page_keyword: $ => /[pP][aA][gG][eE]/,
 
     // --- Operators and punctuation ---
     _semicolon: $ => ';',

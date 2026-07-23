@@ -8,12 +8,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_freq_step
+      options: (freq_options
+        (freq_option
+          (freq_option_key)
           (identifier)))
       body: (proc_body
         (freq_tables_statement
@@ -29,12 +27,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_freq_step
+      options: (freq_options
+        (freq_option
+          (freq_option_key)
           (identifier)))
       body: (proc_body
         (freq_tables_statement
@@ -52,18 +48,73 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_freq_step
+      options: (freq_options
+        (freq_option
+          (freq_option_key)
           (identifier)))
       body: (proc_body
         (where_statement
           (binary_expression
             left: (identifier)
             right: (number)))
+        (freq_tables_statement
+          (identifier))))))
+
+================================================================================
+PROC FREQ full value-options: data=/order=/compress=/nlevels=/formchar=
+================================================================================
+proc freq data=work.in order=freq compress=yes nlevels=10 formchar="|----|";
+  tables a;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_freq_step
+      options: (freq_options
+        (freq_option
+          (freq_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (freq_option
+          (freq_option_key)
+          (identifier))
+        (freq_option
+          (freq_option_key)
+          (identifier))
+        (freq_option
+          (freq_option_key)
+          (number))
+        (freq_option
+          (freq_option_key)
+          (quoted_string
+            (double_quoted_string))))
+      body: (proc_body
+        (freq_tables_statement
+          (identifier))))))
+
+================================================================================
+PROC FREQ boolean flags: noprint page
+================================================================================
+proc freq data=work.in noprint page;
+  tables a;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_freq_step
+      options: (freq_options
+        (freq_option
+          (freq_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (freq_option_flag)
+        (freq_option_flag))
+      body: (proc_body
         (freq_tables_statement
           (identifier))))))
 
