@@ -740,6 +740,11 @@
     }
   },
   {
+    "type": "compare",
+    "named": false,
+    "fields": {}
+  },
+  {
     "type": "compare_base_statement",
     "named": true,
     "fields": {},
@@ -788,6 +793,80 @@
         },
         {
           "type": "macro_variable_reference",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "compare_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "compare_option_key",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "compare_option_flag",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "compare_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "compare_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "compare_option",
+          "named": true
+        },
+        {
+          "type": "compare_option_flag",
+          "named": true
+        },
+        {
+          "type": "identifier",
           "named": true
         }
       ]
@@ -4560,6 +4639,32 @@
     }
   },
   {
+    "type": "proc_compare_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "compare_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "proc_contents_step",
     "named": true,
     "fields": {
@@ -4895,6 +5000,10 @@
         },
         {
           "type": "proc_cimport_step",
+          "named": true
+        },
+        {
+          "type": "proc_compare_step",
           "named": true
         },
         {
@@ -7763,7 +7872,15 @@
     "named": false
   },
   {
+    "type": "comp",
+    "named": false
+  },
+  {
     "type": "compare",
+    "named": false
+  },
+  {
+    "type": "compare_option_flag",
     "named": false
   },
   {
@@ -7808,6 +7925,18 @@
   },
   {
     "type": "create",
+    "named": false
+  },
+  {
+    "type": "crit",
+    "named": false
+  },
+  {
+    "type": "criteria",
+    "named": false
+  },
+  {
+    "type": "criterion",
     "named": false
   },
   {
@@ -8012,6 +8141,10 @@
   },
   {
     "type": "function",
+    "named": false
+  },
+  {
+    "type": "fuzz",
     "named": false
   },
   {
@@ -8239,6 +8372,10 @@
     "named": true
   },
   {
+    "type": "maxprint",
+    "named": false
+  },
+  {
     "type": "mean",
     "named": false
   },
@@ -8248,6 +8385,14 @@
   },
   {
     "type": "merge",
+    "named": false
+  },
+  {
+    "type": "meth",
+    "named": false
+  },
+  {
+    "type": "method",
     "named": false
   },
   {
@@ -8367,6 +8512,10 @@
     "named": false
   },
   {
+    "type": "outall",
+    "named": false
+  },
+  {
     "type": "outargs",
     "named": false
   },
@@ -8379,7 +8528,15 @@
     "named": false
   },
   {
+    "type": "outcompare",
+    "named": false
+  },
+  {
     "type": "outdif",
+    "named": false
+  },
+  {
+    "type": "outdiff",
     "named": false
   },
   {
@@ -8399,6 +8556,10 @@
     "named": false
   },
   {
+    "type": "outnoeq",
+    "named": false
+  },
+  {
     "type": "outnoequal",
     "named": false
   },
@@ -8408,6 +8569,10 @@
   },
   {
     "type": "output",
+    "named": false
+  },
+  {
+    "type": "outstats",
     "named": false
   },
   {

@@ -148,6 +148,10 @@ module.exports = grammar({
     // contents_options vs contents_option_key: same family as the copy/cport/cimport/
     // sort/datasets/append/standard/printto/transpose option conflicts above (Phase 3 C3 / Task 17).
     [$.contents_options, $.contents_option_key],
+    // compare_options vs compare_option_key: same family as the copy/cport/cimport/
+    // sort/datasets/append/standard/printto/transpose/contents option conflicts above
+    // (Phase 3 C3 / Task 18).
+    [$.compare_options, $.compare_option_key],
     // proc_body: repeat1(choice(...)) cannot tell whether an identifier
     // starts a new statement inside the proc body or is a new step outside.
     // Also, run/quit can match as bare_statement or as the step terminator.
@@ -182,6 +186,9 @@ module.exports = grammar({
     // proc_contents_step: same optional-body ambiguity as proc_copy/cport/cimport/
     // sort/datasets/append/standard/printto/transpose (Phase 3 C3 / Task 17).
     [$.proc_contents_step],
+    // proc_compare_step: same optional-body ambiguity as proc_copy/cport/cimport/
+    // sort/datasets/append/standard/printto/transpose/contents (Phase 3 C3 / Task 18).
+    [$.proc_compare_step],
     // proc_generic_step: the optional proc_body now lives here (the original
     // proc_step body, moved when proc_step became a dispatcher).
     [$.proc_generic_step],
@@ -438,6 +445,7 @@ module.exports = grammar({
       prec(1, $.proc_printto_step), // Phase C3 (Task 15)
       prec(1, $.proc_transpose_step), // Phase C3 (Task 16)
       prec(1, $.proc_contents_step), // Phase C3 (Task 17)
+      prec(1, $.proc_compare_step), // Phase C3 (Task 18)
       $.proc_generic_step,
     ),
 
@@ -1142,6 +1150,107 @@ module.exports = grammar({
       alias($._out_keyword, 'out'),
       alias($._out2_keyword, 'out2'),
       alias($._varnum_keyword, 'varnum'),
+      $.identifier,
+    ),
+
+    // PROC COMPARE: 75 keywords, the largest per-proc struct so far. base=/compare=/
+    // data=/out=/criterion=/fuzz=/maxprint=/method=/m= value-options plus a large
+    // boolean-flag family (all, list*, no*, stats, transpose, warn, ...). Same
+    // shape as proc_copy/cport/cimport/sort/datasets/append/standard/printto/
+    // transpose/contents; proc name is emitted as the alias($._proc_compare_keyword,
+    // 'compare') token (no field('name')) and the linter reads the name via
+    // inferProcNameFromStep (Phase 3 C3 / Task 18).
+    //
+    // Single-letter value-option keys: m (method) reuses _m_keyword (STANDARD/
+    // global). b (base) and c (compare) are NOT given dedicated keyword tokens —
+    // see the _comp_keyword comment above for why (error-recovery regression on
+    // 'data a set b;'). They still route via the $.identifier fallback in
+    // compare_option_key, so 'proc compare b=x c=y;' produces compare_option_key
+    // nodes. 'base=x'/'compare=x' always parse as the 4/7-char keyword tokens via
+    // longest-match, never as 'b'+'ase' or 'c'+'ompare'.
+    proc_compare_step: $ => seq(
+      alias($._proc_keyword, 'proc'),
+      alias($._proc_compare_keyword, 'compare'),
+      optional(field('options', $.compare_options)),
+      ';',
+      optional(field('body', $.proc_body)),
+      optional(choice(
+        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
+        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
+      )),
+    ),
+
+    compare_options: $ => repeat1(choice(
+      $.compare_option,
+      $.compare_option_flag,
+      $.identifier,
+    )),
+
+    // key = value (e.g. base=work.in, compare=work.new, data=work.in,
+    // out=work.out, criterion=0.001, crit=1E-6, fuzz=1E-12, maxprint=50,
+    // method=EXACT, meth=ABSOLUTE, b=work.in, c=work.new, m=EXACT,
+    // outall=work.out) OR key with a parenthesized arg group. Mirrors
+    // proc_option/copy/.../contents_option's shape.
+    compare_option: $ => seq(
+      $.compare_option_key,
+      optional($.proc_option_args),
+      optional(seq('=',
+        choice($.catalog_path, $.expression),
+        optional($.data_set_option),
+      )),
+    ),
+
+    // A COMPARE option keyword with no value (boolean flag). Aliased to a named
+    // node for highlighting/linting. Covers the COMPARE flags (43 of them).
+    compare_option_flag: $ => alias(choice(
+      $._all_keyword, $._allobs_keyword, $._allstats_keyword, $._allvars_keyword,
+      $._brief_keyword, $._briefsummary_keyword,
+      $._error_keyword,
+      $._list_keyword, $._listall_keyword,
+      $._listbase_keyword, $._listbaseobs_keyword, $._listbasevar_keyword,
+      $._listcomp_keyword, $._listcompare_keyword,
+      $._listcompareobs_keyword, $._listcomparevar_keyword, $._listcomparevars_keyword,
+      $._listcompobs_keyword, $._listcompvar_keyword,
+      $._listeq_keyword, $._listequal_keyword, $._listequalvar_keyword, $._listeqvar_keyword,
+      $._listobs_keyword, $._listvar_keyword,
+      $._nodate_keyword, $._nomiss_keyword, $._nomiss1_keyword, $._nomiss2_keyword,
+      $._nomissbase_keyword, $._nomisscomp_keyword, $._nomisscompare_keyword, $._nomissing_keyword,
+      $._noobs_keyword,
+      $._noprint_keyword,
+      $._nosum_keyword, $._nosummary_keyword, $._note_keyword, $._novalues_keyword,
+      $._printall_keyword, $._statistics_keyword, $._stats_keyword,
+      $._trans_keyword, alias($._proc_transpose_keyword, 'transpose'),
+      $._warn_keyword, $._warning_keyword,
+    ), 'compare_option_flag'),
+
+    // Option key: known COMPARE value-option keywords (aliased so they appear as
+    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
+    // key, which the linter may flag as invalid for COMPARE). Includes
+    // single-letter 'b'/'c'/'m' value-option shorthand keys (base/compare/method).
+    compare_option_key: $ => choice(
+      alias($._base_keyword, 'base'),
+      alias($._compare_keyword, 'compare'),
+      alias($._comp_keyword, 'comp'),
+      alias($._data_keyword, 'data'),
+      alias($._out_keyword, 'out'),
+      alias($._outall_keyword, 'outall'),
+      alias($._outbase_keyword, 'outbase'),
+      alias($._outcomp_keyword, 'outcomp'),
+      alias($._outcompare_keyword, 'outcompare'),
+      alias($._outdif_keyword, 'outdif'),
+      alias($._outdiff_keyword, 'outdiff'),
+      alias($._outnoeq_keyword, 'outnoeq'),
+      alias($._outnoequal_keyword, 'outnoequal'),
+      alias($._outpercent_keyword, 'outpercent'),
+      alias($._outstats_keyword, 'outstats'),
+      alias($._crit_keyword, 'crit'),
+      alias($._criteria_keyword, 'criteria'),
+      alias($._criterion_keyword, 'criterion'),
+      alias($._fuzz_keyword, 'fuzz'),
+      alias($._maxprint_keyword, 'maxprint'),
+      alias($._meth_keyword, 'meth'),
+      alias($._method_keyword, 'method'),
+      alias($._m_keyword, 'm'),
       $.identifier,
     ),
 
@@ -3295,6 +3404,9 @@ module.exports = grammar({
     // PROC CONTENTS proc-name token (dispatched on by proc_step). Distinct from a
     // bare identifier so the dispatcher can route to proc_contents_step (Phase 3 C3 / Task 17).
     _proc_contents_keyword: $ => /[cC][oO][nN][tT][eE][nN][tT][sS]/,
+    // PROC COMPARE proc-name token (dispatched on by proc_step). Distinct from a
+    // bare identifier so the dispatcher can route to proc_compare_step (Phase 3 C3 / Task 18).
+    _proc_compare_keyword: $ => /[cC][oO][mM][pP][aA][rR][eE]/,
     // PROC SORT reuses the _sort_keyword token (defined further below, shared
     // with CIMPORT's sort= option) as its proc-name token — see the proc_sort_step
     // comment above for why no distinct _proc_sort_keyword is defined (Phase 3 C1).
@@ -3614,6 +3726,88 @@ module.exports = grammar({
     _nods_keyword: $ => /[nN][oO][dD][sS]/,
     _short_keyword: $ => /[sS][hH][oO][rR][tT]/,
     _fmtlen_keyword: $ => /[fF][mM][tT][lL][eE][nN]/,
+
+    // --- PROC COMPARE option keywords (Phase 3 C3 / Task 18) ---
+    // COMPARE-specific option keys/flags. _data_keyword/_out_keyword (global)/
+    // _base_keyword/_compare_keyword (COPY/global)/_m_keyword (STANDARD/global)
+    // are reused by compare_option_key. The rest are COMPARE-only.
+    //
+    // SINGLE-LETTER KEYWORDS b/c/m: the COMPARE spec lists b (base), c (compare),
+    // and m (method) as single-letter value-option shorthand. Per the Phase C
+    // template's single-letter guidance, m reuses the _m_keyword char-class token
+    // already established by STANDARD (Task 14) — it routes cleanly via longest-
+    // match and does not regress any corpus test. b and c, however, were found to
+    // regress the error-recovery test 'data a set b;' (the single-letter token
+    // consumes 'b' as a keyword instead of identifier, shifting the ERROR node
+    // shape). Rather than re-capture that recovery test for a lexical side-effect,
+    // b and c are NOT given dedicated keyword tokens: the $.identifier fallback in
+    // compare_option_key catches them, so 'proc compare b=x c=y;' still produces
+    // a compare_option_key node (just typed as identifier, not aliased 'b'/'c').
+    // The linter's findAllOptionKeyNodes treats both shapes identically.
+    // Value-option keys (used by compare_option_key):
+    _comp_keyword: $ => /[cC][oO][mM][pP]/,
+    _crit_keyword: $ => /[cC][rR][iI][tT]/,
+    _criteria_keyword: $ => /[cC][rR][iI][tT][eE][rR][iI][aA]/,
+    _criterion_keyword: $ => /[cC][rR][iI][tT][eE][rR][iI][oO][nN]/,
+    _fuzz_keyword: $ => /[fF][uU][zZ][zZ]/,
+    _maxprint_keyword: $ => /[mM][aA][xX][pP][rR][iI][nN][tT]/,
+    _meth_keyword: $ => /[mM][eE][tT][hH]/,
+    _method_keyword: $ => /[mM][eE][tT][hH][oO][dD]/,
+    _outall_keyword: $ => /[oO][uU][tT][aA][lL][lL]/,
+    _outbase_keyword: $ => /[oO][uU][tT][bB][aA][sS][eE]/,
+    _outcomp_keyword: $ => /[oO][uU][tT][cC][oO][mM][pP]/,
+    _outcompare_keyword: $ => /[oO][uU][tT][cC][oO][mM][pP][aA][rR][eE]/,
+    _outdif_keyword: $ => /[oO][uU][tT][dD][iI][fF]/,
+    _outdiff_keyword: $ => /[oO][uU][tT][dD][iI][fF][fF]/,
+    _outnoeq_keyword: $ => /[oO][uU][tT][nN][oO][eE][qQ]/,
+    _outnoequal_keyword: $ => /[oO][uU][tT][nN][oO][eE][qQ][uU][aA][lL]/,
+    _outpercent_keyword: $ => /[oO][uU][tT][pP][eE][rR][cC][eE][nN][tT]/,
+    _outstats_keyword: $ => /[oO][uU][tT][sS][tT][aA][tT][sS]/,
+    // Boolean flags (no '= value') used by compare_option_flag:
+    _all_keyword: $ => /[aA][lL][lL]/,
+    _allobs_keyword: $ => /[aA][lL][lL][oO][bB][sS]/,
+    _allstats_keyword: $ => /[aA][lL][lL][sS][tT][aA][tT][sS]/,
+    _allvars_keyword: $ => /[aA][lL][lL][vV][aA][rR][sS]/,
+    _brief_keyword: $ => /[bB][rR][iI][eE][fF]/,
+    _briefsummary_keyword: $ => /[bB][rR][iI][eE][fF][sS][uU][mM][mM][aA][rR][yY]/,
+    _error_keyword: $ => /[eE][rR][rR][oO][rR]/,
+    _list_keyword: $ => /[lL][iI][sS][tT]/,
+    _listall_keyword: $ => /[lL][iI][sS][tT][aA][lL][lL]/,
+    _listbase_keyword: $ => /[lL][iI][sS][tT][bB][aA][sS][eE]/,
+    _listbaseobs_keyword: $ => /[lL][iI][sS][tT][bB][aA][sS][eE][oO][bB][sS]/,
+    _listbasevar_keyword: $ => /[lL][iI][sS][tT][bB][aA][sS][eE][vV][aA][rR]/,
+    _listcomp_keyword: $ => /[lL][iI][sS][tT][cC][oO][mM][pP]/,
+    _listcompare_keyword: $ => /[lL][iI][sS][tT][cC][oO][mM][pP][aA][rR][eE]/,
+    _listcompareobs_keyword: $ => /[lL][iI][sS][tT][cC][oO][mM][pP][aA][rR][eE][oO][bB][sS]/,
+    _listcomparevar_keyword: $ => /[lL][iI][sS][tT][cC][oO][mM][pP][aA][rR][eE][vV][aA][rR]/,
+    _listcomparevars_keyword: $ => /[lL][iI][sS][tT][cC][oO][mM][pP][aA][rR][eE][vV][aA][rR][sS]/,
+    _listcompobs_keyword: $ => /[lL][iI][sS][tT][cC][oO][mM][pP][oO][bB][sS]/,
+    _listcompvar_keyword: $ => /[lL][iI][sS][tT][cC][oO][mM][pP][vV][aA][rR]/,
+    _listeq_keyword: $ => /[lL][iI][sS][tT][eE][qQ]/,
+    _listequal_keyword: $ => /[lL][iI][sS][tT][eE][qQ][uU][aA][lL]/,
+    _listequalvar_keyword: $ => /[lL][iI][sS][tT][eE][qQ][uU][aA][lL][vV][aA][rR]/,
+    _listeqvar_keyword: $ => /[lL][iI][sS][tT][eE][qQ][vV][aA][rR]/,
+    _listobs_keyword: $ => /[lL][iI][sS][tT][oO][bB][sS]/,
+    _listvar_keyword: $ => /[lL][iI][sS][tT][vV][aA][rR]/,
+    _nodate_keyword: $ => /[nN][oO][dD][aA][tT][eE]/,
+    _nomiss_keyword: $ => /[nN][oO][mM][iI][sS][sS]/,
+    _nomiss1_keyword: $ => /[nN][oO][mM][iI][sS][sS]1/,
+    _nomiss2_keyword: $ => /[nN][oO][mM][iI][sS][sS]2/,
+    _nomissbase_keyword: $ => /[nN][oO][mM][iI][sS][sS][bB][aA][sS][eE]/,
+    _nomisscomp_keyword: $ => /[nN][oO][mM][iI][sS][sS][cC][oO][mM][pP]/,
+    _nomisscompare_keyword: $ => /[nN][oO][mM][iI][sS][sS][cC][oO][mM][pP][aA][rR][eE]/,
+    _nomissing_keyword: $ => /[nN][oO][mM][iI][sS][sS][iI][nN][gG]/,
+    _noobs_keyword: $ => /[nN][oO][oO][bB][sS]/,
+    _nosum_keyword: $ => /[nN][oO][sS][uU][mM]/,
+    _nosummary_keyword: $ => /[nN][oO][sS][uU][mM][mM][aA][rR][yY]/,
+    _note_keyword: $ => /[nN][oO][tT][eE]/,
+    _novalues_keyword: $ => /[nN][oO][vV][aA][lL][uU][eE][sS]/,
+    _printall_keyword: $ => /[pP][rR][iI][nN][tT][aA][lL][lL]/,
+    _statistics_keyword: $ => /[sS][tT][aA][tT][iI][sS][tT][iI][cC][sS]/,
+    _stats_keyword: $ => /[sS][tT][aA][tT][sS]/,
+    _trans_keyword: $ => /[tT][rR][aA][nN][sS]/,
+    _warn_keyword: $ => /[wW][aA][rR][nN]/,
+    _warning_keyword: $ => /[wW][aA][rR][nN][iI][nN][gG]/,
 
     // --- Operators and punctuation ---
     _semicolon: $ => ';',

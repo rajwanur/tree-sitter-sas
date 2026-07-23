@@ -1,0 +1,236 @@
+================================================================================
+PROC COMPARE base=/compare= value-options + body statements
+================================================================================
+proc compare base=work.base compare=work.new;
+  var x y;
+  with a b;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_compare_step
+      options: (compare_options
+        (compare_option
+          (compare_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (compare_option
+          (compare_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier))))
+      body: (proc_body
+        (tabulate_var_statement
+          (identifier)
+          (identifier))
+        (compare_with_statement
+          (identifier)
+          (identifier))))))
+
+================================================================================
+PROC COMPARE single-letter b=/c=/m= value-option shorthand keys (b/c via identifier fallback, m via _m_keyword)
+================================================================================
+proc compare b=work.in c=work.new m=EXACT;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_compare_step
+      options: (compare_options
+        (compare_option
+          (compare_option_key
+            (identifier))
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (compare_option
+          (compare_option_key
+            (identifier))
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (compare_option
+          (compare_option_key)
+          (identifier))))))
+
+================================================================================
+PROC COMPARE full value-options + criterion/crit/fuzz/maxprint/method/meth
+================================================================================
+proc compare data=work.in out=work.o criterion=0.0001 crit=0.00001 fuzz=0.0001 maxprint=50 method=EXACT meth=ABS outall=work.oa;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_compare_step
+      options: (compare_options
+        (compare_option
+          (compare_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (compare_option
+          (compare_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (compare_option
+          (compare_option_key)
+          (number))
+        (compare_option
+          (compare_option_key)
+          (number))
+        (compare_option
+          (compare_option_key)
+          (number))
+        (compare_option
+          (compare_option_key)
+          (number))
+        (compare_option
+          (compare_option_key)
+          (identifier))
+        (compare_option
+          (compare_option_key)
+          (identifier))
+        (compare_option
+          (compare_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))))))
+
+================================================================================
+PROC COMPARE list* family flags
+================================================================================
+proc compare data=work.in all allobs allstats allvars brief briefsummary error list listall listbase listbaseobs listbasevar listcomp listcompare listcompareobs listcomparevar listcomparevars listcompobs listcompvar listeq listequal listequalvar listeqvar listobs listvar;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_compare_step
+      options: (compare_options
+        (compare_option
+          (compare_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)))))
+
+================================================================================
+PROC COMPARE no*/stats*/trans/warn family flags
+================================================================================
+proc compare data=work.in nodate nomiss nomiss1 nomiss2 nomissbase nomisscomp nomisscompare nomissing noobs noprint nosum nosummary note novalues printall statistics stats trans transpose warn warning;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_compare_step
+      options: (compare_options
+        (compare_option
+          (compare_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)
+        (compare_option_flag)))))
+
+================================================================================
+PROC COMPARE header + body statements (id/var/with/out-noequal/out-base preserved)
+================================================================================
+proc compare data=work.in base=work.b compare=work.c;
+  id name;
+  var x y;
+  with a b;
+  outnoequal;
+  outbase;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_compare_step
+      options: (compare_options
+        (compare_option
+          (compare_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (compare_option
+          (compare_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (compare_option
+          (compare_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier))))
+      body: (proc_body
+        (means_id_statement
+          (identifier))
+        (tabulate_var_statement
+          (identifier)
+          (identifier))
+        (compare_with_statement
+          (identifier)
+          (identifier))
+        (compare_flag_statement)
+        (compare_flag_statement)))))
+
+================================================================================
+PROC COMPARE no options (bare header)
+================================================================================
+proc compare;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_compare_step)))

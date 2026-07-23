@@ -169,34 +169,7 @@ run;
           (identifier))
         (proc_option_flag)))))
 
-================================================================================
-PROC COMPARE
-================================================================================
-proc compare base=old compare=new;
-  var x y;
-  with a b;
-run;
---------------------------------------------------------------------------------
 
-(source_file
-  (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
-          (identifier))
-        (proc_option
-          (proc_option_key)
-          (identifier)))
-      body: (proc_body
-        (tabulate_var_statement
-          (identifier)
-          (identifier))
-        (compare_with_statement
-          (identifier)
-          (identifier))))))
 
 ================================================================================
 PROC DATASETS
