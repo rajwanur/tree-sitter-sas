@@ -1,0 +1,114 @@
+================================================================================
+PROC OPTIONS bare (no options)
+================================================================================
+proc options;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_options_step)))
+
+================================================================================
+PROC OPTIONS single value-option: option=linesize
+================================================================================
+proc options option=linesize;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_options_step
+      options: (options_options
+        (options_option
+          (options_option_key)
+          (identifier))))))
+
+================================================================================
+PROC OPTIONS group= value-option
+================================================================================
+proc options group=MEMORY;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_options_step
+      options: (options_options
+        (options_option
+          (options_option_key)
+          (identifier))))))
+
+================================================================================
+PROC OPTIONS multiple value-options: option=/value/define=
+================================================================================
+proc options option=linesize value define=value;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_options_step
+      options: (options_options
+        (options_option
+          (options_option_key)
+          (identifier))
+        (options_option
+          (options_option_key))
+        (options_option
+          (options_option_key)
+          (identifier))))))
+
+================================================================================
+PROC OPTIONS boolean flags: long short expand noexpand host portable
+================================================================================
+proc options long short expand noexpand host portable;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_options_step
+      options: (options_options
+        (options_option_flag)
+        (options_option_flag)
+        (options_option_flag)
+        (options_option_flag)
+        (options_option_flag)
+        (options_option_flag)))))
+
+================================================================================
+PROC OPTIONS list/restrict flags
+================================================================================
+proc options listgroups listinsertappend listoptsave listrestrict restrict lognumberformat nolognumberformat nohost;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_options_step
+      options: (options_options
+        (options_option_flag)
+        (options_option_flag)
+        (options_option_flag)
+        (options_option_flag)
+        (options_option_flag)
+        (options_option_flag)
+        (options_option_flag)
+        (options_option_flag)))))
+
+================================================================================
+PROC OPTIONS with body (option statement) — header-only struct
+================================================================================
+proc options;
+  option linesize=80;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_options_step
+      body: (proc_body
+        (options_option_statement
+          (identifier)
+          (number))))))

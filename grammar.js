@@ -156,6 +156,10 @@ module.exports = grammar({
     // sort/datasets/append/standard/printto/transpose/contents/compare option conflicts
     // above (Phase 3 C3 / Task 22).
     [$.freq_options, $.freq_option_key],
+    // options_options vs options_option_key: same family as the copy/cport/cimport/
+    // sort/datasets/append/standard/printto/transpose/contents/compare/freq option
+    // conflicts above (Phase 3 C3 / Task 19).
+    [$.options_options, $.options_option_key],
     // proc_body: repeat1(choice(...)) cannot tell whether an identifier
     // starts a new statement inside the proc body or is a new step outside.
     // Also, run/quit can match as bare_statement or as the step terminator.
@@ -196,6 +200,9 @@ module.exports = grammar({
     // proc_freq_step: same optional-body ambiguity as proc_copy/cport/cimport/
     // sort/datasets/append/standard/printto/transpose/contents/compare (Phase 3 C3 / Task 22).
     [$.proc_freq_step],
+    // proc_options_step: same optional-body ambiguity as proc_copy/cport/cimport/
+    // sort/datasets/append/standard/printto/transpose/contents/compare/freq (Phase 3 C3 / Task 19).
+    [$.proc_options_step],
     // proc_generic_step: the optional proc_body now lives here (the original
     // proc_step body, moved when proc_step became a dispatcher).
     [$.proc_generic_step],
@@ -454,6 +461,7 @@ module.exports = grammar({
       prec(1, $.proc_contents_step), // Phase C3 (Task 17)
       prec(1, $.proc_compare_step), // Phase C3 (Task 18)
       prec(1, $.proc_freq_step), // Phase C3 (Task 22)
+      prec(1, $.proc_options_step), // Phase C3 (Task 19)
       $.proc_generic_step,
     ),
 
@@ -1333,6 +1341,91 @@ module.exports = grammar({
       alias($._formchar_keyword, 'formchar'),
       alias($._nlevels_keyword, 'nlevels'),
       alias($._order_keyword, 'order'),
+      $.identifier,
+    ),
+
+    // PROC OPTIONS: define=/group=/hexvalue=/option=/port=/value= value-options
+    // plus boolean flags (expand/noexpand, host/nohost,
+    // lognumberformat/nolognumberformat, long, listgroups, listinsertappend,
+    // listoptsave, listrestrict, portable, restrict, short). Same shape as
+    // proc_copy/cport/cimport/sort/datasets/append/standard/printto/transpose/
+    // contents/compare/freq; proc name is emitted as the
+    // alias($._proc_options_keyword, 'options') token (no field('name')) and the
+    // linter reads the name via inferProcNameFromStep (Phase 3 C3 / Task 19).
+    //
+    // HEADER-only struct (like DATASETS/TRANSPOSE/CONTENTS/FREQ): this wraps the
+    // options on the 'proc options ...;' header line ONLY. OPTIONS's pre-existing
+    // BODY statement rules (options_option_statement starting with 'option',
+    // options_group_statement starting with 'group =') live in proc_body's
+    // choice() and are UNCHANGED — proc_options_step references $.proc_body for
+    // the body, exactly like proc_freq_step. The header options terminate at the
+    // first ';' and the body begins after it (same boundary as every per-proc
+    // step), so a header key like 'option'/'group' never collides with any body
+    // statement (which only matches inside the body, terminated by its own ';').
+    //
+    // OPTIONS's value-option keys are all multi-letter (define/group/hexvalue/
+    // option/port/value), so tree-sitter's longest-match resolves each ahead of
+    // the generic identifier token at the option-key boundary; the $.identifier
+    // fallback in options_option_key still catches unknown keys.
+    proc_options_step: $ => seq(
+      alias($._proc_keyword, 'proc'),
+      alias($._proc_options_keyword, 'options'),
+      optional(field('options', $.options_options)),
+      ';',
+      optional(field('body', $.proc_body)),
+      optional(choice(
+        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
+        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
+      )),
+    ),
+
+    options_options: $ => repeat1(choice(
+      $.options_option,
+      $.options_option_flag,
+      $.identifier,
+    )),
+
+    // key = value (e.g. option=linesize, group=MEMORY, define=value, port=XXXX,
+    // hexvalue=yes) OR key with a parenthesized arg group OR a bare key.
+    // Mirrors proc_option/copy/.../freq_option's shape.
+    options_option: $ => seq(
+      $.options_option_key,
+      optional($.proc_option_args),
+      optional(seq('=',
+        choice($.catalog_path, $.expression),
+        optional($.data_set_option),
+      )),
+    ),
+
+    // An OPTIONS option keyword with no value (boolean flag). Aliased to a named
+    // node for highlighting/linting. Covers the OPTIONS flags.
+    options_option_flag: $ => alias(choice(
+      $._expand_keyword,
+      $._noexpand_keyword,
+      $._host_keyword,
+      $._nohost_keyword,
+      $._lognumberformat_keyword,
+      $._nolognumberformat_keyword,
+      $._long_keyword,
+      $._short_keyword,
+      $._listgroups_keyword,
+      $._listinsertappend_keyword,
+      $._listoptsave_keyword,
+      $._listrestrict_keyword,
+      $._portable_keyword,
+      $._restrict_keyword,
+    ), 'options_option_flag'),
+
+    // Option key: known OPTIONS value-option keywords (aliased so they appear as
+    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
+    // key, which the linter may flag as invalid for OPTIONS).
+    options_option_key: $ => choice(
+      alias($._define_keyword, 'define'),
+      alias($._group_keyword, 'group'),
+      alias($._hexvalue_keyword, 'hexvalue'),
+      alias($._option_keyword, 'option'),
+      alias($._port_keyword, 'port'),
+      alias($._value_keyword, 'value'),
       $.identifier,
     ),
 
@@ -3492,6 +3585,9 @@ module.exports = grammar({
     // PROC FREQ proc-name token (dispatched on by proc_step). Distinct from a
     // bare identifier so the dispatcher can route to proc_freq_step (Phase 3 C3 / Task 22).
     _proc_freq_keyword: $ => /[fF][rR][eE][qQ]/,
+    // PROC OPTIONS proc-name token (dispatched on by proc_step). Distinct from a
+    // bare identifier so the dispatcher can route to proc_options_step (Phase 3 C3 / Task 19).
+    _proc_options_keyword: $ => /[oO][pP][tT][iI][oO][nN][sS]/,
     // PROC SORT reuses the _sort_keyword token (defined further below, shared
     // with CIMPORT's sort= option) as its proc-name token — see the proc_sort_step
     // comment above for why no distinct _proc_sort_keyword is defined (Phase 3 C1).
@@ -3905,6 +4001,36 @@ module.exports = grammar({
     _nlevels_keyword: $ => /[nN][lL][eE][vV][eE][lL][sS]/,
     // Boolean flag (no '= value') used by freq_option_flag:
     _page_keyword: $ => /[pP][aA][gG][eE]/,
+
+    // --- PROC OPTIONS option keywords (Phase 3 C3 / Task 19) ---
+    // OPTIONS-specific option keys/flags. _short_keyword (PRINTTO/global) is
+    // reused by options_option_flag. The rest are OPTIONS-only. All options are
+    // multi-letter, so no single-letter-key concern here.
+    // Value-option keys (used by options_option_key): define/group/hexvalue/
+    // option/port/value commonly take '= value' (e.g. option=linesize,
+    // group=MEMORY, define=value, port=XXXX, hexvalue=yes, value=...).
+    _define_keyword: $ => /[dD][eE][fF][iI][nN][eE]/,
+    _group_keyword: $ => /[gG][rR][oO][uU][pP]/,
+    _hexvalue_keyword: $ => /[hH][eE][xX][vV][aA][lL][uU][eE]/,
+    _option_keyword: $ => /[oO][pP][tT][iI][oO][nN]/,
+    _port_keyword: $ => /[pP][oO][rR][tT]/,
+    _value_keyword: $ => /[vV][aA][lL][uU][eE]/,
+    // Boolean flags (no '= value') used by options_option_flag: expand/noexpand,
+    // host/nohost, lognumberformat/nolognumberformat, long/short, listgroups,
+    // listinsertappend, listoptsave, listrestrict, portable, restrict.
+    _expand_keyword: $ => /[eE][xX][pP][aA][nN][dD]/,
+    _noexpand_keyword: $ => /[nN][oO][eE][xX][pP][aA][nN][dD]/,
+    _host_keyword: $ => /[hH][oO][sS][tT]/,
+    _nohost_keyword: $ => /[nN][oO][hH][oO][sS][tT]/,
+    _lognumberformat_keyword: $ => /[lL][oO][gG][nN][uU][mM][bB][eE][rR][fF][oO][rR][mM][aA][tT]/,
+    _nolognumberformat_keyword: $ => /[nN][oO][lL][oO][gG][nN][uU][mM][bB][eE][rR][fF][oO][rR][mM][aA][tT]/,
+    _long_keyword: $ => /[lL][oO][nN][gG]/,
+    _listgroups_keyword: $ => /[lL][iI][sS][tT][gG][rR][oO][uU][pP][sS]/,
+    _listinsertappend_keyword: $ => /[lL][iI][sS][tT][iI][nN][sS][eE][rR][tT][aA][pP][pP][eE][nN][dD]/,
+    _listoptsave_keyword: $ => /[lL][iI][sS][tT][oO][pP][tT][sS][aA][vV][eE]/,
+    _listrestrict_keyword: $ => /[lL][iI][sS][tT][rR][eE][sS][tT][rR][iI][cC][tT]/,
+    _portable_keyword: $ => /[pP][oO][rR][tT][aA][bB][lL][eE]/,
+    _restrict_keyword: $ => /[rR][eE][sS][tT][rR][iI][cC][tT]/,
 
     // --- Operators and punctuation ---
     _semicolon: $ => ';',

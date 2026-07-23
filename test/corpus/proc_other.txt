@@ -204,9 +204,7 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_options_step
       body: (proc_body
         (options_option_statement
           (identifier)
