@@ -311,12 +311,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      (proc_name
-        (identifier))
-      (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_means_step
+      (means_options
+        (means_option
+          (means_option_key)
           (identifier)))
       (proc_body
         (means_class_statement

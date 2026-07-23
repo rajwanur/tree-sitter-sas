@@ -164,6 +164,10 @@ module.exports = grammar({
     // sort/datasets/append/standard/printto/transpose/contents/compare/freq/options
     // option conflicts above (Phase 3 C3 / Task 20).
     [$.print_options, $.print_option_key],
+    // means_options vs means_option_key: same family as the
+    // copy/cport/cimport/sort/datasets/append/standard/printto/transpose/contents/
+    // compare/freq/options/print option conflicts above (Phase 3 C3 / Task 21).
+    [$.means_options, $.means_option_key],
     // proc_body: repeat1(choice(...)) cannot tell whether an identifier
     // starts a new statement inside the proc body or is a new step outside.
     // Also, run/quit can match as bare_statement or as the step terminator.
@@ -210,6 +214,9 @@ module.exports = grammar({
     // proc_print_step: same optional-body ambiguity as proc_copy/cport/cimport/
     // sort/datasets/append/standard/printto/transpose/contents/compare/freq/options (Phase 3 C3 / Task 20).
     [$.proc_print_step],
+    // proc_means_step: same optional-body ambiguity as proc_copy/cport/cimport/
+    // sort/datasets/append/standard/printto/transpose/contents/compare/freq/options/print (Phase 3 C3 / Task 21).
+    [$.proc_means_step],
     // proc_generic_step: the optional proc_body now lives here (the original
     // proc_step body, moved when proc_step became a dispatcher).
     [$.proc_generic_step],
@@ -470,6 +477,7 @@ module.exports = grammar({
       prec(1, $.proc_freq_step), // Phase C3 (Task 22)
       prec(1, $.proc_options_step), // Phase C3 (Task 19)
       prec(1, $.proc_print_step), // Phase C3 (Task 20)
+      prec(1, $.proc_means_step), // Phase C3 (Task 21)
       $.proc_generic_step,
     ),
 
@@ -1547,6 +1555,200 @@ module.exports = grammar({
       alias($._n_keyword, 'n'),
       alias($._r_keyword, 'r'),
       alias($._s_keyword, 's'),
+      $.identifier,
+    ),
+
+    // PROC MEANS: data=/alpha=/fw=/maxdec=/order=/vardef=/qmarkers=/qmethod=/
+    // qntldef=/pctldef=/sumsize=/incas=/classdata= value-options plus the
+    // statistic keywords (n/mean/std/min/max/sum/range/var/skew/kurt/css/clm/
+    // lclm/uclm/probt/t/uss/stderr/sumwgt/nmiss/median/mode/q1/q3/qrange/p1..p99)
+    // and the descend=/descending= direction options. Same shape as proc_copy/
+    // cport/cimport/sort/datasets/append/standard/printto/transpose/contents/
+    // compare/freq/options/print; proc name is emitted as the
+    // alias($._proc_means_keyword, 'means') token (no field('name')) and the
+    // linter reads the name via inferProcNameFromStep (Phase 3 C3 / Task 21).
+    //
+    // HEADER-only struct (like DATASETS/TRANSPOSE/CONTENTS/FREQ/OPTIONS/PRINT):
+    // this wraps the options on the 'proc means ...;' header line ONLY. MEANS's
+    // pre-existing BODY statement rules (means_var_statement starting with 'var',
+    // means_class_statement starting with 'class', means_freq_statement starting
+    // with 'freq', means_weight_statement starting with 'weight',
+    // means_id_statement starting with 'id', means_output_statement starting
+    // with 'output', means_types_statement starting with 'types',
+    // means_ways_statement starting with 'ways') live in proc_body's choice()
+    // and are UNCHANGED — proc_means_step references $.proc_body for the body,
+    // exactly like proc_freq_step/proc_options_step/proc_print_step. The header
+    // options terminate at the first ';' and the body begins after it (same
+    // boundary as every per-proc step), so a header key never collides with any
+    // body statement (which only matches inside the body, terminated by its own
+    // ';'). Note: 'var' is both a MEANS header option (vardef) and a body
+    // statement keyword (means_var_statement) — but the header 'var' only ever
+    // appears as a bare option-key or as 'var=...' BEFORE the first ';', while
+    // the body 'var' appears AFTER the first ';' starting means_var_statement,
+    // so there is no real ambiguity.
+    //
+    // SINGLE-LETTER KEYS n/t: MEANS accepts single-letter statistic shorthand
+    // (n = count of nonmissing values, t = t-statistic). n reuses _n_keyword
+    // (PRINT/global). t gets a dedicated _t_keyword char-class token (see its
+    // block comment below). Empirically (Task 21) both route cleanly with no
+    // corpus regression — tree-sitter's longest-match still resolves e.g.
+    // 'nway' as the 4-char _nway_keyword (never 'n'+'way'), 'nmiss' as the
+    // 5-char _nmiss_keyword (never 'n'+'miss'), 'noprint' as 7-char
+    // _noprint_keyword (never 'n'+'oprint'), 'threads' as 7-char _threads_keyword
+    // (never 't'+'hreads'); the $.identifier fallback in means_option_key
+    // catches any unknown single-letter key.
+    //
+    // PERCENTILE KEYS p1/p5/.../p99: these have digits in them. The regex
+    // char-class form works (e.g. _p1_keyword: /[pP]1/). tree-sitter's
+    // longest-match resolves 'p10' as the 3-char _p10_keyword (never 'p1'+'0'),
+    // 'p100' (not a real MEANS option but a defensive check) would NOT match any
+    // _pN_keyword and falls to $.identifier; and 'p1' alone matches _p1_keyword.
+    // The empirical check below verifies 'p10=x' parses as p10 (not p1+0).
+    proc_means_step: $ => seq(
+      alias($._proc_keyword, 'proc'),
+      alias($._proc_means_keyword, 'means'),
+      optional(field('options', $.means_options)),
+      ';',
+      optional(field('body', $.proc_body)),
+      optional(choice(
+        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
+        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
+      )),
+    ),
+
+    means_options: $ => repeat1(choice(
+      $.means_option,
+      $.means_option_flag,
+      $.identifier,
+    )),
+
+    // key = value (e.g. data=sashelp.class, alpha=0.05, fw=12, maxdec=2,
+    // order=freq, vardef=df, qmarkers=2, qmethod=approx, qntldef=3,
+    // pctldef=4, sumsize=full, incas=identical, classdata=x.types,
+    // descend=age, descending=age) OR a bare statistic keyword (n, mean, std,
+    // min, max, sum, range, var, skew, kurt, css, clm, lclm, uclm, probt, t,
+    // uss, stderr, sumwgt, nmiss, median, mode, q1, q3, qrange, p1..p99) OR
+    // key with a parenthesized arg group. Mirrors proc_option/copy/.../options
+    // /print_option's shape.
+    means_option: $ => seq(
+      $.means_option_key,
+      optional($.proc_option_args),
+      optional(seq('=',
+        choice($.catalog_path, $.expression),
+        optional($.data_set_option),
+      )),
+    ),
+
+    // A MEANS option keyword with no value (boolean flag). Aliased to a named
+    // node for highlighting/linting. Covers the canonical MEANS boolean flags:
+    // chartype, completetypes, descendtypes, exclusive, idmin, missing,
+    // nolabel, nonobs, noprint (reuses DATASETS/global _noprint_keyword),
+    // notrap, nway, printalltypes, printids, printidvars, stackods,
+    // stackodsoutput, exclnpwgt/exclnpwgts (reuses STANDARD/global), nothreads
+    // (reuses DATASETS/global _nothreads_keyword), threads (reuses
+    // DATASETS/global _threads_keyword), print (reuses STANDARD/global
+    // _print_keyword), printall (reuses FREQ/global _printall_keyword). The
+    // statistic keywords (mean/std/n/...) are value-option keys (see
+    // means_option_key) NOT flags — a bare 'mean' still parses via means_option
+    // (key with no '= value') and the option_flag list stays conflict-free.
+    means_option_flag: $ => alias(choice(
+      $._chartype_keyword,
+      $._completetypes_keyword,
+      $._descendtypes_keyword,
+      $._exclusive_keyword,
+      $._idmin_keyword,
+      $._missing_keyword,
+      $._nolabel_keyword,
+      $._nonobs_keyword,
+      $._noprint_keyword,
+      $._notrap_keyword,
+      $._nway_keyword,
+      $._printalltypes_keyword,
+      $._printids_keyword,
+      $._printidvars_keyword,
+      $._stackods_keyword,
+      $._stackodsoutput_keyword,
+      $._exclnpwgt_keyword,
+      $._exclnpwgts_keyword,
+      $._nothreads_keyword,
+      $._threads_keyword,
+      $._print_keyword,
+      $._printall_keyword,
+    ), 'means_option_flag'),
+
+    // Option key: known MEANS value-option keywords (aliased so they appear as
+    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
+    // key, which the linter may flag as invalid for MEANS). Includes the
+    // value-options (alpha/chartype-less/data/descend/descending/fw/incas/
+    // maxdec/order/pctldef/qmarkers/qmethod/qntldef/sumsize/vardef/classdata),
+    // the statistic keywords (clm/css/kurt/kurtosis/lclm/max/mean/median/min/
+    // mode/n/nmiss/p1..p99/pbt/probt/q1/q3/qrange/range/skew/skewness/std/
+    // stddev/stderr/sum/sumwgt/t/uclm/uss/var), and the single-letter n/t
+    // statistic shorthand keys.
+    means_option_key: $ => choice(
+      // Value-options (typically key=value):
+      alias($._alpha_keyword, 'alpha'),
+      alias($._classdata_keyword, 'classdata'),
+      alias($._data_keyword, 'data'),
+      alias($._descend_keyword, 'descend'),
+      alias($._descending_keyword, 'descending'),
+      alias($._fw_keyword, 'fw'),
+      alias($._incas_keyword, 'incas'),
+      alias($._maxdec_keyword, 'maxdec'),
+      alias($._order_keyword, 'order'),
+      alias($._pctldef_keyword, 'pctldef'),
+      alias($._qmarkers_keyword, 'qmarkers'),
+      alias($._qmethod_keyword, 'qmethod'),
+      alias($._qntldef_keyword, 'qntldef'),
+      alias($._sumsize_keyword, 'sumsize'),
+      alias($._vardef_keyword, 'vardef'),
+      // Statistic keywords (bare flags or take args in OUTPUT):
+      alias($._clm_keyword, 'clm'),
+      alias($._css_keyword, 'css'),
+      alias($._kurt_keyword, 'kurt'),
+      alias($._kurtosis_keyword, 'kurtosis'),
+      alias($._lclm_keyword, 'lclm'),
+      alias($._max_keyword, 'max'),
+      alias($._mean_keyword, 'mean'),
+      alias($._median_keyword, 'median'),
+      alias($._min_keyword, 'min'),
+      alias($._mode_keyword, 'mode'),
+      alias($._nmiss_keyword, 'nmiss'),
+      alias($._pbt_keyword, 'pbt'),
+      alias($._probt_keyword, 'probt'),
+      alias($._q1_keyword, 'q1'),
+      alias($._q3_keyword, 'q3'),
+      alias($._qrange_keyword, 'qrange'),
+      alias($._range_keyword, 'range'),
+      alias($._skew_keyword, 'skew'),
+      alias($._skewness_keyword, 'skewness'),
+      alias($._std_keyword, 'std'),
+      alias($._stddev_keyword, 'stddev'),
+      alias($._stderr_keyword, 'stderr'),
+      alias($._sum_keyword, 'sum'),
+      alias($._sumwgt_keyword, 'sumwgt'),
+      alias($._uclm_keyword, 'uclm'),
+      alias($._uss_keyword, 'uss'),
+      alias($._var_keyword, 'var'),
+      // Percentile statistic keywords (p1/p5/p10/.../p99):
+      alias($._p1_keyword, 'p1'),
+      alias($._p5_keyword, 'p5'),
+      alias($._p10_keyword, 'p10'),
+      alias($._p20_keyword, 'p20'),
+      alias($._p25_keyword, 'p25'),
+      alias($._p30_keyword, 'p30'),
+      alias($._p40_keyword, 'p40'),
+      alias($._p50_keyword, 'p50'),
+      alias($._p60_keyword, 'p60'),
+      alias($._p70_keyword, 'p70'),
+      alias($._p75_keyword, 'p75'),
+      alias($._p80_keyword, 'p80'),
+      alias($._p90_keyword, 'p90'),
+      alias($._p95_keyword, 'p95'),
+      alias($._p99_keyword, 'p99'),
+      // Single-letter statistic shorthand (n reuses PRINT/global; t is new):
+      alias($._n_keyword, 'n'),
+      alias($._t_keyword, 't'),
       $.identifier,
     ),
 
@@ -3713,6 +3915,9 @@ module.exports = grammar({
     // bare identifier (and from _proc_printto_keyword) so the dispatcher can
     // route to proc_print_step (Phase 3 C3 / Task 20).
     _proc_print_keyword: $ => /[pP][rR][iI][nN][tT]/,
+    // PROC MEANS proc-name token (dispatched on by proc_step). Distinct from a
+    // bare identifier so the dispatcher can route to proc_means_step (Phase 3 C3 / Task 21).
+    _proc_means_keyword: $ => /[mM][eE][aA][nN][sS]/,
     // PROC SORT reuses the _sort_keyword token (defined further below, shared
     // with CIMPORT's sort= option) as its proc-name token — see the proc_sort_step
     // comment above for why no distinct _proc_sort_keyword is defined (Phase 3 C1).
@@ -4200,6 +4405,109 @@ module.exports = grammar({
     _l_keyword: $ => /[lL]/,
     _n_keyword: $ => /[nN]/,
     _r_keyword: $ => /[rR]/,
+
+    // --- PROC MEANS option keywords (Phase 3 C3 / Task 21) ---
+    // MEANS-specific option keys/flags. Reused by means_option_key/_flag:
+    // _data_keyword (global), _mean_keyword/_std_keyword/_vardef_keyword
+    // (STANDARD/global), _exclnpwgt_keyword/_exclnpwgts_keyword/_print_keyword
+    // (STANDARD/global), _noprint_keyword/_nothreads_keyword/_threads_keyword
+    // (DATASETS/global), _order_keyword (CONTENTS/global), _range_keyword
+    // (FREQ/global), _var_keyword (global), _printall_keyword (FREQ/global),
+    // _n_keyword (PRINT/global). The rest are MEANS-only.
+    //
+    // SINGLE-LETTER KEYWORD t: the MEANS spec lists n and t as single-letter
+    // statistic shorthand (n reuses _n_keyword from PRINT). Per the Phase C
+    // template's single-letter guidance, t is given a dedicated _t_keyword
+    // char-class token. tree-sitter's longest-match rule makes it win over the
+    // generic identifier (length 1 vs N) at the exact option-key boundary, and
+    // the $.identifier fallback in means_option_key still catches unknown
+    // single-letter keys. See the means_option_key comment for the empirical
+    // conflict check (Task 21): both n and t route cleanly and do not regress
+    // any corpus test, so unlike COMPARE's b/c (Task 18) no fallback-to-
+    // identifier is needed here.
+    //
+    // PERCENTILE KEYWORDS p1/p5/.../p99: these contain digits. The regex
+    // char-class form works (e.g. _p1_keyword: /[pP]1/). tree-sitter's
+    // longest-match resolves 'p10' as the 3-char _p10_keyword (never 'p1'+'0'),
+    // 'p25' as 3-char _p25_keyword (never 'p2'+'5' — note there is no p2), and
+    // 'p1' alone as 2-char _p1_keyword. The empirical check below (parse of
+    // 'p10=x') confirms p10 wins over p1+0.
+    //
+    // Boolean flags (no '= value') used by means_option_flag:
+    _chartype_keyword: $ => /[cC][hH][aA][rR][tT][yY][pP][eE]/,
+    _completetypes_keyword: $ => /[cC][oO][mM][pP][lL][eE][tT][eE][tT][yY][pP][eE][sS]/,
+    _descendtypes_keyword: $ => /[dD][eE][sS][cC][eE][nN][dD][tT][yY][pP][eE][sS]/,
+    _exclusive_keyword: $ => /[eE][xX][cC][lL][uU][sS][iI][vV][eE]/,
+    _idmin_keyword: $ => /[iI][dD][mM][iI][nN]/,
+    _missing_keyword: $ => /[mM][iI][sS][sS][iI][nN][gG]/,
+    _nolabel_keyword: $ => /[nN][oO][lL][aA][bB][eE][lL]/,
+    _nonobs_keyword: $ => /[nN][oO][nN][oO][bB][sS]/,
+    _notrap_keyword: $ => /[nN][oO][tT][rR][aA][pP]/,
+    _nway_keyword: $ => /[nN][wW][aA][yY]/,
+    _printalltypes_keyword: $ => /[pP][rR][iI][nN][tT][aA][lL][lL][tT][yY][pP][eE][sS]/,
+    _printids_keyword: $ => /[pP][rR][iI][nN][tT][iI][dD][sS]/,
+    _printidvars_keyword: $ => /[pP][rR][iI][nN][tT][iI][dD][vV][aA][rR][sS]/,
+    _stackods_keyword: $ => /[sS][tT][aA][cC][kK][oO][dD][sS]/,
+    _stackodsoutput_keyword: $ => /[sS][tT][aA][cC][kK][oO][dD][sS][oO][uU][tT][pP][uU][tT]/,
+    // Value-option keys (used by means_option_key):
+    _alpha_keyword: $ => /[aA][lL][pP][hH][aA]/,
+    _classdata_keyword: $ => /[cC][lL][aA][sS][sS][dD][aA][tT][aA]/,
+    _descend_keyword: $ => /[dD][eE][sS][cC][eE][nN][dD]/,
+    _descending_keyword: $ => /[dD][eE][sS][cC][eE][nN][dD][iI][nN][gG]/,
+    _fw_keyword: $ => /[fF][wW]/,
+    _incas_keyword: $ => /[iI][nN][cC][aA][sS]/,
+    _maxdec_keyword: $ => /[mM][aA][xX][dD][eE][cC]/,
+    _pctldef_keyword: $ => /[pP][cC][tT][lL][dD][eE][fF]/,
+    _qmarkers_keyword: $ => /[qQ][mM][aA][rR][kK][eE][rR][sS]/,
+    _qmethod_keyword: $ => /[qQ][mM][eE][tT][hH][oO][dD]/,
+    _qntldef_keyword: $ => /[qQ][nN][tT][lL][dD][eE][fF]/,
+    _sumsize_keyword: $ => /[sS][uU][mM][sS][iI][zZ][eE]/,
+    // Statistic keywords (used by means_option_key; bare flags or take args):
+    _clm_keyword: $ => /[cC][lL][mM]/,
+    _css_keyword: $ => /[cC][sS][sS]/,
+    _kurt_keyword: $ => /[kK][uU][rR][tT]/,
+    _kurtosis_keyword: $ => /[kK][uU][rR][tT][oO][sS][iI][sS]/,
+    _lclm_keyword: $ => /[lL][cC][lL][mM]/,
+    _max_keyword: $ => /[mM][aA][xX]/,
+    _median_keyword: $ => /[mM][eE][dD][iI][aA][nN]/,
+    _min_keyword: $ => /[mM][iI][nN]/,
+    _mode_keyword: $ => /[mM][oO][dD][eE]/,
+    _nmiss_keyword: $ => /[nN][mM][iI][sS][sS]/,
+    _pbt_keyword: $ => /[pP][bB][tT]/,
+    _probt_keyword: $ => /[pP][rR][oO][bB][tT]/,
+    _q1_keyword: $ => /[qQ]1/,
+    _q3_keyword: $ => /[qQ]3/,
+    _qrange_keyword: $ => /[qQ][rR][aA][nN][gG][eE]/,
+    _skew_keyword: $ => /[sS][kK][eE][wW]/,
+    _skewness_keyword: $ => /[sS][kK][eE][wW][nN][eE][sS][sS]/,
+    _stddev_keyword: $ => /[sS][tT][dD][dD][eE][vV]/,
+    _stderr_keyword: $ => /[sS][tT][dD][eE][rR][rR]/,
+    _sum_keyword: $ => /[sS][uU][mM]/,
+    _sumwgt_keyword: $ => /[sS][uU][mM][wW][gG][tT]/,
+    _uclm_keyword: $ => /[uU][cC][lL][mM]/,
+    _uss_keyword: $ => /[uU][sS][sS]/,
+    // Percentile statistic keywords (p1/p5/p10/p20/p25/p30/p40/p50/p60/p70/p75/
+    // p80/p90/p95/p99). The digit is a literal char in the regex char-class.
+    // Longest-match resolves 'p10' over 'p1' (3 vs 2 chars) — see block comment.
+    _p1_keyword: $ => /[pP]1/,
+    _p5_keyword: $ => /[pP]5/,
+    _p10_keyword: $ => /[pP]10/,
+    _p20_keyword: $ => /[pP]20/,
+    _p25_keyword: $ => /[pP]25/,
+    _p30_keyword: $ => /[pP]30/,
+    _p40_keyword: $ => /[pP]40/,
+    _p50_keyword: $ => /[pP]50/,
+    _p60_keyword: $ => /[pP]60/,
+    _p70_keyword: $ => /[pP]70/,
+    _p75_keyword: $ => /[pP]75/,
+    _p80_keyword: $ => /[pP]80/,
+    _p90_keyword: $ => /[pP]90/,
+    _p95_keyword: $ => /[pP]95/,
+    _p99_keyword: $ => /[pP]99/,
+    // Single-letter statistic shorthand (t). See the block comment above for the
+    // longest-match rationale and the empirical no-regression check. (n reuses
+    // _n_keyword defined in the PRINT block above.)
+    _t_keyword: $ => /[tT]/,
 
     // --- Operators and punctuation ---
     _semicolon: $ => ';',

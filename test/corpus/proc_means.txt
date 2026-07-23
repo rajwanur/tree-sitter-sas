@@ -7,12 +7,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_means_step
+      options: (means_options
+        (means_option
+          (means_option_key)
           (identifier))))))
 
 ================================================================================
@@ -25,12 +23,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_means_step
+      options: (means_options
+        (means_option
+          (means_option_key)
           (identifier)))
       body: (proc_body
         (tabulate_var_statement
@@ -48,12 +44,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_means_step
+      options: (means_options
+        (means_option
+          (means_option_key)
           (identifier)))
       body: (proc_body
         (means_class_statement
@@ -72,12 +66,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_means_step
+      options: (means_options
+        (means_option
+          (means_option_key)
           (identifier)))
       body: (proc_body
         (tabulate_var_statement
@@ -112,3 +104,127 @@ run;
         (means_output_statement
           (data_reference
             (identifier)))))))
+
+================================================================================
+PROC MEANS value-options (data=/alpha=/fw=/maxdec=/order=/vardef=)
+================================================================================
+proc means data=sashelp.class alpha=0.05 fw=12 maxdec=2 order=freq vardef=df;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_means_step
+      options: (means_options
+        (means_option
+          (means_option_key)
+          (dotted_identifier
+            base: (identifier)
+            member: (identifier)))
+        (means_option
+          (means_option_key)
+          (number))
+        (means_option
+          (means_option_key)
+          (number))
+        (means_option
+          (means_option_key)
+          (number))
+        (means_option
+          (means_option_key)
+          (identifier))
+        (means_option
+          (means_option_key)
+          (identifier))))))
+
+================================================================================
+PROC MEANS statistics + single-letter n/t (longest-match vs nmiss/nway/threads)
+================================================================================
+proc means data=x n t nmiss mean std min max sum kurt skew;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_means_step
+      options: (means_options
+        (means_option
+          (means_option_key)
+          (identifier))
+        (means_option
+          (means_option_key))
+        (means_option
+          (means_option_key))
+        (means_option
+          (means_option_key))
+        (means_option
+          (means_option_key))
+        (means_option
+          (means_option_key))
+        (means_option
+          (means_option_key))
+        (means_option
+          (means_option_key))
+        (means_option
+          (means_option_key))
+        (means_option
+          (means_option_key))
+        (means_option
+          (means_option_key))))))
+
+================================================================================
+PROC MEANS percentiles (p1/p10/p25/p50/p75/p99 longest-match)
+================================================================================
+proc means data=x p1 p10 p25 p50 p75 p99 q1 q3 qrange median;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_means_step
+      options: (means_options
+        (means_option
+          (means_option_key)
+          (identifier))
+        (means_option
+          (means_option_key))
+        (means_option
+          (means_option_key))
+        (means_option
+          (means_option_key))
+        (means_option
+          (means_option_key))
+        (means_option
+          (means_option_key))
+        (means_option
+          (means_option_key))
+        (means_option
+          (means_option_key))
+        (means_option
+          (means_option_key))
+        (means_option
+          (means_option_key))
+        (means_option
+          (means_option_key))))))
+
+================================================================================
+PROC MEANS boolean flags (noprint/missing/nway/exclnpwgt/nothreads/threads/print)
+================================================================================
+proc means data=x noprint missing nway exclnpwgt nothreads threads print;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_means_step
+      options: (means_options
+        (means_option
+          (means_option_key)
+          (identifier))
+        (means_option_flag)
+        (means_option_flag)
+        (means_option_flag)
+        (means_option_flag)
+        (means_option_flag)
+        (means_option_flag)
+        (means_option_flag)))))

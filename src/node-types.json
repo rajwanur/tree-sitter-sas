@@ -3616,6 +3616,80 @@
     }
   },
   {
+    "type": "means_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "means_option_key",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "means_option_flag",
+    "named": true,
+    "fields": {}
+  },
+  {
+    "type": "means_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "means_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "means_option",
+          "named": true
+        },
+        {
+          "type": "means_option_flag",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "means_output_statement",
     "named": true,
     "fields": {},
@@ -5068,6 +5142,32 @@
     }
   },
   {
+    "type": "proc_means_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "means_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "proc_name",
     "named": true,
     "fields": {},
@@ -5343,6 +5443,10 @@
         },
         {
           "type": "proc_generic_step",
+          "named": true
+        },
+        {
+          "type": "proc_means_step",
           "named": true
         },
         {
@@ -8058,6 +8162,10 @@
     "named": false
   },
   {
+    "type": "alpha",
+    "named": false
+  },
+  {
     "type": "alter",
     "named": false
   },
@@ -8199,7 +8307,15 @@
     "named": false
   },
   {
+    "type": "classdata",
+    "named": false
+  },
+  {
     "type": "classlev",
+    "named": false
+  },
+  {
+    "type": "clm",
     "named": false
   },
   {
@@ -8279,6 +8395,10 @@
     "named": false
   },
   {
+    "type": "css",
+    "named": false
+  },
+  {
     "type": "d",
     "named": false
   },
@@ -8348,6 +8468,14 @@
   },
   {
     "type": "desc",
+    "named": false
+  },
+  {
+    "type": "descend",
+    "named": false
+  },
+  {
+    "type": "descending",
     "named": false
   },
   {
@@ -8499,6 +8627,10 @@
     "named": false
   },
   {
+    "type": "fw",
+    "named": false
+  },
+  {
     "type": "ge",
     "named": false
   },
@@ -8603,6 +8735,10 @@
     "named": false
   },
   {
+    "type": "incas",
+    "named": false
+  },
+  {
     "type": "index",
     "named": false
   },
@@ -8675,11 +8811,23 @@
     "named": false
   },
   {
+    "type": "kurt",
+    "named": false
+  },
+  {
+    "type": "kurtosis",
+    "named": false
+  },
+  {
     "type": "l",
     "named": false
   },
   {
     "type": "label",
+    "named": false
+  },
+  {
+    "type": "lclm",
     "named": false
   },
   {
@@ -8755,11 +8903,31 @@
     "named": true
   },
   {
+    "type": "max",
+    "named": false
+  },
+  {
+    "type": "maxdec",
+    "named": false
+  },
+  {
     "type": "maxprint",
     "named": false
   },
   {
     "type": "mean",
+    "named": false
+  },
+  {
+    "type": "means",
+    "named": false
+  },
+  {
+    "type": "means_option_flag",
+    "named": false
+  },
+  {
+    "type": "median",
     "named": false
   },
   {
@@ -8779,12 +8947,20 @@
     "named": false
   },
   {
+    "type": "min",
+    "named": false
+  },
+  {
     "type": "missing",
     "named": false
   },
   {
     "type": "missing_value",
     "named": true
+  },
+  {
+    "type": "mode",
+    "named": false
   },
   {
     "type": "model",
@@ -8832,6 +9008,10 @@
   },
   {
     "type": "nlevels",
+    "named": false
+  },
+  {
+    "type": "nmiss",
     "named": false
   },
   {
@@ -8983,11 +9163,79 @@
     "named": false
   },
   {
+    "type": "p1",
+    "named": false
+  },
+  {
+    "type": "p10",
+    "named": false
+  },
+  {
+    "type": "p20",
+    "named": false
+  },
+  {
+    "type": "p25",
+    "named": false
+  },
+  {
+    "type": "p30",
+    "named": false
+  },
+  {
+    "type": "p40",
+    "named": false
+  },
+  {
+    "type": "p5",
+    "named": false
+  },
+  {
+    "type": "p50",
+    "named": false
+  },
+  {
+    "type": "p60",
+    "named": false
+  },
+  {
+    "type": "p70",
+    "named": false
+  },
+  {
+    "type": "p75",
+    "named": false
+  },
+  {
+    "type": "p80",
+    "named": false
+  },
+  {
+    "type": "p90",
+    "named": false
+  },
+  {
+    "type": "p95",
+    "named": false
+  },
+  {
+    "type": "p99",
+    "named": false
+  },
+  {
     "type": "pageby",
     "named": false
   },
   {
     "type": "paired",
+    "named": false
+  },
+  {
+    "type": "pbt",
+    "named": false
+  },
+  {
+    "type": "pctldef",
     "named": false
   },
   {
@@ -9035,6 +9283,10 @@
     "named": false
   },
   {
+    "type": "probt",
+    "named": false
+  },
+  {
     "type": "proc",
     "named": false
   },
@@ -9055,7 +9307,31 @@
     "named": false
   },
   {
+    "type": "q1",
+    "named": false
+  },
+  {
+    "type": "q3",
+    "named": false
+  },
+  {
+    "type": "qmarkers",
+    "named": false
+  },
+  {
+    "type": "qmethod",
+    "named": false
+  },
+  {
+    "type": "qntldef",
+    "named": false
+  },
+  {
     "type": "qqplot",
+    "named": false
+  },
+  {
+    "type": "qrange",
     "named": false
   },
   {
@@ -9192,6 +9468,14 @@
     "named": true
   },
   {
+    "type": "skew",
+    "named": false
+  },
+  {
+    "type": "skewness",
+    "named": false
+  },
+  {
     "type": "sort",
     "named": false
   },
@@ -9228,6 +9512,14 @@
     "named": false
   },
   {
+    "type": "stddev",
+    "named": false
+  },
+  {
+    "type": "stderr",
+    "named": false
+  },
+  {
     "type": "stepplet",
     "named": false
   },
@@ -9256,7 +9548,19 @@
     "named": false
   },
   {
+    "type": "sumsize",
+    "named": false
+  },
+  {
+    "type": "sumwgt",
+    "named": false
+  },
+  {
     "type": "symbol",
+    "named": false
+  },
+  {
+    "type": "t",
     "named": false
   },
   {
@@ -9300,6 +9604,10 @@
     "named": false
   },
   {
+    "type": "uclm",
+    "named": false
+  },
+  {
     "type": "uniform",
     "named": false
   },
@@ -9325,6 +9633,10 @@
   },
   {
     "type": "update",
+    "named": false
+  },
+  {
+    "type": "uss",
     "named": false
   },
   {
