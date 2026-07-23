@@ -8,9 +8,7 @@ quit;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_sql_step
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -31,9 +29,7 @@ quit;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_sql_step
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -58,9 +54,7 @@ quit;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_sql_step
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -86,9 +80,7 @@ quit;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_sql_step
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -115,9 +107,7 @@ quit;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_sql_step
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -139,9 +129,7 @@ quit;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_sql_step
       body: (proc_body
         (sql_create_table
           (identifier)
@@ -161,9 +149,7 @@ quit;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_sql_step
       body: (proc_body
         (sql_create_view
           (identifier)
@@ -183,9 +169,7 @@ quit;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_sql_step
       body: (proc_body
         (sql_insert_into
           (identifier)
@@ -202,9 +186,7 @@ quit;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_sql_step
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -233,9 +215,7 @@ quit;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_sql_step
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -267,9 +247,7 @@ quit;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_sql_step
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -290,9 +268,7 @@ quit;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_sql_step
       body: (proc_body
         (sql_drop_statement
           (identifier))))))
@@ -307,9 +283,7 @@ quit;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_sql_step
       body: (proc_body
         (sql_disconnect
           (identifier))))))
@@ -324,9 +298,7 @@ quit;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_sql_step
       body: (proc_body
         (sql_reset
           (identifier))))))
@@ -341,9 +313,7 @@ quit;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_sql_step
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -365,9 +335,7 @@ quit;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_sql_step
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -393,9 +361,7 @@ quit;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_sql_step
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -420,11 +386,10 @@ quit;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (identifier))
+    (proc_sql_step
+      options: (sql_options
+        (sql_option
+          (sql_option_key)))
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -457,9 +422,7 @@ quit;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_sql_step
       body: (proc_body
         (sql_select_statement
           (sql_select_list

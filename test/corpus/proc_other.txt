@@ -35,12 +35,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_report_step
+      options: (report_options
+        (report_option
+          (report_option_key)
           (identifier)))
       body: (proc_body
         (report_column_statement
@@ -62,12 +60,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_tabulate_step
+      options: (tabulate_options
+        (tabulate_option
+          (tabulate_option_key)
           (identifier)))
       body: (proc_body
         (means_class_statement
@@ -169,8 +165,6 @@ run;
           (identifier))
         (proc_option_flag)))))
 
-
-
 ================================================================================
 PROC DATASETS
 ================================================================================
@@ -241,12 +235,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_univariate_step
+      options: (univariate_options
+        (univariate_option
+          (univariate_option_key)
           (identifier)))
       body: (proc_body
         (tabulate_var_statement
@@ -266,12 +258,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_reg_step
+      options: (reg_options
+        (reg_option
+          (reg_option_key)
           (identifier)))
       body: (proc_body
         (logistic_model_statement
@@ -288,12 +278,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_gplot_step
+      options: (gplot_options
+        (gplot_option
+          (gplot_option_key)
           (identifier)))
       body: (proc_body
         (reg_plot_statement
@@ -311,12 +299,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_sgplot_step
+      options: (sgplot_options
+        (sgplot_option
+          (sgplot_option_key)
           (identifier)))
       body: (proc_body
         (sgplot_scatter_statement
@@ -334,12 +320,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_sgplot_step
+      options: (sgplot_options
+        (sgplot_option
+          (sgplot_option_key)
           (dotted_identifier
             base: (identifier)
             member: (identifier))))
@@ -394,9 +378,7 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
+    (proc_format_step
       body: (proc_body
         (format_value_statement
           (identifier)

@@ -128,12 +128,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_tabulate_step
+      options: (tabulate_options
+        (tabulate_option
+          (tabulate_option_key)
           (dotted_identifier
             base: (identifier)
             member: (identifier))))

@@ -208,6 +208,71 @@
     ]
   },
   {
+    "type": "anova_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "anova_option_key",
+          "named": true
+        },
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "anova_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "anova_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "anova_option",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "append_base_statement",
     "named": true,
     "fields": {},
@@ -1678,6 +1743,71 @@
     }
   },
   {
+    "type": "factor_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "factor_option_key",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "factor_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "factor_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "factor_option",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "fcmp_function_block",
     "named": true,
     "fields": {
@@ -1736,6 +1866,71 @@
         },
         {
           "type": "statement",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "fcmp_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "fcmp_option_key",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "fcmp_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "fcmp_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "fcmp_option",
+          "named": true
+        },
+        {
+          "type": "identifier",
           "named": true
         }
       ]
@@ -1883,6 +2078,71 @@
       "types": [
         {
           "type": "expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "format_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "format_option_key",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "format_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "format_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "format_option",
+          "named": true
+        },
+        {
+          "type": "identifier",
           "named": true
         }
       ]
@@ -2165,6 +2425,136 @@
     }
   },
   {
+    "type": "genmod_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "genmod_option_key",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "genmod_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "genmod_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "genmod_option",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "glm_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "glm_option_key",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "glm_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "glm_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "glm_option",
+          "named": true
+        },
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "global_statement",
     "named": true,
     "fields": {},
@@ -2277,6 +2667,71 @@
       "types": [
         {
           "type": "quoted_string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "gplot_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "gplot_option_key",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "gplot_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "gplot_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "gplot_option",
+          "named": true
+        },
+        {
+          "type": "identifier",
           "named": true
         }
       ]
@@ -2725,6 +3180,71 @@
     }
   },
   {
+    "type": "lifetest_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "lifetest_option_key",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "lifetest_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "lifetest_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "lifetest_option",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "lifetest_strata_statement",
     "named": true,
     "fields": {},
@@ -2803,6 +3323,71 @@
         },
         {
           "type": "quoted_string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "logistic_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "logistic_option_key",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "logistic_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "logistic_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "logistic_option",
           "named": true
         }
       ]
@@ -3840,6 +4425,71 @@
     }
   },
   {
+    "type": "mixed_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "mixed_option_key",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "mixed_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "mixed_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "mixed_option",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "model_option",
     "named": true,
     "fields": {},
@@ -4110,6 +4760,136 @@
     }
   },
   {
+    "type": "phreg_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "phreg_option_key",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "phreg_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "phreg_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "phreg_option",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "princomp_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "princomp_option_key",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "princomp_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "princomp_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "princomp_option",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "print",
     "named": false,
     "fields": {}
@@ -4336,6 +5116,32 @@
           "named": true
         }
       ]
+    }
+  },
+  {
+    "type": "proc_anova_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "anova_options",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -5080,6 +5886,84 @@
     }
   },
   {
+    "type": "proc_factor_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "factor_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "proc_fcmp_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "fcmp_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "proc_format_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "format_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "proc_freq_step",
     "named": true,
     "fields": {
@@ -5142,6 +6026,136 @@
     }
   },
   {
+    "type": "proc_genmod_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "genmod_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "proc_glm_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "glm_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "proc_gplot_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "gplot_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "proc_lifetest_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "lifetest_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "proc_logistic_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "logistic_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "proc_means_step",
     "named": true,
     "fields": {
@@ -5161,6 +6175,32 @@
         "types": [
           {
             "type": "means_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "proc_mixed_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "mixed_options",
             "named": true
           }
         ]
@@ -5298,6 +6338,58 @@
     }
   },
   {
+    "type": "proc_phreg_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "phreg_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "proc_princomp_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "princomp_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "proc_print_step",
     "named": true,
     "fields": {
@@ -5350,6 +6442,84 @@
     }
   },
   {
+    "type": "proc_reg_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "reg_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "proc_report_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "report_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "proc_sgplot_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "sgplot_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
     "type": "proc_sort_step",
     "named": true,
     "fields": {
@@ -5369,6 +6539,32 @@
         "types": [
           {
             "type": "sort_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "proc_sql_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "sql_options",
             "named": true
           }
         ]
@@ -5410,6 +6606,10 @@
       "required": true,
       "types": [
         {
+          "type": "proc_anova_step",
+          "named": true
+        },
+        {
           "type": "proc_append_step",
           "named": true
         },
@@ -5438,6 +6638,18 @@
           "named": true
         },
         {
+          "type": "proc_factor_step",
+          "named": true
+        },
+        {
+          "type": "proc_fcmp_step",
+          "named": true
+        },
+        {
+          "type": "proc_format_step",
+          "named": true
+        },
+        {
           "type": "proc_freq_step",
           "named": true
         },
@@ -5446,11 +6658,43 @@
           "named": true
         },
         {
+          "type": "proc_genmod_step",
+          "named": true
+        },
+        {
+          "type": "proc_glm_step",
+          "named": true
+        },
+        {
+          "type": "proc_gplot_step",
+          "named": true
+        },
+        {
+          "type": "proc_lifetest_step",
+          "named": true
+        },
+        {
+          "type": "proc_logistic_step",
+          "named": true
+        },
+        {
           "type": "proc_means_step",
           "named": true
         },
         {
+          "type": "proc_mixed_step",
+          "named": true
+        },
+        {
           "type": "proc_options_step",
+          "named": true
+        },
+        {
+          "type": "proc_phreg_step",
+          "named": true
+        },
+        {
+          "type": "proc_princomp_step",
           "named": true
         },
         {
@@ -5462,7 +6706,23 @@
           "named": true
         },
         {
+          "type": "proc_reg_step",
+          "named": true
+        },
+        {
+          "type": "proc_report_step",
+          "named": true
+        },
+        {
+          "type": "proc_sgplot_step",
+          "named": true
+        },
+        {
           "type": "proc_sort_step",
+          "named": true
+        },
+        {
+          "type": "proc_sql_step",
           "named": true
         },
         {
@@ -5470,10 +6730,48 @@
           "named": true
         },
         {
+          "type": "proc_tabulate_step",
+          "named": true
+        },
+        {
           "type": "proc_transpose_step",
+          "named": true
+        },
+        {
+          "type": "proc_ttest_step",
+          "named": true
+        },
+        {
+          "type": "proc_univariate_step",
           "named": true
         }
       ]
+    }
+  },
+  {
+    "type": "proc_tabulate_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "tabulate_options",
+            "named": true
+          }
+        ]
+      }
     }
   },
   {
@@ -5496,6 +6794,58 @@
         "types": [
           {
             "type": "transpose_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "proc_ttest_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "ttest_options",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "proc_univariate_step",
+    "named": true,
+    "fields": {
+      "body": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "proc_body",
+            "named": true
+          }
+        ]
+      },
+      "options": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "univariate_options",
             "named": true
           }
         ]
@@ -5618,6 +6968,71 @@
     }
   },
   {
+    "type": "reg_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        },
+        {
+          "type": "reg_option_key",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "reg_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "reg_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "reg_option",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "reg_output_statement",
     "named": true,
     "fields": {},
@@ -5718,6 +7133,11 @@
         }
       ]
     }
+  },
+  {
+    "type": "report",
+    "named": false,
+    "fields": {}
   },
   {
     "type": "report_break_statement",
@@ -5849,6 +7269,71 @@
         },
         {
           "type": "quoted_string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "report_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        },
+        {
+          "type": "report_option_key",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "report_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "report_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "report_option",
           "named": true
         }
       ]
@@ -6260,6 +7745,52 @@
     }
   },
   {
+    "type": "sgplot_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        },
+        {
+          "type": "sgplot_option_key",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "sgplot_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "sgplot_option_list",
     "named": true,
     "fields": {},
@@ -6277,6 +7808,25 @@
         },
         {
           "type": "quoted_string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "sgplot_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "sgplot_option",
           "named": true
         }
       ]
@@ -6937,6 +8487,71 @@
     }
   },
   {
+    "type": "sql_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        },
+        {
+          "type": "sql_option_key",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "sql_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "sql_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "sql_option",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "sql_order_by_clause",
     "named": true,
     "fields": {},
@@ -7365,6 +8980,71 @@
     }
   },
   {
+    "type": "tabulate_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        },
+        {
+          "type": "tabulate_option_key",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "tabulate_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "tabulate_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "tabulate_option",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "tabulate_table_statement",
     "named": true,
     "fields": {},
@@ -7580,6 +9260,71 @@
     }
   },
   {
+    "type": "ttest_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        },
+        {
+          "type": "ttest_option_key",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "ttest_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "ttest_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "ttest_option",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "ttest_paired_statement",
     "named": true,
     "fields": {},
@@ -7729,6 +9474,71 @@
         },
         {
           "type": "quoted_string",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "univariate_option",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "catalog_path",
+          "named": true
+        },
+        {
+          "type": "data_set_option",
+          "named": true
+        },
+        {
+          "type": "expression",
+          "named": true
+        },
+        {
+          "type": "proc_option_args",
+          "named": true
+        },
+        {
+          "type": "univariate_option_key",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "univariate_option_key",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "univariate_options",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "identifier",
+          "named": true
+        },
+        {
+          "type": "univariate_option",
           "named": true
         }
       ]
@@ -8150,6 +9960,14 @@
     "named": false
   },
   {
+    "type": "aalen",
+    "named": false
+  },
+  {
+    "type": "absolute",
+    "named": false
+  },
+  {
     "type": "add",
     "named": false
   },
@@ -8166,11 +9984,31 @@
     "named": false
   },
   {
+    "type": "alphaqt",
+    "named": false
+  },
+  {
     "type": "alter",
     "named": false
   },
   {
     "type": "and",
+    "named": false
+  },
+  {
+    "type": "anno",
+    "named": false
+  },
+  {
+    "type": "annotate",
+    "named": false
+  },
+  {
+    "type": "anova",
+    "named": false
+  },
+  {
+    "type": "anovaf",
     "named": false
   },
   {
@@ -8198,6 +10036,22 @@
     "named": false
   },
   {
+    "type": "aspect",
+    "named": false
+  },
+  {
+    "type": "asycorr",
+    "named": false
+  },
+  {
+    "type": "asycov",
+    "named": false
+  },
+  {
+    "type": "atrisk",
+    "named": false
+  },
+  {
     "type": "attrib",
     "named": false
   },
@@ -8207,6 +10061,22 @@
   },
   {
     "type": "band",
+    "named": false
+  },
+  {
+    "type": "bandmax",
+    "named": false
+  },
+  {
+    "type": "bandmaxtime",
+    "named": false
+  },
+  {
+    "type": "bandmin",
+    "named": false
+  },
+  {
+    "type": "bandmintime",
     "named": false
   },
   {
@@ -8251,6 +10121,14 @@
     "named": false
   },
   {
+    "type": "bypageno",
+    "named": false
+  },
+  {
+    "type": "byvar",
+    "named": false
+  },
+  {
     "type": "calculated",
     "named": false
   },
@@ -8260,6 +10138,10 @@
   },
   {
     "type": "cancel",
+    "named": false
+  },
+  {
+    "type": "caption",
     "named": false
   },
   {
@@ -8275,6 +10157,10 @@
     "named": false
   },
   {
+    "type": "casfmtlib",
+    "named": false
+  },
+  {
     "type": "cat",
     "named": false
   },
@@ -8287,6 +10173,10 @@
     "named": false
   },
   {
+    "type": "center",
+    "named": false
+  },
+  {
     "type": "centiles",
     "named": false
   },
@@ -8295,11 +10185,43 @@
     "named": false
   },
   {
+    "type": "ci",
+    "named": false
+  },
+  {
+    "type": "cibasic",
+    "named": false
+  },
+  {
+    "type": "cifvar",
+    "named": false
+  },
+  {
     "type": "cimport",
     "named": false
   },
   {
     "type": "cimport_option_flag",
+    "named": false
+  },
+  {
+    "type": "cipctldf",
+    "named": false
+  },
+  {
+    "type": "cipctlnormal",
+    "named": false
+  },
+  {
+    "type": "ciquantdf",
+    "named": false
+  },
+  {
+    "type": "ciquantnormal",
+    "named": false
+  },
+  {
+    "type": "cl",
     "named": false
   },
   {
@@ -8319,6 +10241,18 @@
     "named": false
   },
   {
+    "type": "cntlin",
+    "named": false
+  },
+  {
+    "type": "cntlout",
+    "named": false
+  },
+  {
+    "type": "cochran",
+    "named": false
+  },
+  {
     "type": "column",
     "named": false
   },
@@ -8335,11 +10269,31 @@
     "named": false
   },
   {
+    "type": "completecols",
+    "named": false
+  },
+  {
+    "type": "completerows",
+    "named": false
+  },
+  {
     "type": "compress",
     "named": false
   },
   {
     "type": "compute",
+    "named": false
+  },
+  {
+    "type": "confband",
+    "named": false
+  },
+  {
+    "type": "conftype",
+    "named": false
+  },
+  {
+    "type": "constdatetime",
     "named": false
   },
   {
@@ -8355,6 +10309,26 @@
     "named": false
   },
   {
+    "type": "conv",
+    "named": false
+  },
+  {
+    "type": "converge",
+    "named": false
+  },
+  {
+    "type": "convf",
+    "named": false
+  },
+  {
+    "type": "convg",
+    "named": false
+  },
+  {
+    "type": "convh",
+    "named": false
+  },
+  {
     "type": "copy",
     "named": false
   },
@@ -8364,6 +10338,38 @@
   },
   {
     "type": "corr",
+    "named": false
+  },
+  {
+    "type": "cov",
+    "named": false
+  },
+  {
+    "type": "covariance",
+    "named": false
+  },
+  {
+    "type": "cover",
+    "named": false
+  },
+  {
+    "type": "covm",
+    "named": false
+  },
+  {
+    "type": "covout",
+    "named": false
+  },
+  {
+    "type": "covs",
+    "named": false
+  },
+  {
+    "type": "covsandwich",
+    "named": false
+  },
+  {
+    "type": "covtest",
     "named": false
   },
   {
@@ -8399,6 +10405,10 @@
     "named": false
   },
   {
+    "type": "cycleattrs",
+    "named": false
+  },
+  {
     "type": "d",
     "named": false
   },
@@ -8431,6 +10441,10 @@
     "named": false
   },
   {
+    "type": "dattrmap",
+    "named": false
+  },
+  {
     "type": "dbms",
     "named": false
   },
@@ -8444,6 +10458,10 @@
   },
   {
     "type": "declare",
+    "named": false
+  },
+  {
+    "type": "def",
     "named": false
   },
   {
@@ -8467,6 +10485,10 @@
     "named": false
   },
   {
+    "type": "des",
+    "named": false
+  },
+  {
     "type": "desc",
     "named": false
   },
@@ -8479,7 +10501,19 @@
     "named": false
   },
   {
+    "type": "description",
+    "named": false
+  },
+  {
     "type": "details",
+    "named": false
+  },
+  {
+    "type": "dfbw",
+    "named": false
+  },
+  {
+    "type": "dictdiag",
     "named": false
   },
   {
@@ -8488,6 +10522,10 @@
   },
   {
     "type": "disconnect",
+    "named": false
+  },
+  {
+    "type": "dist",
     "named": false
   },
   {
@@ -8507,6 +10545,10 @@
     "named": true
   },
   {
+    "type": "dquote",
+    "named": false
+  },
+  {
     "type": "drop",
     "named": false
   },
@@ -8519,7 +10561,15 @@
     "named": false
   },
   {
+    "type": "edf",
+    "named": false
+  },
+  {
     "type": "eet",
+    "named": false
+  },
+  {
+    "type": "eigenvectors",
     "named": false
   },
   {
@@ -8527,7 +10577,15 @@
     "named": false
   },
   {
+    "type": "empirical",
+    "named": false
+  },
+  {
     "type": "encodinginfo",
+    "named": false
+  },
+  {
+    "type": "encrypt",
     "named": false
   },
   {
@@ -8551,7 +10609,19 @@
     "named": false
   },
   {
+    "type": "error",
+    "named": false
+  },
+  {
+    "type": "errorstop",
+    "named": false
+  },
+  {
     "type": "et",
+    "named": false
+  },
+  {
+    "type": "ev",
     "named": false
   },
   {
@@ -8559,11 +10629,39 @@
     "named": false
   },
   {
+    "type": "exactonly",
+    "named": false
+  },
+  {
+    "type": "exactoptions",
+    "named": false
+  },
+  {
     "type": "except",
     "named": false
   },
   {
+    "type": "exclnpwgt",
+    "named": false
+  },
+  {
+    "type": "exclnpwgts",
+    "named": false
+  },
+  {
     "type": "exclude",
+    "named": false
+  },
+  {
+    "type": "exclusive",
+    "named": false
+  },
+  {
+    "type": "exec",
+    "named": false
+  },
+  {
+    "type": "exitcode",
     "named": false
   },
   {
@@ -8579,11 +10677,35 @@
     "named": false
   },
   {
+    "type": "factor",
+    "named": false
+  },
+  {
+    "type": "fcmp",
+    "named": false
+  },
+  {
+    "type": "feedback",
+    "named": false
+  },
+  {
     "type": "file",
     "named": false
   },
   {
     "type": "filename",
+    "named": false
+  },
+  {
+    "type": "flag",
+    "named": false
+  },
+  {
+    "type": "flow",
+    "named": false
+  },
+  {
+    "type": "fmtlib",
     "named": false
   },
   {
@@ -8631,6 +10753,10 @@
     "named": false
   },
   {
+    "type": "gamma",
+    "named": false
+  },
+  {
     "type": "ge",
     "named": false
   },
@@ -8639,7 +10765,27 @@
     "named": false
   },
   {
+    "type": "genmod",
+    "named": false
+  },
+  {
     "type": "gennum",
+    "named": false
+  },
+  {
+    "type": "getcascmplib",
+    "named": false
+  },
+  {
+    "type": "getcascmpopt",
+    "named": false
+  },
+  {
+    "type": "getcmplib",
+    "named": false
+  },
+  {
+    "type": "getcmpopt",
     "named": false
   },
   {
@@ -8651,7 +10797,19 @@
     "named": false
   },
   {
+    "type": "glm",
+    "named": false
+  },
+  {
     "type": "goto",
+    "named": false
+  },
+  {
+    "type": "gout",
+    "named": false
+  },
+  {
+    "type": "gplot",
     "named": false
   },
   {
@@ -8687,6 +10845,10 @@
     "named": false
   },
   {
+    "type": "h0",
+    "named": false
+  },
+  {
     "type": "hash",
     "named": false
   },
@@ -8707,11 +10869,35 @@
     "named": false
   },
   {
+    "type": "hey",
+    "named": false
+  },
+  {
+    "type": "heywood",
+    "named": false
+  },
+  {
+    "type": "hide",
+    "named": false
+  },
+  {
     "type": "histogram",
     "named": false
   },
   {
     "type": "hiter",
+    "named": false
+  },
+  {
+    "type": "hkp",
+    "named": false
+  },
+  {
+    "type": "hkpower",
+    "named": false
+  },
+  {
+    "type": "ic",
     "named": false
   },
   {
@@ -8727,7 +10913,15 @@
     "named": false
   },
   {
+    "type": "idout",
+    "named": false
+  },
+  {
     "type": "if",
+    "named": false
+  },
+  {
+    "type": "imagemap",
     "named": false
   },
   {
@@ -8743,7 +10937,15 @@
     "named": false
   },
   {
+    "type": "inest",
+    "named": false
+  },
+  {
     "type": "infile",
+    "named": false
+  },
+  {
+    "type": "info",
     "named": false
   },
   {
@@ -8751,7 +10953,19 @@
     "named": false
   },
   {
+    "type": "inlib",
+    "named": false
+  },
+  {
+    "type": "inmodel",
+    "named": false
+  },
+  {
     "type": "inner",
+    "named": false
+  },
+  {
+    "type": "inobs",
     "named": false
   },
   {
@@ -8771,6 +10985,10 @@
     "named": false
   },
   {
+    "type": "intervals",
+    "named": false
+  },
+  {
     "type": "into",
     "named": false
   },
@@ -8783,11 +11001,19 @@
     "named": false
   },
   {
+    "type": "ipassthru",
+    "named": false
+  },
+  {
     "type": "is",
     "named": false
   },
   {
     "type": "isfileutf8",
+    "named": false
+  },
+  {
+    "type": "itdetails",
     "named": false
   },
   {
@@ -8863,6 +11089,10 @@
     "named": false
   },
   {
+    "type": "lifetest",
+    "named": false
+  },
+  {
     "type": "line",
     "named": false
   },
@@ -8871,11 +11101,59 @@
     "named": true
   },
   {
+    "type": "lineprinter",
+    "named": false
+  },
+  {
+    "type": "list",
+    "named": false
+  },
+  {
     "type": "listall",
     "named": false
   },
   {
+    "type": "listcode",
+    "named": false
+  },
+  {
+    "type": "listfuncs",
+    "named": false
+  },
+  {
+    "type": "listprog",
+    "named": false
+  },
+  {
+    "type": "listsource",
+    "named": false
+  },
+  {
+    "type": "locale",
+    "named": false
+  },
+  {
+    "type": "location",
+    "named": false
+  },
+  {
+    "type": "loccount",
+    "named": false
+  },
+  {
     "type": "log",
+    "named": false
+  },
+  {
+    "type": "logistic",
+    "named": false
+  },
+  {
+    "type": "lognote",
+    "named": false
+  },
+  {
+    "type": "loops",
     "named": false
   },
   {
@@ -8903,6 +11181,10 @@
     "named": true
   },
   {
+    "type": "manova",
+    "named": false
+  },
+  {
     "type": "max",
     "named": false
   },
@@ -8911,7 +11193,31 @@
     "named": false
   },
   {
+    "type": "maxfunc",
+    "named": false
+  },
+  {
+    "type": "maxiter",
+    "named": false
+  },
+  {
+    "type": "maxlablen",
+    "named": false
+  },
+  {
     "type": "maxprint",
+    "named": false
+  },
+  {
+    "type": "maxresponselevels",
+    "named": false
+  },
+  {
+    "type": "maxselen",
+    "named": false
+  },
+  {
+    "type": "maxtime",
     "named": false
   },
   {
@@ -8951,12 +11257,28 @@
     "named": false
   },
   {
+    "type": "mineigen",
+    "named": false
+  },
+  {
     "type": "missing",
     "named": false
   },
   {
     "type": "missing_value",
     "named": true
+  },
+  {
+    "type": "mixed",
+    "named": false
+  },
+  {
+    "type": "mmeq",
+    "named": false
+  },
+  {
+    "type": "mmeqsol",
+    "named": false
   },
   {
     "type": "mode",
@@ -8971,7 +11293,15 @@
     "named": false
   },
   {
+    "type": "modes",
+    "named": false
+  },
+  {
     "type": "modify",
+    "named": false
+  },
+  {
+    "type": "msa",
     "named": false
   },
   {
@@ -8980,6 +11310,14 @@
   },
   {
     "type": "mtype",
+    "named": false
+  },
+  {
+    "type": "mu0",
+    "named": false
+  },
+  {
+    "type": "multipass",
     "named": false
   },
   {
@@ -8995,6 +11333,14 @@
     "named": true
   },
   {
+    "type": "named",
+    "named": false
+  },
+  {
+    "type": "namelen",
+    "named": false
+  },
+  {
     "type": "ne",
     "named": false
   },
@@ -9003,7 +11349,31 @@
     "named": false
   },
   {
+    "type": "nelson",
+    "named": false
+  },
+  {
     "type": "new",
+    "named": false
+  },
+  {
+    "type": "nextrobs",
+    "named": false
+  },
+  {
+    "type": "nextrval",
+    "named": false
+  },
+  {
+    "type": "nfact",
+    "named": false
+  },
+  {
+    "type": "nfactors",
+    "named": false
+  },
+  {
+    "type": "ninterval",
     "named": false
   },
   {
@@ -9019,7 +11389,123 @@
     "named": false
   },
   {
+    "type": "noalias",
+    "named": false
+  },
+  {
+    "type": "noautolegend",
+    "named": false
+  },
+  {
+    "type": "noborder",
+    "named": false
+  },
+  {
+    "type": "nobound",
+    "named": false
+  },
+  {
+    "type": "nobs",
+    "named": false
+  },
+  {
+    "type": "nobyplot",
+    "named": false
+  },
+  {
+    "type": "nobyvar",
+    "named": false
+  },
+  {
+    "type": "nocenter",
+    "named": false
+  },
+  {
+    "type": "noclprint",
+    "named": false
+  },
+  {
+    "type": "nocompletecols",
+    "named": false
+  },
+  {
+    "type": "nocompleterows",
+    "named": false
+  },
+  {
+    "type": "noconstdatetime",
+    "named": false
+  },
+  {
+    "type": "nocorr",
+    "named": false
+  },
+  {
+    "type": "nocov",
+    "named": false
+  },
+  {
+    "type": "nocycleattrs",
+    "named": false
+  },
+  {
+    "type": "nodictdiag",
+    "named": false
+  },
+  {
+    "type": "nodouble",
+    "named": false
+  },
+  {
+    "type": "noerrorstop",
+    "named": false
+  },
+  {
+    "type": "noexec",
+    "named": false
+  },
+  {
+    "type": "noexecute",
+    "named": false
+  },
+  {
+    "type": "nofeedback",
+    "named": false
+  },
+  {
+    "type": "noheader",
+    "named": false
+  },
+  {
+    "type": "noinfo",
+    "named": false
+  },
+  {
+    "type": "noint",
+    "named": false
+  },
+  {
+    "type": "noipassthru",
+    "named": false
+  },
+  {
+    "type": "noitprint",
+    "named": false
+  },
+  {
+    "type": "noleft",
+    "named": false
+  },
+  {
     "type": "nolist",
+    "named": false
+  },
+  {
+    "type": "nonumber",
+    "named": false
+  },
+  {
+    "type": "noopaque",
     "named": false
   },
   {
@@ -9027,7 +11513,59 @@
     "named": false
   },
   {
+    "type": "noprofile",
+    "named": false
+  },
+  {
+    "type": "nopromaxnorm",
+    "named": false
+  },
+  {
+    "type": "noprompt",
+    "named": false
+  },
+  {
+    "type": "noremerge",
+    "named": false
+  },
+  {
+    "type": "noreplace",
+    "named": false
+  },
+  {
+    "type": "norm",
+    "named": false
+  },
+  {
+    "type": "normal",
+    "named": false
+  },
+  {
+    "type": "normaltest",
+    "named": false
+  },
+  {
+    "type": "noseps",
+    "named": false
+  },
+  {
+    "type": "nosortmsg",
+    "named": false
+  },
+  {
+    "type": "nostimer",
+    "named": false
+  },
+  {
+    "type": "nosubpixel",
+    "named": false
+  },
+  {
     "type": "nosumlabel",
+    "named": false
+  },
+  {
+    "type": "nosummary",
     "named": false
   },
   {
@@ -9035,7 +11573,39 @@
     "named": false
   },
   {
+    "type": "notabcontents",
+    "named": false
+  },
+  {
+    "type": "notable",
+    "named": false
+  },
+  {
     "type": "note",
+    "named": false
+  },
+  {
+    "type": "nothreads",
+    "named": false
+  },
+  {
+    "type": "novarcontents",
+    "named": false
+  },
+  {
+    "type": "nowall",
+    "named": false
+  },
+  {
+    "type": "nowarnrecurs",
+    "named": false
+  },
+  {
+    "type": "nplot",
+    "named": false
+  },
+  {
+    "type": "nplots",
     "named": false
   },
   {
@@ -9044,6 +11614,10 @@
   },
   {
     "type": "null",
+    "named": false
+  },
+  {
+    "type": "number",
     "named": false
   },
   {
@@ -9063,6 +11637,10 @@
     "named": false
   },
   {
+    "type": "opaque",
+    "named": false
+  },
+  {
     "type": "option",
     "named": false
   },
@@ -9072,6 +11650,10 @@
   },
   {
     "type": "or",
+    "named": false
+  },
+  {
+    "type": "ord",
     "named": false
   },
   {
@@ -9103,11 +11685,23 @@
     "named": false
   },
   {
+    "type": "outcif",
+    "named": false
+  },
+  {
     "type": "outcomp",
     "named": false
   },
   {
     "type": "outcompare",
+    "named": false
+  },
+  {
+    "type": "outdesign",
+    "named": false
+  },
+  {
+    "type": "outdesignonly",
     "named": false
   },
   {
@@ -9131,7 +11725,15 @@
     "named": false
   },
   {
+    "type": "outitemstore",
+    "named": false
+  },
+  {
     "type": "outlib",
+    "named": false
+  },
+  {
+    "type": "outmodel",
     "named": false
   },
   {
@@ -9143,6 +11745,10 @@
     "named": false
   },
   {
+    "type": "outobs",
+    "named": false
+  },
+  {
     "type": "outpercent",
     "named": false
   },
@@ -9151,11 +11757,55 @@
     "named": false
   },
   {
+    "type": "outrept",
+    "named": false
+  },
+  {
+    "type": "outs",
+    "named": false
+  },
+  {
+    "type": "outseb",
+    "named": false
+  },
+  {
+    "type": "outsscp",
+    "named": false
+  },
+  {
+    "type": "outstat",
+    "named": false
+  },
+  {
     "type": "outstats",
     "named": false
   },
   {
+    "type": "outstb",
+    "named": false
+  },
+  {
+    "type": "outsurv",
+    "named": false
+  },
+  {
+    "type": "outt",
+    "named": false
+  },
+  {
+    "type": "outtable",
+    "named": false
+  },
+  {
+    "type": "outtest",
+    "named": false
+  },
+  {
     "type": "outtype",
+    "named": false
+  },
+  {
+    "type": "outvif",
     "named": false
   },
   {
@@ -9223,6 +11873,14 @@
     "named": false
   },
   {
+    "type": "pad",
+    "named": false
+  },
+  {
+    "type": "page",
+    "named": false
+  },
+  {
     "type": "pageby",
     "named": false
   },
@@ -9231,11 +11889,35 @@
     "named": false
   },
   {
+    "type": "parprefix",
+    "named": false
+  },
+  {
     "type": "pbt",
     "named": false
   },
   {
+    "type": "pcomit",
+    "named": false
+  },
+  {
     "type": "pctldef",
+    "named": false
+  },
+  {
+    "type": "pctlevel",
+    "named": false
+  },
+  {
+    "type": "pctndec",
+    "named": false
+  },
+  {
+    "type": "percent",
+    "named": false
+  },
+  {
+    "type": "phreg",
     "named": false
   },
   {
@@ -9255,7 +11937,31 @@
     "named": false
   },
   {
+    "type": "plotref",
+    "named": false
+  },
+  {
+    "type": "plots",
+    "named": false
+  },
+  {
+    "type": "plotsize",
+    "named": false
+  },
+  {
     "type": "port",
+    "named": false
+  },
+  {
+    "type": "power",
+    "named": false
+  },
+  {
+    "type": "pprefix",
+    "named": false
+  },
+  {
+    "type": "pre",
     "named": false
   },
   {
@@ -9263,7 +11969,23 @@
     "named": false
   },
   {
+    "type": "preplot",
+    "named": false
+  },
+  {
+    "type": "prerotate",
+    "named": false
+  },
+  {
     "type": "preserverawbyvalues",
+    "named": false
+  },
+  {
+    "type": "press",
+    "named": false
+  },
+  {
+    "type": "princomp",
     "named": false
   },
   {
@@ -9276,6 +11998,10 @@
   },
   {
     "type": "printto_option_flag",
+    "named": false
+  },
+  {
+    "type": "priors",
     "named": false
   },
   {
@@ -9292,6 +12018,14 @@
   },
   {
     "type": "proc_option_flag",
+    "named": false
+  },
+  {
+    "type": "prompt",
+    "named": false
+  },
+  {
+    "type": "proportion",
     "named": false
   },
   {
@@ -9343,7 +12077,23 @@
     "named": false
   },
   {
+    "type": "random",
+    "named": false
+  },
+  {
     "type": "range",
+    "named": false
+  },
+  {
+    "type": "ranks",
+    "named": false
+  },
+  {
+    "type": "ratio",
+    "named": false
+  },
+  {
+    "type": "rattrmap",
     "named": false
   },
   {
@@ -9351,7 +12101,35 @@
     "named": false
   },
   {
+    "type": "rconv",
+    "named": false
+  },
+  {
+    "type": "rconverge",
+    "named": false
+  },
+  {
+    "type": "re",
+    "named": false
+  },
+  {
     "type": "read",
+    "named": false
+  },
+  {
+    "type": "reduceout",
+    "named": false
+  },
+  {
+    "type": "reduceput",
+    "named": false
+  },
+  {
+    "type": "reduceputobs",
+    "named": false
+  },
+  {
+    "type": "reduceputvalues",
     "named": false
   },
   {
@@ -9367,7 +12145,15 @@
     "named": false
   },
   {
+    "type": "remerge",
+    "named": false
+  },
+  {
     "type": "rename",
+    "named": false
+  },
+  {
+    "type": "reorder",
     "named": false
   },
   {
@@ -9379,7 +12165,15 @@
     "named": true
   },
   {
+    "type": "res",
+    "named": false
+  },
+  {
     "type": "reset",
+    "named": false
+  },
+  {
+    "type": "residuals",
     "named": false
   },
   {
@@ -9395,7 +12189,31 @@
     "named": false
   },
   {
+    "type": "ridge",
+    "named": false
+  },
+  {
     "type": "right",
+    "named": false
+  },
+  {
+    "type": "riter",
+    "named": false
+  },
+  {
+    "type": "robustscale",
+    "named": false
+  },
+  {
+    "type": "rocoptions",
+    "named": false
+  },
+  {
+    "type": "rorder",
+    "named": false
+  },
+  {
+    "type": "rotate",
     "named": false
   },
   {
@@ -9404,6 +12222,10 @@
   },
   {
     "type": "rows",
+    "named": false
+  },
+  {
+    "type": "rsquare",
     "named": false
   },
   {
@@ -9428,6 +12250,22 @@
   },
   {
     "type": "scatterplotmatrix",
+    "named": false
+  },
+  {
+    "type": "score",
+    "named": false
+  },
+  {
+    "type": "scoring",
+    "named": false
+  },
+  {
+    "type": "scree",
+    "named": false
+  },
+  {
+    "type": "se",
     "named": false
   },
   {
@@ -9456,6 +12294,30 @@
     "named": false
   },
   {
+    "type": "setcascmplib",
+    "named": false
+  },
+  {
+    "type": "setcascmpopt",
+    "named": false
+  },
+  {
+    "type": "setcmplib",
+    "named": false
+  },
+  {
+    "type": "setcmpopt",
+    "named": false
+  },
+  {
+    "type": "sganno",
+    "named": false
+  },
+  {
+    "type": "sgplot",
+    "named": false
+  },
+  {
     "type": "sheet",
     "named": false
   },
@@ -9464,8 +12326,40 @@
     "named": false
   },
   {
+    "type": "showall",
+    "named": false
+  },
+  {
+    "type": "side",
+    "named": false
+  },
+  {
+    "type": "sided",
+    "named": false
+  },
+  {
+    "type": "sides",
+    "named": false
+  },
+  {
+    "type": "sigiter",
+    "named": false
+  },
+  {
+    "type": "simple",
+    "named": false
+  },
+  {
+    "type": "sing",
+    "named": false
+  },
+  {
     "type": "single_quoted_string",
     "named": true
+  },
+  {
+    "type": "singular",
+    "named": false
   },
   {
     "type": "skew",
@@ -9484,6 +12378,10 @@
     "named": false
   },
   {
+    "type": "sortmsg",
+    "named": false
+  },
+  {
     "type": "sortseq",
     "named": false
   },
@@ -9492,7 +12390,15 @@
     "named": false
   },
   {
+    "type": "spanrows",
+    "named": false
+  },
+  {
     "type": "split",
+    "named": false
+  },
+  {
+    "type": "sql",
     "named": false
   },
   {
@@ -9524,11 +12430,23 @@
     "named": false
   },
   {
+    "type": "stimer",
+    "named": false
+  },
+  {
+    "type": "stopontrunc",
+    "named": false
+  },
+  {
     "type": "strata",
     "named": false
   },
   {
     "type": "style",
+    "named": false
+  },
+  {
+    "type": "subpixel",
     "named": false
   },
   {
@@ -9545,6 +12463,10 @@
   },
   {
     "type": "sumlabel",
+    "named": false
+  },
+  {
+    "type": "summarycontents",
     "named": false
   },
   {
@@ -9568,7 +12490,23 @@
     "named": false
   },
   {
+    "type": "tableout",
+    "named": false
+  },
+  {
     "type": "tables",
+    "named": false
+  },
+  {
+    "type": "tabulate",
+    "named": false
+  },
+  {
+    "type": "target",
+    "named": false
+  },
+  {
+    "type": "tau",
     "named": false
   },
   {
@@ -9580,7 +12518,19 @@
     "named": false
   },
   {
+    "type": "threads",
+    "named": false
+  },
+  {
     "type": "time",
+    "named": false
+  },
+  {
+    "type": "timelim",
+    "named": false
+  },
+  {
+    "type": "timelist",
     "named": false
   },
   {
@@ -9588,7 +12538,19 @@
     "named": false
   },
   {
+    "type": "tmplout",
+    "named": false
+  },
+  {
     "type": "to",
+    "named": false
+  },
+  {
+    "type": "tost",
+    "named": false
+  },
+  {
+    "type": "trace",
     "named": false
   },
   {
@@ -9600,11 +12562,47 @@
     "named": false
   },
   {
+    "type": "trap",
+    "named": false
+  },
+  {
+    "type": "trim",
+    "named": false
+  },
+  {
+    "type": "trimmed",
+    "named": false
+  },
+  {
+    "type": "truncate",
+    "named": false
+  },
+  {
+    "type": "ttest",
+    "named": false
+  },
+  {
     "type": "types",
     "named": false
   },
   {
+    "type": "ubufsize",
+    "named": false
+  },
+  {
     "type": "uclm",
+    "named": false
+  },
+  {
+    "type": "ultra",
+    "named": false
+  },
+  {
+    "type": "ultraheywood",
+    "named": false
+  },
+  {
+    "type": "undo_policy",
     "named": false
   },
   {
@@ -9624,6 +12622,10 @@
     "named": false
   },
   {
+    "type": "univariate",
+    "named": false
+  },
+  {
     "type": "until",
     "named": false
   },
@@ -9637,6 +12639,10 @@
   },
   {
     "type": "uss",
+    "named": false
+  },
+  {
+    "type": "usscp",
     "named": false
   },
   {
@@ -9672,6 +12678,10 @@
     "named": false
   },
   {
+    "type": "warnrecurs",
+    "named": false
+  },
+  {
     "type": "ways",
     "named": false
   },
@@ -9693,6 +12703,14 @@
   },
   {
     "type": "width",
+    "named": false
+  },
+  {
+    "type": "winsor",
+    "named": false
+  },
+  {
+    "type": "winsorized",
     "named": false
   },
   {

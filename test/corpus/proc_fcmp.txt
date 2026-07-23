@@ -14,15 +14,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key))
-        (proc_option
-          (proc_option_key
-            (identifier))
+    (proc_fcmp_step
+      options: (fcmp_options
+        (fcmp_option
+          (fcmp_option_key)
           (catalog_path
             (identifier)
             (identifier)

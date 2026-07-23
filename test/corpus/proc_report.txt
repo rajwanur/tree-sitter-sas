@@ -13,12 +13,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_report_step
+      options: (report_options
+        (report_option
+          (report_option_key)
           (identifier)))
       body: (proc_body
         (report_column_statement
@@ -57,12 +55,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_report_step
+      options: (report_options
+        (report_option
+          (report_option_key)
           (identifier)))
       body: (proc_body
         (report_column_statement
@@ -103,12 +99,10 @@ run;
 
 (source_file
   (proc_step
-    (proc_generic_step
-      name: (proc_name
-        (identifier))
-      options: (proc_options
-        (proc_option
-          (proc_option_key)
+    (proc_report_step
+      options: (report_options
+        (report_option
+          (report_option_key)
           (dotted_identifier
             base: (identifier)
             member: (identifier))))
