@@ -109,114 +109,15 @@ module.exports = grammar({
     // 'identifier identifier' is ambiguous (two bare flags vs flag+value). GLR
     // explores both (G13).
     [$.proc_options, $.proc_option_key],
-    // copy_options vs copy_option_key: same family as the proc_options conflict
-    // above. With copy_option's '= value' optional, after 'proc copy ident' the
-    // parser cannot tell whether a following identifier is a second bare flag or
-    // the value of the first (e.g. 'proc copy in out' = two flags vs in=out-shape).
-    // GLR explores both; the '= value' presence decides (Phase 3 B1).
-    [$.copy_options, $.copy_option_key],
-    // cport_options vs cport_option_key: same family as the copy_options
-    // conflict above (Phase 3 B2).
-    [$.cport_options, $.cport_option_key],
-    // cimport_options vs cimport_option_key: same family as the copy/cport
-    // conflicts above (Phase 3 B3).
-    [$.cimport_options, $.cimport_option_key],
-    // cimport_option_flag vs cimport_option_key: several CIMPORT options are
-    // valid both as a bare flag (force/upcase/new/sort/compress) and as a
-    // key=value (compress=/new=/sort=/upcase=). At 'proc cimport compress ident'
-    // GLR cannot tell whether 'compress' is a flag (ident is the next option) or
-    // a key (ident is its value). Same family as the option conflicts above.
-    [$.cimport_option_flag, $.cimport_option_key],
-    // sort_options vs sort_option_key: same family as the copy/cport/cimport
-    // option conflicts above (Phase 3 C1).
-    [$.sort_options, $.sort_option_key],
-    // datasets_options vs datasets_option_key: same family as the copy/cport/
-    // cimport/sort option conflicts above (Phase 3 C2 / Task 12).
-    [$.datasets_options, $.datasets_option_key],
-    // append_options vs append_option_key: same family as the copy/cport/cimport/
-    // sort/datasets option conflicts above (Phase 3 C3 / Task 13).
-    [$.append_options, $.append_option_key],
-    // standard_options vs standard_option_key: same family as the copy/cport/
-    // cimport/sort/datasets/append option conflicts above (Phase 3 C3 / Task 14).
-    [$.standard_options, $.standard_option_key],
-    // printto_options vs printto_option_key: same family as the copy/cport/cimport/
-    // sort/datasets/append/standard option conflicts above (Phase 3 C3 / Task 15).
-    [$.printto_options, $.printto_option_key],
-    // transpose_options vs transpose_option_key: same family as the copy/cport/cimport/
-    // sort/datasets/append/standard/printto option conflicts above (Phase 3 C3 / Task 16).
-    [$.transpose_options, $.transpose_option_key],
-    // contents_options vs contents_option_key: same family as the copy/cport/cimport/
-    // sort/datasets/append/standard/printto/transpose option conflicts above (Phase 3 C3 / Task 17).
-    [$.contents_options, $.contents_option_key],
-    // compare_options vs compare_option_key: same family as the copy/cport/cimport/
-    // sort/datasets/append/standard/printto/transpose/contents option conflicts above
-    // (Phase 3 C3 / Task 18).
-    [$.compare_options, $.compare_option_key],
-    // freq_options vs freq_option_key: same family as the copy/cport/cimport/
-    // sort/datasets/append/standard/printto/transpose/contents/compare option conflicts
-    // above (Phase 3 C3 / Task 22).
-    [$.freq_options, $.freq_option_key],
-    // options_options vs options_option_key: same family as the copy/cport/cimport/
-    // sort/datasets/append/standard/printto/transpose/contents/compare/freq option
-    // conflicts above (Phase 3 C3 / Task 19).
-    [$.options_options, $.options_option_key],
-    // print_options vs print_option_key: same family as the copy/cport/cimport/
-    // sort/datasets/append/standard/printto/transpose/contents/compare/freq/options
-    // option conflicts above (Phase 3 C3 / Task 20).
-    [$.print_options, $.print_option_key],
-    // means_options vs means_option_key: same family as the
-    // copy/cport/cimport/sort/datasets/append/standard/printto/transpose/contents/
-    // compare/freq/options/print option conflicts above (Phase 3 C3 / Task 21).
-    [$.means_options, $.means_option_key],
+    // proc_option_flag vs proc_option_key: a keyword that is a boolean flag in
+    // one PROC (e.g. compress) is a key=value in another. Now that every per-proc
+    // option set is merged into one proc_option_key/proc_option_flag, any shared
+    // keyword is ambiguous until '=' is seen. GLR explores both (aggressive refactor).
+    [$.proc_option_flag, $.proc_option_key],
     // proc_body: repeat1(choice(...)) cannot tell whether an identifier
     // starts a new statement inside the proc body or is a new step outside.
     // Also, run/quit can match as bare_statement or as the step terminator.
     [$.proc_body],
-    // proc_step was a single rule with an optional proc_body (the original
-    // [$.proc_step] conflict). proc_step is now a choice() dispatcher, so the
-    // ambiguity moved into each per-proc *_step rule below. The generic fallback
-    // (proc_generic_step) and proc_copy_step each carry the same bounded
-    // single-rule optional-body ambiguity.
-    [$.proc_copy_step],
-    // proc_cport_step: same optional-body ambiguity as proc_copy_step (Phase 3 B2).
-    [$.proc_cport_step],
-    // proc_cimport_step: same optional-body ambiguity as proc_copy/cport (Phase 3 B3).
-    [$.proc_cimport_step],
-    // proc_sort_step: same optional-body ambiguity as proc_copy/cport/cimport (Phase 3 C1).
-    [$.proc_sort_step],
-    // proc_datasets_step: same optional-body ambiguity as proc_copy/cport/cimport/
-    // sort (Phase 3 C2 / Task 12).
-    [$.proc_datasets_step],
-    // proc_append_step: same optional-body ambiguity as proc_copy/cport/cimport/
-    // sort/datasets (Phase 3 C3 / Task 13).
-    [$.proc_append_step],
-    // proc_standard_step: same optional-body ambiguity as proc_copy/cport/cimport/
-    // sort/datasets/append (Phase 3 C3 / Task 14).
-    [$.proc_standard_step],
-    // proc_printto_step: same optional-body ambiguity as proc_copy/cport/cimport/
-    // sort/datasets/append/standard (Phase 3 C3 / Task 15).
-    [$.proc_printto_step],
-    // proc_transpose_step: same optional-body ambiguity as proc_copy/cport/cimport/
-    // sort/datasets/append/standard/printto (Phase 3 C3 / Task 16).
-    [$.proc_transpose_step],
-    // proc_contents_step: same optional-body ambiguity as proc_copy/cport/cimport/
-    // sort/datasets/append/standard/printto/transpose (Phase 3 C3 / Task 17).
-    [$.proc_contents_step],
-    // proc_compare_step: same optional-body ambiguity as proc_copy/cport/cimport/
-    // sort/datasets/append/standard/printto/transpose/contents (Phase 3 C3 / Task 18).
-    [$.proc_compare_step],
-    // proc_freq_step: same optional-body ambiguity as proc_copy/cport/cimport/
-    // sort/datasets/append/standard/printto/transpose/contents/compare (Phase 3 C3 / Task 22).
-    [$.proc_freq_step],
-    // proc_options_step: same optional-body ambiguity as proc_copy/cport/cimport/
-    // sort/datasets/append/standard/printto/transpose/contents/compare/freq (Phase 3 C3 / Task 19).
-    [$.proc_options_step],
-    // proc_print_step: same optional-body ambiguity as proc_copy/cport/cimport/
-    // sort/datasets/append/standard/printto/transpose/contents/compare/freq/options (Phase 3 C3 / Task 20).
-    [$.proc_print_step],
-    // proc_means_step: same optional-body ambiguity as proc_copy/cport/cimport/
-    // sort/datasets/append/standard/printto/transpose/contents/compare/freq/options/print (Phase 3 C3 / Task 21).
-    [$.proc_means_step],
     // proc_generic_step: the optional proc_body now lives here (the original
     // proc_step body, moved when proc_step became a dispatcher).
     [$.proc_generic_step],
@@ -344,44 +245,6 @@ module.exports = grammar({
     [$.macro_call_statement, $.macro_expression],
     // macro_do_block body identifier-led statement ambiguity.
     [$.macro_do_block, $.macro_expression, $.assignment_statement, $.bare_statement],
-    [$.reg_options, $.reg_option_key],
-    [$.proc_reg_step],
-    [$.glm_options, $.glm_option_key],
-    [$.proc_glm_step],
-    [$.mixed_options, $.mixed_option_key],
-    [$.proc_mixed_step],
-    [$.anova_options, $.anova_option_key],
-    [$.proc_anova_step],
-    [$.phreg_options, $.phreg_option_key],
-    [$.proc_phreg_step],
-    [$.genmod_options, $.genmod_option_key],
-    [$.proc_genmod_step],
-    [$.factor_options, $.factor_option_key],
-    [$.proc_factor_step],
-    [$.princomp_options, $.princomp_option_key],
-    [$.proc_princomp_step],
-    [$.logistic_options, $.logistic_option_key],
-    [$.proc_logistic_step],
-    [$.ttest_options, $.ttest_option_key],
-    [$.proc_ttest_step],
-    [$.lifetest_options, $.lifetest_option_key],
-    [$.proc_lifetest_step],
-    [$.univariate_options, $.univariate_option_key],
-    [$.proc_univariate_step],
-    [$.sgplot_options, $.sgplot_option_key],
-    [$.proc_sgplot_step],
-    [$.gplot_options, $.gplot_option_key],
-    [$.proc_gplot_step],
-    [$.format_options, $.format_option_key],
-    [$.proc_format_step],
-    [$.fcmp_options, $.fcmp_option_key],
-    [$.proc_fcmp_step],
-    [$.sql_options, $.sql_option_key],
-    [$.proc_sql_step],
-    [$.report_options, $.report_option_key],
-    [$.proc_report_step],
-    [$.tabulate_options, $.tabulate_option_key],
-    [$.proc_tabulate_step],
   ],
 
   // Top-level rules exposed as node types for polymorphic dispatch.
@@ -500,2378 +363,12 @@ module.exports = grammar({
     // valid identifier (proc_generic_step's proc_name -> identifier). Without
     // this, the generic arm (identifier matches 'copy') would win and the
     // per-proc struct would never be produced.
-    proc_step: $ => choice(
-      prec(1, $.proc_copy_step),
-      prec(1, $.proc_cport_step),
-      prec(1, $.proc_cimport_step), // Phase B3
-      prec(1, $.proc_sort_step), // Phase C1
-      prec(1, $.proc_datasets_step), // Phase C2 (Task 12)
-      prec(1, $.proc_append_step), // Phase C3 (Task 13)
-      prec(1, $.proc_standard_step), // Phase C3 (Task 14)
-      prec(1, $.proc_printto_step), // Phase C3 (Task 15)
-      prec(1, $.proc_transpose_step), // Phase C3 (Task 16)
-      prec(1, $.proc_contents_step), // Phase C3 (Task 17)
-      prec(1, $.proc_compare_step), // Phase C3 (Task 18)
-      prec(1, $.proc_freq_step), // Phase C3 (Task 22)
-      prec(1, $.proc_options_step), // Phase C3 (Task 19)
-      prec(1, $.proc_print_step), // Phase C3 (Task 20)
-      prec(1, $.proc_means_step), // Phase C3 (Task 21)
-      prec(1, $.proc_reg_step), // Phase 3 D
-      prec(1, $.proc_glm_step), // Phase 3 D
-      prec(1, $.proc_mixed_step), // Phase 3 D
-      prec(1, $.proc_anova_step), // Phase 3 D
-      prec(1, $.proc_phreg_step), // Phase 3 D
-      prec(1, $.proc_genmod_step), // Phase 3 D
-      prec(1, $.proc_factor_step), // Phase 3 D
-      prec(1, $.proc_princomp_step), // Phase 3 D
-      prec(1, $.proc_logistic_step), // Phase 3 D
-      prec(1, $.proc_ttest_step), // Phase 3 D
-      prec(1, $.proc_lifetest_step), // Phase 3 D
-      prec(1, $.proc_univariate_step), // Phase 3 D
-      prec(1, $.proc_sgplot_step), // Phase 3 D
-      prec(1, $.proc_gplot_step), // Phase 3 D
-      prec(1, $.proc_format_step), // Phase 3 D
-      prec(1, $.proc_fcmp_step), // Phase 3 D
-      prec(1, $.proc_sql_step), // Phase 3 D
-      prec(1, $.proc_report_step), // Phase 3 D
-      prec(1, $.proc_tabulate_step), // Phase 3 D
-
-      $.proc_generic_step,
-    ),
-
-    // PROC COPY: in=/out=/memtype= options plus boolean flags (move, force, ...).
-    // The proc name is emitted as the alias($._proc_copy_keyword,'copy') token;
-    // it is NOT also captured as field('name',...) to avoid a redundant alias
-    // conflicting with the generic proc_name path. The linter reads the name
-    // from the step node type (proc_copy_step -> 'copy') via inferProcNameFromStep.
-    proc_copy_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_copy_keyword, 'copy'),
-      optional(field('options', $.copy_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    copy_options: $ => repeat1(choice(
-      $.copy_option,
-      $.copy_option_flag,
-      $.identifier,
-    )),
-
-    // key = value  (e.g. in=work, out=staging, memtype=data) OR key with a
-    // parenthesized arg group. Mirrors proc_option's shape but with
-    // copy_option_key (the COPY-only keyword set).
-    copy_option: $ => seq(
-      $.copy_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    // A COPY option keyword with no value (boolean flag), e.g. move / force /
-    // clone / noaccel. Aliased to a named node for highlighting/linting.
-    copy_option_flag: $ => alias(choice(
-      $._replace_keyword, $._label_keyword,
-      $._accel_keyword, $._noaccel_keyword,
-      $._clone_keyword, $._noclone_keyword,
-      $._force_keyword, $._move_keyword, $._datecopy_keyword,
-    ), 'copy_option_flag'),
-
-    // Option key: known COPY keywords (aliased so they appear as anonymous
-    // keyword nodes for highlighting) OR a generic identifier (unknown key,
-    // which the linter may flag as invalid for COPY).
-    copy_option_key: $ => choice(
-      alias($._in_keyword, 'in'),
-      alias($._out_keyword, 'out'),
-      alias($._memtype_keyword, 'memtype'),
-      alias($._index_keyword, 'index'),
-      alias($._constraint_keyword, 'constraint'),
-      alias($._encryptkey_keyword, 'encryptkey'),
-      alias($._override_keyword, 'override'),
-      alias($._alter_keyword, 'alter'),
-      $.identifier,
-    ),
-
-    // PROC CPORT: library=/file=/memtype=/catalog=/data=/index=/constraint=/
-    // after=/eet=/et=/generation=/intype=/outlib=/outtype= value options plus
-    // boolean flags (asis, nocompress, noedit, nosrc, tape, translate, datecopy).
-    // Same shape as proc_copy_step; the proc name is emitted as the
-    // alias($._proc_cport_keyword,'cport') token (no field('name')) and the
-    // linter reads the name via inferProcNameFromStep (Phase 3 B2).
-    proc_cport_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_cport_keyword, 'cport'),
-      optional(field('options', $.cport_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    cport_options: $ => repeat1(choice(
-      $.cport_option,
-      $.cport_option_flag,
-      $.identifier,
-    )),
-
-    // key = value (e.g. library=work, file=x, memtype=data, catalog=...) OR key
-    // with a parenthesized arg group. Mirrors proc_option/copy_option's shape.
-    cport_option: $ => seq(
-      $.cport_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    // A CPORT option keyword with no value (boolean flag), e.g. asis / tape /
-    // translate / noedit / nosrc / nocompress / datecopy. Aliased to a named
-    // node for highlighting/linting.
-    cport_option_flag: $ => alias(choice(
-      $._asis_keyword, $._nocompress_keyword, $._noedit_keyword,
-      $._nosrc_keyword, $._tape_keyword, $._translate_keyword,
-      $._datecopy_keyword,
-    ), 'cport_option_flag'),
-
-    // Option key: known CPORT keywords (aliased so they appear as anonymous
-    // keyword nodes for highlighting) OR a generic identifier (unknown key,
-    // which the linter may flag as invalid for CPORT).
-    cport_option_key: $ => choice(
-      alias($._library_keyword, 'library'),
-      alias($._file_keyword, 'file'),
-      alias($._data_keyword, 'data'),
-      alias($._catalog_keyword, 'catalog'),
-      alias($._memtype_keyword, 'memtype'),
-      alias($._index_keyword, 'index'),
-      alias($._constraint_keyword, 'constraint'),
-      alias($._after_keyword, 'after'),
-      alias($._eet_keyword, 'eet'),
-      alias($._et_keyword, 'et'),
-      alias($._generation_keyword, 'generation'),
-      alias($._intype_keyword, 'intype'),
-      alias($._outlib_keyword, 'outlib'),
-      alias($._outtype_keyword, 'outtype'),
-      $.identifier,
-    ),
-
-    // PROC CIMPORT: library=/file=/data=/catalog=/memtype=/eet=/et=/lib=/
-    // libref=/cat=/ds=/mt=/compress=/encodinginfo=/extendformat=/extendsn=/
-    // extendvar=/infile=/isfileutf8=/new=/sort=/ upcase= value options plus
-    // boolean flags (force, noedit, nosrc, tape, upcase, new, sort, compress).
-    // Same shape as proc_copy/cport_step; the proc name is emitted as the
-    // alias($._proc_cimport_keyword,'cimport') token (no field('name')) and the
-    // linter reads the name via inferProcNameFromStep (Phase 3 B3).
-    //
-    // NOTE on single-letter abbreviations (c/d/l/n/y): CIMPORT legitimately
-    // accepts these one-char option aliases. A /[cC]/ regex would shadow the
-    // first character of every identifier-led option and create unbounded lexical
-    // conflict with $.identifier. They are therefore intentionally left out of
-    // cimport_option_key's named-keyword arms: a bare 'c' / 'd' / 'l' / 'n' /
-    // 'y' parses via the $.identifier fallback (still a cimport_option_key node,
-    // still validated by the linter against the CIMPORT schema) — it just does
-    // not receive an anonymous keyword token for highlighting. Pragmatic over
-    // exhaustive (Phase 3 B3 brief guidance).
-    proc_cimport_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_cimport_keyword, 'cimport'),
-      optional(field('options', $.cimport_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    cimport_options: $ => repeat1(choice(
-      $.cimport_option,
-      $.cimport_option_flag,
-      $.identifier,
-    )),
-
-    // key = value (e.g. library=work, file=x.ptx, memtype=data) OR key with a
-    // parenthesized arg group. Mirrors proc_option/copy/cport_option's shape.
-    cimport_option: $ => seq(
-      $.cimport_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    // A CIMPORT option keyword with no value (boolean flag), e.g. force / tape /
-    // noedit / nosrc / upcase / new / sort / compress. Aliased to a named node
-    // for highlighting/linting.
-    cimport_option_flag: $ => alias(choice(
-      $._force_keyword, $._noedit_keyword, $._nosrc_keyword,
-      $._tape_keyword, $._upcase_keyword, $._new_keyword,
-      $._sort_keyword, $._compress_keyword,
-    ), 'cimport_option_flag'),
-
-    // Option key: known CIMPORT keywords (aliased so they appear as anonymous
-    // keyword nodes for highlighting) OR a generic identifier (unknown key OR a
-    // single-letter alias c/d/l/n/y, which the linter may flag as invalid for
-    // CIMPORT).
-    cimport_option_key: $ => choice(
-      alias($._library_keyword, 'library'),
-      alias($._file_keyword, 'file'),
-      alias($._data_keyword, 'data'),
-      alias($._catalog_keyword, 'catalog'),
-      alias($._memtype_keyword, 'memtype'),
-      alias($._eet_keyword, 'eet'),
-      alias($._et_keyword, 'et'),
-      alias($._lib_keyword, 'lib'),
-      alias($._libref_keyword, 'libref'),
-      alias($._cat_keyword, 'cat'),
-      alias($._ds_keyword, 'ds'),
-      alias($._mt_keyword, 'mt'),
-      alias($._compress_keyword, 'compress'),
-      alias($._encodinginfo_keyword, 'encodinginfo'),
-      alias($._extendformat_keyword, 'extendformat'),
-      alias($._extendsn_keyword, 'extendsn'),
-      alias($._extendvar_keyword, 'extendvar'),
-      alias($._infile_keyword, 'infile'),
-      alias($._isfileutf8_keyword, 'isfileutf8'),
-      alias($._new_keyword, 'new'),
-      alias($._sort_keyword, 'sort'),
-      alias($._upcase_keyword, 'upcase'),
-      alias($._nsrc_keyword, 'nsrc'),
-      $.identifier,
-    ),
-
-    // PROC SORT: data=/out=/dupout=/sortseq=/sortsize=/uniqueout= value options
-    // plus boolean flags (ascii, danish, ebcdic, finnish, national, norwegian,
-    // swedish, reverse, datecopy, force, equals, noequals, nodupkey,
-    // nouniquekey, nothreads, threads, tagsort, presorted, overwrite).
-    // Same shape as proc_copy/cport/cimport_step; the proc name is emitted as the
-    // alias($._sort_keyword,'sort') token (no field('name')) and the
-    // linter reads the name via inferProcNameFromStep (Phase 3 C1).
-    //
-    // NOTE on token reuse: SORT reuses the existing _sort_keyword token (defined
-    // earlier for CIMPORT's sort= option key) rather than a distinct
-    // _proc_sort_keyword. The two would have identical /[sS][oO][rR][tT]/
-    // regexes; duplicate token regexes create an unstable lexer conflict (the
-    // parser could match 'sort' as either token, and the generic-step identifier
-    // path won the tie during testing). Reusing the single _sort_keyword token
-    // and aliasing it to 'sort' here is the correct, stable choice — the alias
-    // controls the emitted node text and the step routing is decided by the
-    // prec(1) dispatcher arm, not by the token identity.
-    proc_sort_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._sort_keyword, 'sort'),
-      optional(field('options', $.sort_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    sort_options: $ => repeat1(choice(
-      $.sort_option,
-      $.sort_option_flag,
-      $.identifier,
-    )),
-
-    // key = value (e.g. data=work.a, out=sorted, dupout=dups, sortsize=100M) OR
-    // key with a parenthesized arg group. Mirrors proc_option/copy/cport/
-    // cimport_option's shape.
-    sort_option: $ => seq(
-      $.sort_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    // A SORT option keyword with no value (boolean flag). Aliased to a named
-    // node for highlighting/linting. Covers the 19 SORT flags: locale collation
-    // order keywords (ascii/danish/ebcdic/finnish/national/norwegian/swedish),
-    // reverse, datecopy, force, equals/noequals, nodupkey/nouniquekey,
-    // nothreads/threads, tagsort, presorted, overwrite.
-    sort_option_flag: $ => alias(choice(
-      $._ascii_keyword, $._danish_keyword, $._ebcdic_keyword,
-      $._finnish_keyword, $._national_keyword, $._norwegian_keyword,
-      $._swedish_keyword, $._reverse_keyword,
-      $._datecopy_keyword, $._force_keyword,
-      $._equals_keyword, $._noequals_keyword,
-      $._nodupkey_keyword, $._nouniquekey_keyword,
-      $._nothreads_keyword, $._threads_keyword,
-      $._tagsort_keyword, $._presorted_keyword, $._overwrite_keyword,
-    ), 'sort_option_flag'),
-
-    // Option key: known SORT value-option keywords (aliased so they appear as
-    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
-    // key, which the linter may flag as invalid for SORT).
-    sort_option_key: $ => choice(
-      alias($._data_keyword, 'data'),
-      alias($._out_keyword, 'out'),
-      alias($._dupout_keyword, 'dupout'),
-      alias($._sortseq_keyword, 'sortseq'),
-      alias($._sortsize_keyword, 'sortsize'),
-      alias($._uniqueout_keyword, 'uniqueout'),
-      $.identifier,
-    ),
-
-    // PROC DATASETS: lib=/library=/dd=/ddname=/memtype=/mt=/mtype=/gennum=/
-    // alter=/pw=/read=/encryptkey= value options plus boolean flags (kill, force,
-    // nolist, noprint, nowarn, details, nodetails). Same shape as proc_copy/cport/
-    // cimport/sort_step; the proc name is emitted as the
-    // alias($._proc_datasets_keyword,'datasets') token (no field('name')) and the
-    // linter reads the name via inferProcNameFromStep (Phase 3 C2 / Task 12).
-    //
-    // HEADER-only struct: this wraps the options on the 'proc datasets ...;' header
-    // line ONLY. The DATASETS body statements (datasets_lib_statement,
-    // datasets_kill_statement, datasets_copy_statement, datasets_delete_statement,
-    // datasets_change_statement, datasets_modify_statement, etc.) are pre-existing
-    // rules in proc_body's choice() and remain UNCHANGED — proc_datasets_step
-    // references $.proc_body for the body, exactly like proc_copy/cport/cimport/
-    // sort_step. The linter validates header options against the DATASETS schema;
-    // body statements are parsed/validated separately.
-    //
-    // NOTE on 'kill' and 'nolist': these keywords are ALSO legal DATASETS body
-    // statements (datasets_kill_statement: 'kill ;', datasets_nolist_statement:
-    // 'nolist ;'). On the HEADER line they are bare option flags; in the BODY they
-    // start their own statement. The two never collide because the header options
-    // terminate at the first ';' and the body begins after it — exactly the same
-    // boundary that already governs every per-proc step.
-    proc_datasets_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_datasets_keyword, 'datasets'),
-      optional(field('options', $.datasets_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    datasets_options: $ => repeat1(choice(
-      $.datasets_option,
-      $.datasets_option_flag,
-      $.identifier,
-    )),
-
-    // key = value (e.g. lib=work, library=work, memtype=data, gennum=2, dd=foo,
-    // alter=secret, pw=secret, read=secret, encryptkey=key) OR key with a
-    // parenthesized arg group. Mirrors proc_option/copy/cport/cimport/sort_option's
-    // shape.
-    datasets_option: $ => seq(
-      $.datasets_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    // A DATASETS option keyword with no value (boolean flag), e.g. kill / force /
-    // nolist / noprint / nowarn / details / nodetails. Aliased to a named node for
-    // highlighting/linting.
-    datasets_option_flag: $ => alias(choice(
-      $._kill_keyword, $._force_keyword, $._nolist_keyword,
-      $._noprint_keyword, $._nowarn_keyword,
-      $._details_keyword, $._nodetails_keyword,
-    ), 'datasets_option_flag'),
-
-    // Option key: known DATASETS value-option keywords (aliased so they appear as
-    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
-    // key, which the linter may flag as invalid for DATASETS).
-    datasets_option_key: $ => choice(
-      alias($._lib_keyword, 'lib'),
-      alias($._library_keyword, 'library'),
-      alias($._dd_keyword, 'dd'),
-      alias($._ddname_keyword, 'ddname'),
-      alias($._memtype_keyword, 'memtype'),
-      alias($._mt_keyword, 'mt'),
-      alias($._mtype_keyword, 'mtype'),
-      alias($._gennum_keyword, 'gennum'),
-      alias($._alter_keyword, 'alter'),
-      alias($._pw_keyword, 'pw'),
-      alias($._read_keyword, 'read'),
-      alias($._encryptkey_keyword, 'encryptkey'),
-      $.identifier,
-    ),
-
-    // PROC APPEND: base=/data=/out=/appendver=/encryptkey= value options plus
-    // boolean flags (force, getsort, new, nowarn). Same shape as proc_copy/cport/
-    // cimport/sort/datasets_step; the proc name is emitted as the
-    // alias($._proc_append_keyword,'append') token (no field('name')) and the
-    // linter reads the name via inferProcNameFromStep (Phase 3 C3 / Task 13).
-    proc_append_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_append_keyword, 'append'),
-      optional(field('options', $.append_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    append_options: $ => repeat1(choice(
-      $.append_option,
-      $.append_option_flag,
-      $.identifier,
-    )),
-
-    // key = value (e.g. base=work.master, data=work.adds, out=merged,
-    // appendver=V9, encryptkey=key) OR key with a parenthesized arg group.
-    // Mirrors proc_option/copy/cport/cimport/sort/datasets_option's shape.
-    append_option: $ => seq(
-      $.append_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    // An APPEND option keyword with no value (boolean flag). Aliased to a named
-    // node for highlighting/linting. Covers the 4 APPEND flags: force, getsort,
-    // new, nowarn.
-    append_option_flag: $ => alias(choice(
-      $._force_keyword, $._getsort_keyword,
-      $._new_keyword, $._nowarn_keyword,
-    ), 'append_option_flag'),
-
-    // Option key: known APPEND value-option keywords (aliased so they appear as
-    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
-    // key, which the linter may flag as invalid for APPEND).
-    append_option_key: $ => choice(
-      alias($._base_keyword, 'base'),
-      alias($._data_keyword, 'data'),
-      alias($._out_keyword, 'out'),
-      alias($._appendver_keyword, 'appendver'),
-      alias($._encryptkey_keyword, 'encryptkey'),
-      $.identifier,
-    ),
-
-    // PROC STANDARD: data=/mean=/out=/s=/std=/vardef=/m=/preserverawbyvalues=
-    // value options plus boolean flags (exclnpwgt, exclnpwgts, noprint, print,
-    // replace). Same shape as proc_copy/cport/cimport/sort/datasets/append_step;
-    // the proc name is emitted as the alias($._proc_standard_keyword,'standard')
-    // token (no field('name')) and the linter reads the name via
-    // inferProcNameFromStep (Phase 3 C3 / Task 14).
-    //
-    // Single-letter value-option keys 'm' and 's' (mean/std shorthand) use
-    // dedicated _m_keyword/_s_keyword char-class tokens. tree-sitter's longest-
-    // match rule makes them win over the generic identifier (length 1 vs N) at
-    // the exact token boundary, and the $.identifier fallback in
-    // standard_option_key still catches unknown single-letter keys.
-    proc_standard_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_standard_keyword, 'standard'),
-      optional(field('options', $.standard_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    standard_options: $ => repeat1(choice(
-      $.standard_option,
-      $.standard_option_flag,
-      $.identifier,
-    )),
-
-    // key = value (e.g. data=sashelp.class, mean=100, out=standardized,
-    // s=15, std=1, vardef=DF, m=50, preserverawbyvalues=YES) OR key with a
-    // parenthesized arg group. Mirrors proc_option/copy/.../append_option's shape.
-    standard_option: $ => seq(
-      $.standard_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    // A STANDARD option keyword with no value (boolean flag). Aliased to a named
-    // node for highlighting/linting. Covers the 5 STANDARD flags: exclnpwgt,
-    // exclnpwgts, noprint, print, replace.
-    standard_option_flag: $ => alias(choice(
-      $._exclnpwgt_keyword, $._exclnpwgts_keyword,
-      $._noprint_keyword, $._print_keyword,
-      $._replace_keyword,
-    ), 'standard_option_flag'),
-
-    // Option key: known STANDARD value-option keywords (aliased so they appear as
-    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
-    // key, which the linter may flag as invalid for STANDARD).
-    standard_option_key: $ => choice(
-      alias($._data_keyword, 'data'),
-      alias($._mean_keyword, 'mean'),
-      alias($._out_keyword, 'out'),
-      alias($._s_keyword, 's'),
-      alias($._std_keyword, 'std'),
-      alias($._vardef_keyword, 'vardef'),
-      alias($._m_keyword, 'm'),
-      alias($._preserverawbyvalues_keyword, 'preserverawbyvalues'),
-      $.identifier,
-    ),
-
-    // PROC PRINTTO: file=/label=/log=/name=/print=/unit= value options plus a
-    // single boolean flag (new). Same shape as proc_copy/cport/cimport/sort/
-    // datasets/append/standard_step; the proc name is emitted as the
-    // alias($._proc_printto_keyword,'printto') token (no field('name')) and the
-    // linter reads the name via inferProcNameFromStep (Phase 3 C3 / Task 15).
-    //
-    // PRINTTO's value-option keys are all multi-letter (file, label, log, name,
-    // print, unit), so tree-sitter's longest-match resolves each ahead of the
-    // generic identifier token at the option-key boundary; the $.identifier
-    // fallback in printto_option_key still catches unknown keys.
-    proc_printto_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_printto_keyword, 'printto'),
-      optional(field('options', $.printto_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    printto_options: $ => repeat1(choice(
-      $.printto_option,
-      $.printto_option_flag,
-      $.identifier,
-    )),
-
-    // key = value (e.g. file='out.lst', label='run1', log='out.log',
-    // name=foo, print='out.prn', unit=2) OR key with a parenthesized arg group.
-    // Mirrors proc_option/copy/.../standard_option's shape.
-    printto_option: $ => seq(
-      $.printto_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    // A PRINTTO option keyword with no value (boolean flag). Aliased to a named
-    // node for highlighting/linting. Covers the single PRINTTO flag: new.
-    printto_option_flag: $ => alias(choice(
-      $._new_keyword,
-    ), 'printto_option_flag'),
-
-    // Option key: known PRINTTO value-option keywords (aliased so they appear as
-    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
-    // key, which the linter may flag as invalid for PRINTTO).
-    printto_option_key: $ => choice(
-      alias($._file_keyword, 'file'),
-      alias($._label_keyword, 'label'),
-      alias($._log_keyword, 'log'),
-      alias($._name_keyword, 'name'),
-      alias($._print_keyword, 'print'),
-      alias($._unit_keyword, 'unit'),
-      $.identifier,
-    ),
-
-    // PROC TRANSPOSE: data=/delim=/delimiter=/label=/name=/out=/prefix=/suffix=
-    // value options plus a single boolean flag (let). Same shape as proc_copy/
-    // cport/cimport/sort/datasets/append/standard/printto_step; the proc name is
-    // emitted as the alias($._proc_transpose_keyword,'transpose') token (no
-    // field('name')) and the linter reads the name via inferProcNameFromStep
-    // (Phase 3 C3 / Task 16).
-    //
-    // HEADER-only struct (like DATASETS): this wraps the options on the
-    // 'proc transpose ...;' header line ONLY. TRANSPOSE's pre-existing BODY
-    // statement rules (transpose_var_statement, transpose_id_statement,
-    // transpose_idlabel_statement, transpose_copy_statement) live in proc_body's
-    // choice() and are UNCHANGED — proc_transpose_step references $.proc_body for
-    // the body, exactly like proc_datasets_step. The header options terminate at
-    // the first ';' and the body begins after it (same boundary as every per-proc
-    // step), so 'let' as a header flag never collides with body statements.
-    //
-    // TRANSPOSE's value-option keys are all multi-letter (data, delim, delimiter,
-    // label, name, out, prefix, suffix), so tree-sitter's longest-match resolves
-    // each ahead of the generic identifier token at the option-key boundary; the
-    // $.identifier fallback in transpose_option_key still catches unknown keys.
-    proc_transpose_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_transpose_keyword, 'transpose'),
-      optional(field('options', $.transpose_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    transpose_options: $ => repeat1(choice(
-      $.transpose_option,
-      $.transpose_option_flag,
-      $.identifier,
-    )),
-
-    // key = value (e.g. data=work.in, out=work.out, prefix=col, suffix=_val,
-    // name=varname, label='row label', delim=',', delimiter='|') OR key with a
-    // parenthesized arg group. Mirrors proc_option/copy/.../printto_option's shape.
-    transpose_option: $ => seq(
-      $.transpose_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    // A TRANSPOSE option keyword with no value (boolean flag). Aliased to a named
-    // node for highlighting/linting. Covers the single TRANSPOSE flag: let.
-    transpose_option_flag: $ => alias(choice(
-      $._let_keyword,
-    ), 'transpose_option_flag'),
-
-    // Option key: known TRANSPOSE value-option keywords (aliased so they appear as
-    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
-    // key, which the linter may flag as invalid for TRANSPOSE).
-    transpose_option_key: $ => choice(
-      alias($._data_keyword, 'data'),
-      alias($._delim_keyword, 'delim'),
-      alias($._delimiter_keyword, 'delimiter'),
-      alias($._label_keyword, 'label'),
-      alias($._name_keyword, 'name'),
-      alias($._out_keyword, 'out'),
-      alias($._prefix_keyword, 'prefix'),
-      alias($._suffix_keyword, 'suffix'),
-      $.identifier,
-    ),
-
-    // PROC CONTENTS: centiles=/data=/encryptkey=/memtype=/mt=/mtype=/order=/out=/
-    // out2=/varnum= value options plus boolean flags (details, directory,
-    // nodetails, nods, noprint, short, fmtlen). Same shape as proc_copy/cport/
-    // cimport/sort/datasets/append/standard/printto/transpose_step; the proc name
-    // is emitted as the alias($._proc_contents_keyword,'contents') token (no
-    // field('name')) and the linter reads the name via inferProcNameFromStep
-    // (Phase 3 C3 / Task 17).
-    //
-    // HEADER-only struct (like DATASETS/TRANSPOSE): this wraps the options on the
-    // 'proc contents ...;' header line ONLY. CONTENTS's pre-existing BODY
-    // statement rules (contents_data_statement, contents_out_statement,
-    // contents_flag_statement) live in proc_body's choice() and are UNCHANGED —
-    // proc_contents_step references $.proc_body for the body, exactly like
-    // proc_datasets_step. The header options terminate at the first ';' and the
-    // body begins after it (same boundary as every per-proc step), so a header
-    // flag like 'noprint'/'details' never collides with contents_flag_statement
-    // (which itself only matches inside the body, terminated by its own ';').
-    //
-    // CONTENTS's value-option keys are all multi-letter (centiles, data,
-    // encryptkey, memtype, mt, mtype, order, out, out2, varnum), so tree-sitter's
-    // longest-match resolves each ahead of the generic identifier token at the
-    // option-key boundary; the $.identifier fallback in contents_option_key still
-    // catches unknown keys. 'mt' (2 letters) is below the single-letter threshold
-    // and is already a shared keyword token (_mt_keyword, CIMPORT), so it routes
-    // cleanly here too.
-    proc_contents_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_contents_keyword, 'contents'),
-      optional(field('options', $.contents_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    contents_options: $ => repeat1(choice(
-      $.contents_option,
-      $.contents_option_flag,
-      $.identifier,
-    )),
-
-    // key = value (e.g. data=work.in, out=work.out, out2=work.out2,
-    // memtype=data, mt=view, order=varnum, centiles=4, encryptkey='key',
-    // varnum, mtype=catalog) OR key with a parenthesized arg group. Mirrors
-    // proc_option/copy/.../transpose_option's shape.
-    contents_option: $ => seq(
-      $.contents_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    // A CONTENTS option keyword with no value (boolean flag). Aliased to a named
-    // node for highlighting/linting. Covers the CONTENTS flags: details,
-    // directory, nodetails, nods, noprint, short, fmtlen.
-    contents_option_flag: $ => alias(choice(
-      $._details_keyword,
-      $._directory_keyword,
-      $._nodetails_keyword,
-      $._nods_keyword,
-      $._noprint_keyword,
-      $._short_keyword,
-      $._fmtlen_keyword,
-    ), 'contents_option_flag'),
-
-    // Option key: known CONTENTS value-option keywords (aliased so they appear as
-    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
-    // key, which the linter may flag as invalid for CONTENTS).
-    contents_option_key: $ => choice(
-      alias($._centiles_keyword, 'centiles'),
-      alias($._data_keyword, 'data'),
-      alias($._encryptkey_keyword, 'encryptkey'),
-      alias($._memtype_keyword, 'memtype'),
-      alias($._mt_keyword, 'mt'),
-      alias($._mtype_keyword, 'mtype'),
-      alias($._order_keyword, 'order'),
-      alias($._out_keyword, 'out'),
-      alias($._out2_keyword, 'out2'),
-      alias($._varnum_keyword, 'varnum'),
-      $.identifier,
-    ),
-
-    // PROC COMPARE: 75 keywords, the largest per-proc struct so far. base=/compare=/
-    // data=/out=/criterion=/fuzz=/maxprint=/method=/m= value-options plus a large
-    // boolean-flag family (all, list*, no*, stats, transpose, warn, ...). Same
-    // shape as proc_copy/cport/cimport/sort/datasets/append/standard/printto/
-    // transpose/contents; proc name is emitted as the alias($._proc_compare_keyword,
-    // 'compare') token (no field('name')) and the linter reads the name via
-    // inferProcNameFromStep (Phase 3 C3 / Task 18).
-    //
-    // Single-letter value-option keys: m (method) reuses _m_keyword (STANDARD/
-    // global). b (base) and c (compare) are NOT given dedicated keyword tokens —
-    // see the _comp_keyword comment above for why (error-recovery regression on
-    // 'data a set b;'). They still route via the $.identifier fallback in
-    // compare_option_key, so 'proc compare b=x c=y;' produces compare_option_key
-    // nodes. 'base=x'/'compare=x' always parse as the 4/7-char keyword tokens via
-    // longest-match, never as 'b'+'ase' or 'c'+'ompare'.
-    proc_compare_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_compare_keyword, 'compare'),
-      optional(field('options', $.compare_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    compare_options: $ => repeat1(choice(
-      $.compare_option,
-      $.compare_option_flag,
-      $.identifier,
-    )),
-
-    // key = value (e.g. base=work.in, compare=work.new, data=work.in,
-    // out=work.out, criterion=0.001, crit=1E-6, fuzz=1E-12, maxprint=50,
-    // method=EXACT, meth=ABSOLUTE, b=work.in, c=work.new, m=EXACT,
-    // outall=work.out) OR key with a parenthesized arg group. Mirrors
-    // proc_option/copy/.../contents_option's shape.
-    compare_option: $ => seq(
-      $.compare_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    // A COMPARE option keyword with no value (boolean flag). Aliased to a named
-    // node for highlighting/linting. Covers the COMPARE flags (43 of them).
-    compare_option_flag: $ => alias(choice(
-      $._all_keyword, $._allobs_keyword, $._allstats_keyword, $._allvars_keyword,
-      $._brief_keyword, $._briefsummary_keyword,
-      $._error_keyword,
-      $._list_keyword, $._listall_keyword,
-      $._listbase_keyword, $._listbaseobs_keyword, $._listbasevar_keyword,
-      $._listcomp_keyword, $._listcompare_keyword,
-      $._listcompareobs_keyword, $._listcomparevar_keyword, $._listcomparevars_keyword,
-      $._listcompobs_keyword, $._listcompvar_keyword,
-      $._listeq_keyword, $._listequal_keyword, $._listequalvar_keyword, $._listeqvar_keyword,
-      $._listobs_keyword, $._listvar_keyword,
-      $._nodate_keyword, $._nomiss_keyword, $._nomiss1_keyword, $._nomiss2_keyword,
-      $._nomissbase_keyword, $._nomisscomp_keyword, $._nomisscompare_keyword, $._nomissing_keyword,
-      $._noobs_keyword,
-      $._noprint_keyword,
-      $._nosum_keyword, $._nosummary_keyword, $._note_keyword, $._novalues_keyword,
-      $._printall_keyword, $._statistics_keyword, $._stats_keyword,
-      $._trans_keyword, alias($._proc_transpose_keyword, 'transpose'),
-      $._warn_keyword, $._warning_keyword,
-    ), 'compare_option_flag'),
-
-    // Option key: known COMPARE value-option keywords (aliased so they appear as
-    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
-    // key, which the linter may flag as invalid for COMPARE). Includes
-    // single-letter 'b'/'c'/'m' value-option shorthand keys (base/compare/method).
-    compare_option_key: $ => choice(
-      alias($._base_keyword, 'base'),
-      alias($._compare_keyword, 'compare'),
-      alias($._comp_keyword, 'comp'),
-      alias($._data_keyword, 'data'),
-      alias($._out_keyword, 'out'),
-      alias($._outall_keyword, 'outall'),
-      alias($._outbase_keyword, 'outbase'),
-      alias($._outcomp_keyword, 'outcomp'),
-      alias($._outcompare_keyword, 'outcompare'),
-      alias($._outdif_keyword, 'outdif'),
-      alias($._outdiff_keyword, 'outdiff'),
-      alias($._outnoeq_keyword, 'outnoeq'),
-      alias($._outnoequal_keyword, 'outnoequal'),
-      alias($._outpercent_keyword, 'outpercent'),
-      alias($._outstats_keyword, 'outstats'),
-      alias($._crit_keyword, 'crit'),
-      alias($._criteria_keyword, 'criteria'),
-      alias($._criterion_keyword, 'criterion'),
-      alias($._fuzz_keyword, 'fuzz'),
-      alias($._maxprint_keyword, 'maxprint'),
-      alias($._meth_keyword, 'meth'),
-      alias($._method_keyword, 'method'),
-      alias($._m_keyword, 'm'),
-      $.identifier,
-    ),
-
-    // PROC FREQ: compress=/data=/formchar=/nlevels=/order= value-options plus
-    // boolean flags (noprint, page). Same shape as proc_copy/cport/cimport/
-    // sort/datasets/append/standard/printto/transpose/contents/compare; proc name
-    // is emitted as the alias($._proc_freq_keyword, 'freq') token (no
-    // field('name')) and the linter reads the name via inferProcNameFromStep
-    // (Phase 3 C3 / Task 22).
-    //
-    // HEADER-only struct (like DATASETS/TRANSPOSE/CONTENTS): this wraps the
-    // options on the 'proc freq ...;' header line ONLY. FREQ's pre-existing BODY
-    // statement rules (freq_tables_statement, freq_exact_statement,
-    // freq_weight_statement, freq_test_statement, freq_output_statement) live in
-    // proc_body's choice() and are UNCHANGED — proc_freq_step references
-    // $.proc_body for the body, exactly like proc_contents_step. The header
-    // options terminate at the first ';' and the body begins after it (same
-    // boundary as every per-proc step), so a header flag like 'noprint'/'page'
-    // never collides with any body statement (which only matches inside the body,
-    // terminated by its own ';').
-    //
-    // FREQ's value-option keys are all multi-letter (compress, data, formchar,
-    // nlevels, order), so tree-sitter's longest-match resolves each ahead of the
-    // generic identifier token at the option-key boundary; the $.identifier
-    // fallback in freq_option_key still catches unknown keys. The 7-letter
-    // 'formchar' value-option is a long char string (e.g. formchar=|----|), but
-    // the value routes through $.expression / $.quoted_string so it parses
-    // cleanly without a dedicated value node.
-    proc_freq_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_freq_keyword, 'freq'),
-      optional(field('options', $.freq_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    freq_options: $ => repeat1(choice(
-      $.freq_option,
-      $.freq_option_flag,
-      $.identifier,
-    )),
-
-    // key = value (e.g. data=work.in, order=freq, compress=yes, nlevels=10,
-    // formchar='|----|') OR key with a parenthesized arg group. Mirrors
-    // proc_option/copy/.../compare_option's shape.
-    freq_option: $ => seq(
-      $.freq_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    // A FREQ option keyword with no value (boolean flag). Aliased to a named
-    // node for highlighting/linting. Covers the FREQ flags: noprint, page.
-    freq_option_flag: $ => alias(choice(
-      $._noprint_keyword,
-      $._page_keyword,
-    ), 'freq_option_flag'),
-
-    // Option key: known FREQ value-option keywords (aliased so they appear as
-    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
-    // key, which the linter may flag as invalid for FREQ).
-    freq_option_key: $ => choice(
-      alias($._compress_keyword, 'compress'),
-      alias($._data_keyword, 'data'),
-      alias($._formchar_keyword, 'formchar'),
-      alias($._nlevels_keyword, 'nlevels'),
-      alias($._order_keyword, 'order'),
-      $.identifier,
-    ),
-
-    // PROC OPTIONS: define=/group=/hexvalue=/option=/port=/value= value-options
-    // plus boolean flags (expand/noexpand, host/nohost,
-    // lognumberformat/nolognumberformat, long, listgroups, listinsertappend,
-    // listoptsave, listrestrict, portable, restrict, short). Same shape as
-    // proc_copy/cport/cimport/sort/datasets/append/standard/printto/transpose/
-    // contents/compare/freq; proc name is emitted as the
-    // alias($._proc_options_keyword, 'options') token (no field('name')) and the
-    // linter reads the name via inferProcNameFromStep (Phase 3 C3 / Task 19).
-    //
-    // HEADER-only struct (like DATASETS/TRANSPOSE/CONTENTS/FREQ): this wraps the
-    // options on the 'proc options ...;' header line ONLY. OPTIONS's pre-existing
-    // BODY statement rules (options_option_statement starting with 'option',
-    // options_group_statement starting with 'group =') live in proc_body's
-    // choice() and are UNCHANGED — proc_options_step references $.proc_body for
-    // the body, exactly like proc_freq_step. The header options terminate at the
-    // first ';' and the body begins after it (same boundary as every per-proc
-    // step), so a header key like 'option'/'group' never collides with any body
-    // statement (which only matches inside the body, terminated by its own ';').
-    //
-    // OPTIONS's value-option keys are all multi-letter (define/group/hexvalue/
-    // option/port/value), so tree-sitter's longest-match resolves each ahead of
-    // the generic identifier token at the option-key boundary; the $.identifier
-    // fallback in options_option_key still catches unknown keys.
-    proc_options_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_options_keyword, 'options'),
-      optional(field('options', $.options_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    options_options: $ => repeat1(choice(
-      $.options_option,
-      $.options_option_flag,
-      $.identifier,
-    )),
-
-    // key = value (e.g. option=linesize, group=MEMORY, define=value, port=XXXX,
-    // hexvalue=yes) OR key with a parenthesized arg group OR a bare key.
-    // Mirrors proc_option/copy/.../freq_option's shape.
-    options_option: $ => seq(
-      $.options_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    // An OPTIONS option keyword with no value (boolean flag). Aliased to a named
-    // node for highlighting/linting. Covers the OPTIONS flags.
-    options_option_flag: $ => alias(choice(
-      $._expand_keyword,
-      $._noexpand_keyword,
-      $._host_keyword,
-      $._nohost_keyword,
-      $._lognumberformat_keyword,
-      $._nolognumberformat_keyword,
-      $._long_keyword,
-      $._short_keyword,
-      $._listgroups_keyword,
-      $._listinsertappend_keyword,
-      $._listoptsave_keyword,
-      $._listrestrict_keyword,
-      $._portable_keyword,
-      $._restrict_keyword,
-    ), 'options_option_flag'),
-
-    // Option key: known OPTIONS value-option keywords (aliased so they appear as
-    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
-    // key, which the linter may flag as invalid for OPTIONS).
-    options_option_key: $ => choice(
-      alias($._define_keyword, 'define'),
-      alias($._group_keyword, 'group'),
-      alias($._hexvalue_keyword, 'hexvalue'),
-      alias($._option_keyword, 'option'),
-      alias($._port_keyword, 'port'),
-      alias($._value_keyword, 'value'),
-      $.identifier,
-    ),
-
-    // PROC PRINT: data=/double=/heading=/label=/n=/obs=/round=/rows=/split=/style=/
-    // uniform=/width=/blank=/blankline=/contents=/grand_label=/grandtot_label=/
-    // grandtotal_label=/gtot_label=/gtotal_label=/sumlabel=/nosumlabel= value-options
-    // plus boolean flags (noobs, plus the single-letter d/l/n/r/s shorthand).
-    // Same shape as proc_copy/cport/cimport/sort/datasets/append/standard/printto/
-    // transpose/contents/compare/freq/options; proc name is emitted as the
-    // alias($._proc_print_keyword, 'print') token (no field('name')) and the
-    // linter reads the name via inferProcNameFromStep (Phase 3 C3 / Task 20).
-    //
-    // HEADER-only struct (like DATASETS/TRANSPOSE/CONTENTS/FREQ/OPTIONS): this
-    // wraps the options on the 'proc print ...;' header line ONLY. PRINT's
-    // pre-existing BODY statement rules (print_var_statement starting with 'var',
-    // print_id_statement starting with 'id', print_sum_statement starting with
-    // 'sum', print_pageby_statement starting with 'pageby') live in proc_body's
-    // choice() and are UNCHANGED — proc_print_step references $.proc_body for the
-    // body, exactly like proc_freq_step/proc_options_step. The header options
-    // terminate at the first ';' and the body begins after it (same boundary as
-    // every per-proc step), so a header key never collides with any body
-    // statement (which only matches inside the body, terminated by its own ';').
-    //
-    // SINGLE-LETTER KEYS d/l/n/r/s: PRINT accepts single-letter option shorthand
-    // (d=double, l=label, n=number-of-obs, r=round, s=sum). s reuses _s_keyword
-    // (STANDARD/global). d/l/n/r get dedicated _d_keyword/_l_keyword/_n_keyword/
-    // _r_keyword char-class tokens (see their block comment above). Empirically
-    // (Task 20) all four route cleanly with no corpus regression — unlike
-    // COMPARE's b/c (Task 18), no fallback-to-identifier is needed. tree-sitter's
-    // longest-match still resolves e.g. 'data=' as the 4-char _data_keyword
-    // (never as 'd'+'ata'), 'label=' as the 5-char _label_keyword (never as
-    // 'l'+'abel'), 'round=' as 5-char _round_keyword (never 'r'+'ound'), and
-    // 'noobs' as the 5-char _noobs_keyword (never 'n'+'oops'); the $.identifier
-    // fallback in print_option_key catches any unknown single-letter key.
-    proc_print_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_print_keyword, 'print'),
-      optional(field('options', $.print_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    print_options: $ => repeat1(choice(
-      $.print_option,
-      $.print_option_flag,
-      $.identifier,
-    )),
-
-    // key = value (e.g. data=sashelp.class, double=no, heading=both, label,
-    // n=5, obs=10, round=0.01, rows=page, split='*', style=[style...],
-    // uniform, width=full, blank, blankline, contents=yes,
-    // grand_label='Total', grandtot_label='Grand', grandtotal_label='All',
-    // gtot_label='GT', gtotal_label='GTotal', sumlabel='Sum', nosumlabel,
-    // d=foo, l, n=20, r, s) OR key with a parenthesized arg group. Mirrors
-    // proc_option/copy/.../options_option's shape.
-    print_option: $ => seq(
-      $.print_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    // A PRINT option keyword with no value (boolean flag). Aliased to a named
-    // node for highlighting/linting. Covers the PRINT flags: noobs (reuses the
-    // COMPARE/global _noobs_keyword). The single-letter shorthand d/l/n/r/s are
-    // value-option keys (see print_option_key) NOT flags — matching the
-    // COMPARE/STANDARD precedent where _m_keyword lives only in *_option_key, so
-    // a bare 's' still parses via print_option (key with no '= value') and the
-    // option_flag list stays conflict-free.
-    print_option_flag: $ => alias(choice(
-      $._noobs_keyword,
-    ), 'print_option_flag'),
-
-    // Option key: known PRINT value-option keywords (aliased so they appear as
-    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
-    // key, which the linter may flag as invalid for PRINT). Includes the
-    // multi-letter keys (blank/blankline/contents/data/double/grand_label/
-    // grandtot_label/grandtotal_label/gtot_label/gtotal_label/heading/label/obs/
-    // round/rows/split/style/sumlabel/nosumlabel/uniform/width) and the
-    // single-letter d/l/n/r/s shorthand keys.
-    print_option_key: $ => choice(
-      alias($._blank_keyword, 'blank'),
-      alias($._blankline_keyword, 'blankline'),
-      alias($._contents_keyword, 'contents'),
-      alias($._data_keyword, 'data'),
-      alias($._double_keyword, 'double'),
-      alias($._grand_label_keyword, 'grand_label'),
-      alias($._grandtot_label_keyword, 'grandtot_label'),
-      alias($._grandtotal_label_keyword, 'grandtotal_label'),
-      alias($._gtot_label_keyword, 'gtot_label'),
-      alias($._gtotal_label_keyword, 'gtotal_label'),
-      alias($._heading_keyword, 'heading'),
-      alias($._label_keyword, 'label'),
-      alias($._obs_keyword, 'obs'),
-      alias($._round_keyword, 'round'),
-      alias($._rows_keyword, 'rows'),
-      alias($._split_keyword, 'split'),
-      alias($._style_keyword, 'style'),
-      alias($._sumlabel_keyword, 'sumlabel'),
-      alias($._nosumlabel_keyword, 'nosumlabel'),
-      alias($._uniform_keyword, 'uniform'),
-      alias($._width_keyword, 'width'),
-      alias($._d_keyword, 'd'),
-      alias($._l_keyword, 'l'),
-      alias($._n_keyword, 'n'),
-      alias($._r_keyword, 'r'),
-      alias($._s_keyword, 's'),
-      $.identifier,
-    ),
-
-    // PROC MEANS: data=/alpha=/fw=/maxdec=/order=/vardef=/qmarkers=/qmethod=/
-    // qntldef=/pctldef=/sumsize=/incas=/classdata= value-options plus the
-    // statistic keywords (n/mean/std/min/max/sum/range/var/skew/kurt/css/clm/
-    // lclm/uclm/probt/t/uss/stderr/sumwgt/nmiss/median/mode/q1/q3/qrange/p1..p99)
-    // and the descend=/descending= direction options. Same shape as proc_copy/
-    // cport/cimport/sort/datasets/append/standard/printto/transpose/contents/
-    // compare/freq/options/print; proc name is emitted as the
-    // alias($._proc_means_keyword, 'means') token (no field('name')) and the
-    // linter reads the name via inferProcNameFromStep (Phase 3 C3 / Task 21).
-    //
-    // HEADER-only struct (like DATASETS/TRANSPOSE/CONTENTS/FREQ/OPTIONS/PRINT):
-    // this wraps the options on the 'proc means ...;' header line ONLY. MEANS's
-    // pre-existing BODY statement rules (means_var_statement starting with 'var',
-    // means_class_statement starting with 'class', means_freq_statement starting
-    // with 'freq', means_weight_statement starting with 'weight',
-    // means_id_statement starting with 'id', means_output_statement starting
-    // with 'output', means_types_statement starting with 'types',
-    // means_ways_statement starting with 'ways') live in proc_body's choice()
-    // and are UNCHANGED — proc_means_step references $.proc_body for the body,
-    // exactly like proc_freq_step/proc_options_step/proc_print_step. The header
-    // options terminate at the first ';' and the body begins after it (same
-    // boundary as every per-proc step), so a header key never collides with any
-    // body statement (which only matches inside the body, terminated by its own
-    // ';'). Note: 'var' is both a MEANS header option (vardef) and a body
-    // statement keyword (means_var_statement) — but the header 'var' only ever
-    // appears as a bare option-key or as 'var=...' BEFORE the first ';', while
-    // the body 'var' appears AFTER the first ';' starting means_var_statement,
-    // so there is no real ambiguity.
-    //
-    // SINGLE-LETTER KEYS n/t: MEANS accepts single-letter statistic shorthand
-    // (n = count of nonmissing values, t = t-statistic). n reuses _n_keyword
-    // (PRINT/global). t gets a dedicated _t_keyword char-class token (see its
-    // block comment below). Empirically (Task 21) both route cleanly with no
-    // corpus regression — tree-sitter's longest-match still resolves e.g.
-    // 'nway' as the 4-char _nway_keyword (never 'n'+'way'), 'nmiss' as the
-    // 5-char _nmiss_keyword (never 'n'+'miss'), 'noprint' as 7-char
-    // _noprint_keyword (never 'n'+'oprint'), 'threads' as 7-char _threads_keyword
-    // (never 't'+'hreads'); the $.identifier fallback in means_option_key
-    // catches any unknown single-letter key.
-    //
-    // PERCENTILE KEYS p1/p5/.../p99: these have digits in them. The regex
-    // char-class form works (e.g. _p1_keyword: /[pP]1/). tree-sitter's
-    // longest-match resolves 'p10' as the 3-char _p10_keyword (never 'p1'+'0'),
-    // 'p100' (not a real MEANS option but a defensive check) would NOT match any
-    // _pN_keyword and falls to $.identifier; and 'p1' alone matches _p1_keyword.
-    // The empirical check below verifies 'p10=x' parses as p10 (not p1+0).
-    proc_means_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_means_keyword, 'means'),
-      optional(field('options', $.means_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    means_options: $ => repeat1(choice(
-      $.means_option,
-      $.means_option_flag,
-      $.identifier,
-    )),
-
-    // key = value (e.g. data=sashelp.class, alpha=0.05, fw=12, maxdec=2,
-    // order=freq, vardef=df, qmarkers=2, qmethod=approx, qntldef=3,
-    // pctldef=4, sumsize=full, incas=identical, classdata=x.types,
-    // descend=age, descending=age) OR a bare statistic keyword (n, mean, std,
-    // min, max, sum, range, var, skew, kurt, css, clm, lclm, uclm, probt, t,
-    // uss, stderr, sumwgt, nmiss, median, mode, q1, q3, qrange, p1..p99) OR
-    // key with a parenthesized arg group. Mirrors proc_option/copy/.../options
-    // /print_option's shape.
-    means_option: $ => seq(
-      $.means_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    // A MEANS option keyword with no value (boolean flag). Aliased to a named
-    // node for highlighting/linting. Covers the canonical MEANS boolean flags:
-    // chartype, completetypes, descendtypes, exclusive, idmin, missing,
-    // nolabel, nonobs, noprint (reuses DATASETS/global _noprint_keyword),
-    // notrap, nway, printalltypes, printids, printidvars, stackods,
-    // stackodsoutput, exclnpwgt/exclnpwgts (reuses STANDARD/global), nothreads
-    // (reuses DATASETS/global _nothreads_keyword), threads (reuses
-    // DATASETS/global _threads_keyword), print (reuses STANDARD/global
-    // _print_keyword), printall (reuses FREQ/global _printall_keyword). The
-    // statistic keywords (mean/std/n/...) are value-option keys (see
-    // means_option_key) NOT flags — a bare 'mean' still parses via means_option
-    // (key with no '= value') and the option_flag list stays conflict-free.
-    means_option_flag: $ => alias(choice(
-      $._chartype_keyword,
-      $._completetypes_keyword,
-      $._descendtypes_keyword,
-      $._exclusive_keyword,
-      $._idmin_keyword,
-      $._missing_keyword,
-      $._nolabel_keyword,
-      $._nonobs_keyword,
-      $._noprint_keyword,
-      $._notrap_keyword,
-      $._nway_keyword,
-      $._printalltypes_keyword,
-      $._printids_keyword,
-      $._printidvars_keyword,
-      $._stackods_keyword,
-      $._stackodsoutput_keyword,
-      $._exclnpwgt_keyword,
-      $._exclnpwgts_keyword,
-      $._nothreads_keyword,
-      $._threads_keyword,
-      $._print_keyword,
-      $._printall_keyword,
-    ), 'means_option_flag'),
-
-    // Option key: known MEANS value-option keywords (aliased so they appear as
-    // anonymous keyword nodes for highlighting) OR a generic identifier (unknown
-    // key, which the linter may flag as invalid for MEANS). Includes the
-    // value-options (alpha/chartype-less/data/descend/descending/fw/incas/
-    // maxdec/order/pctldef/qmarkers/qmethod/qntldef/sumsize/vardef/classdata),
-    // the statistic keywords (clm/css/kurt/kurtosis/lclm/max/mean/median/min/
-    // mode/n/nmiss/p1..p99/pbt/probt/q1/q3/qrange/range/skew/skewness/std/
-    // stddev/stderr/sum/sumwgt/t/uclm/uss/var), and the single-letter n/t
-    // statistic shorthand keys.
-    means_option_key: $ => choice(
-      // Value-options (typically key=value):
-      alias($._alpha_keyword, 'alpha'),
-      alias($._classdata_keyword, 'classdata'),
-      alias($._data_keyword, 'data'),
-      alias($._descend_keyword, 'descend'),
-      alias($._descending_keyword, 'descending'),
-      alias($._fw_keyword, 'fw'),
-      alias($._incas_keyword, 'incas'),
-      alias($._maxdec_keyword, 'maxdec'),
-      alias($._order_keyword, 'order'),
-      alias($._pctldef_keyword, 'pctldef'),
-      alias($._qmarkers_keyword, 'qmarkers'),
-      alias($._qmethod_keyword, 'qmethod'),
-      alias($._qntldef_keyword, 'qntldef'),
-      alias($._sumsize_keyword, 'sumsize'),
-      alias($._vardef_keyword, 'vardef'),
-      // Statistic keywords (bare flags or take args in OUTPUT):
-      alias($._clm_keyword, 'clm'),
-      alias($._css_keyword, 'css'),
-      alias($._kurt_keyword, 'kurt'),
-      alias($._kurtosis_keyword, 'kurtosis'),
-      alias($._lclm_keyword, 'lclm'),
-      alias($._max_keyword, 'max'),
-      alias($._mean_keyword, 'mean'),
-      alias($._median_keyword, 'median'),
-      alias($._min_keyword, 'min'),
-      alias($._mode_keyword, 'mode'),
-      alias($._nmiss_keyword, 'nmiss'),
-      alias($._pbt_keyword, 'pbt'),
-      alias($._probt_keyword, 'probt'),
-      alias($._q1_keyword, 'q1'),
-      alias($._q3_keyword, 'q3'),
-      alias($._qrange_keyword, 'qrange'),
-      alias($._range_keyword, 'range'),
-      alias($._skew_keyword, 'skew'),
-      alias($._skewness_keyword, 'skewness'),
-      alias($._std_keyword, 'std'),
-      alias($._stddev_keyword, 'stddev'),
-      alias($._stderr_keyword, 'stderr'),
-      alias($._sum_keyword, 'sum'),
-      alias($._sumwgt_keyword, 'sumwgt'),
-      alias($._uclm_keyword, 'uclm'),
-      alias($._uss_keyword, 'uss'),
-      alias($._var_keyword, 'var'),
-      // Percentile statistic keywords (p1/p5/p10/.../p99):
-      alias($._p1_keyword, 'p1'),
-      alias($._p5_keyword, 'p5'),
-      alias($._p10_keyword, 'p10'),
-      alias($._p20_keyword, 'p20'),
-      alias($._p25_keyword, 'p25'),
-      alias($._p30_keyword, 'p30'),
-      alias($._p40_keyword, 'p40'),
-      alias($._p50_keyword, 'p50'),
-      alias($._p60_keyword, 'p60'),
-      alias($._p70_keyword, 'p70'),
-      alias($._p75_keyword, 'p75'),
-      alias($._p80_keyword, 'p80'),
-      alias($._p90_keyword, 'p90'),
-      alias($._p95_keyword, 'p95'),
-      alias($._p99_keyword, 'p99'),
-      // Single-letter statistic shorthand (n reuses PRINT/global; t is new):
-      alias($._n_keyword, 'n'),
-      alias($._t_keyword, 't'),
-      $.identifier,
-    ),
-
-    // proc_body is optional (via optional()) so that PROCs with no body statements
-    // (e.g., "proc contents data=x; run;") don't have run; consumed as a
-    // bare_statement. When proc_body IS present, it uses repeat1() internally
-    // to satisfy tree-sitter's prohibition on empty-string-matching rules.
-    //
-    // proc_generic_step is the verbatim original proc_step body. It is the
-    // fallback for any PROC not yet converted to a per-proc *_step rule, so
-    // non-COPY PROC behavior is unchanged.
-    // --- PROC REG per-proc struct (Phase 3 D) ---
-    proc_reg_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_reg_keyword, 'reg'),
-      optional(field('options', $.reg_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    reg_options: $ => repeat1(choice(
-      $.reg_option,
-      $.identifier,
-    )),
-
-    reg_option: $ => seq(
-      $.reg_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    reg_option_key: $ => choice(
-      alias($._all_keyword, 'all'),
-      alias($._alpha_keyword, 'alpha'),
-      alias($._annotate_keyword, 'annotate'),
-      alias($._corr_keyword, 'corr'),
-      alias($._covout_keyword, 'covout'),
-      alias($._data_keyword, 'data'),
-      alias($._edf_keyword, 'edf'),
-      alias($._gout_keyword, 'gout'),
-      alias($._lineprinter_keyword, 'lineprinter'),
-      alias($._noprint_keyword, 'noprint'),
-      alias($._outest_keyword, 'outest'),
-      alias($._outseb_keyword, 'outseb'),
-      alias($._outsscp_keyword, 'outsscp'),
-      alias($._outstb_keyword, 'outstb'),
-      alias($._outvif_keyword, 'outvif'),
-      alias($._pcomit_keyword, 'pcomit'),
-      alias($._plots_keyword, 'plots'),
-      alias($._press_keyword, 'press'),
-      alias($._ridge_keyword, 'ridge'),
-      alias($._rsquare_keyword, 'rsquare'),
-      alias($._simple_keyword, 'simple'),
-      alias($._singular_keyword, 'singular'),
-      alias($._tableout_keyword, 'tableout'),
-      alias($._usscp_keyword, 'usscp'),
-      $.identifier,
-    ),
-
-    // --- PROC GLM per-proc struct (Phase 3 D) ---
-    proc_glm_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_glm_keyword, 'glm'),
-      optional(field('options', $.glm_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    glm_options: $ => repeat1(choice(
-      $.glm_option,
-      $.identifier,
-    )),
-
-    glm_option: $ => seq(
-      $.glm_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    glm_option_key: $ => choice(
-      alias($._alpha_keyword, 'alpha'),
-      alias($._data_keyword, 'data'),
-      alias($._manova_keyword, 'manova'),
-      alias($._multipass_keyword, 'multipass'),
-      alias($._namelen_keyword, 'namelen'),
-      alias($._noprint_keyword, 'noprint'),
-      alias($._order_keyword, 'order'),
-      alias($._outstat_keyword, 'outstat'),
-      alias($._plots_keyword, 'plots'),
-      $.identifier,
-    ),
-
-    // --- PROC MIXED per-proc struct (Phase 3 D) ---
-    proc_mixed_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_mixed_keyword, 'mixed'),
-      optional(field('options', $.mixed_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    mixed_options: $ => repeat1(choice(
-      $.mixed_option,
-      $.identifier,
-    )),
-
-    mixed_option: $ => seq(
-      $.mixed_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    mixed_option_key: $ => choice(
-      alias($._absolute_keyword, 'absolute'),
-      alias($._alpha_keyword, 'alpha'),
-      alias($._anovaf_keyword, 'anovaf'),
-      alias($._asycorr_keyword, 'asycorr'),
-      alias($._asycov_keyword, 'asycov'),
-      alias($._cl_keyword, 'cl'),
-      alias($._convf_keyword, 'convf'),
-      alias($._convg_keyword, 'convg'),
-      alias($._convh_keyword, 'convh'),
-      alias($._covtest_keyword, 'covtest'),
-      alias($._data_keyword, 'data'),
-      alias($._dfbw_keyword, 'dfbw'),
-      alias($._empirical_keyword, 'empirical'),
-      alias($._ic_keyword, 'ic'),
-      alias($._info_keyword, 'info'),
-      alias($._itdetails_keyword, 'itdetails'),
-      alias($._lognote_keyword, 'lognote'),
-      alias($._maxfunc_keyword, 'maxfunc'),
-      alias($._maxiter_keyword, 'maxiter'),
-      alias($._method_keyword, 'method'),
-      alias($._mmeq_keyword, 'mmeq'),
-      alias($._mmeqsol_keyword, 'mmeqsol'),
-      alias($._namelen_keyword, 'namelen'),
-      alias($._nobound_keyword, 'nobound'),
-      alias($._noclprint_keyword, 'noclprint'),
-      alias($._noinfo_keyword, 'noinfo'),
-      alias($._noitprint_keyword, 'noitprint'),
-      alias($._noprofile_keyword, 'noprofile'),
-      alias($._ord_keyword, 'ord'),
-      alias($._order_keyword, 'order'),
-      alias($._plots_keyword, 'plots'),
-      alias($._ranks_keyword, 'ranks'),
-      alias($._ratio_keyword, 'ratio'),
-      alias($._ridge_keyword, 'ridge'),
-      alias($._scoring_keyword, 'scoring'),
-      alias($._sigiter_keyword, 'sigiter'),
-      alias($._update_keyword, 'update'),
-      $.identifier,
-    ),
-
-    // --- PROC ANOVA per-proc struct (Phase 3 D) ---
-    proc_anova_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_anova_keyword, 'anova'),
-      optional(field('options', $.anova_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    anova_options: $ => repeat1(choice(
-      $.anova_option,
-      $.identifier,
-    )),
-
-    anova_option: $ => seq(
-      $.anova_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    anova_option_key: $ => choice(
-      alias($._data_keyword, 'data'),
-      alias($._manova_keyword, 'manova'),
-      alias($._multipass_keyword, 'multipass'),
-      alias($._namelen_keyword, 'namelen'),
-      alias($._order_keyword, 'order'),
-      alias($._outstat_keyword, 'outstat'),
-      alias($._plots_keyword, 'plots'),
-      $.identifier,
-    ),
-
-    // --- PROC PHREG per-proc struct (Phase 3 D) ---
-    proc_phreg_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_phreg_keyword, 'phreg'),
-      optional(field('options', $.phreg_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    phreg_options: $ => repeat1(choice(
-      $.phreg_option,
-      $.identifier,
-    )),
-
-    phreg_option: $ => seq(
-      $.phreg_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    phreg_option_key: $ => choice(
-      alias($._alpha_keyword, 'alpha'),
-      alias($._atrisk_keyword, 'atrisk'),
-      alias($._covm_keyword, 'covm'),
-      alias($._covout_keyword, 'covout'),
-      alias($._covs_keyword, 'covs'),
-      alias($._covsandwich_keyword, 'covsandwich'),
-      alias($._data_keyword, 'data'),
-      alias($._inest_keyword, 'inest'),
-      alias($._multipass_keyword, 'multipass'),
-      alias($._namelen_keyword, 'namelen'),
-      alias($._noprint_keyword, 'noprint'),
-      alias($._nosummary_keyword, 'nosummary'),
-      alias($._outest_keyword, 'outest'),
-      alias($._plots_keyword, 'plots'),
-      alias($._simple_keyword, 'simple'),
-      $.identifier,
-    ),
-
-    // --- PROC GENMOD per-proc struct (Phase 3 D) ---
-    proc_genmod_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_genmod_keyword, 'genmod'),
-      optional(field('options', $.genmod_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    genmod_options: $ => repeat1(choice(
-      $.genmod_option,
-      $.identifier,
-    )),
-
-    genmod_option: $ => seq(
-      $.genmod_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    genmod_option_key: $ => choice(
-      alias($._data_keyword, 'data'),
-      alias($._desc_keyword, 'desc'),
-      alias($._descend_keyword, 'descend'),
-      alias($._descending_keyword, 'descending'),
-      alias($._namelen_keyword, 'namelen'),
-      alias($._order_keyword, 'order'),
-      alias($._plots_keyword, 'plots'),
-      alias($._rorder_keyword, 'rorder'),
-      $.identifier,
-    ),
-
-    // --- PROC FACTOR per-proc struct (Phase 3 D) ---
-    proc_factor_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_factor_keyword, 'factor'),
-      optional(field('options', $.factor_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    factor_options: $ => repeat1(choice(
-      $.factor_option,
-      $.identifier,
-    )),
-
-    factor_option: $ => seq(
-      $.factor_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    factor_option_key: $ => choice(
-      alias($._all_keyword, 'all'),
-      alias($._alpha_keyword, 'alpha'),
-      alias($._ci_keyword, 'ci'),
-      alias($._conv_keyword, 'conv'),
-      alias($._converge_keyword, 'converge'),
-      alias($._corr_keyword, 'corr'),
-      alias($._cov_keyword, 'cov'),
-      alias($._covariance_keyword, 'covariance'),
-      alias($._cover_keyword, 'cover'),
-      alias($._data_keyword, 'data'),
-      alias($._eigenvectors_keyword, 'eigenvectors'),
-      alias($._ev_keyword, 'ev'),
-      alias($._flag_keyword, 'flag'),
-      alias($._fuzz_keyword, 'fuzz'),
-      alias($._gamma_keyword, 'gamma'),
-      alias($._hey_keyword, 'hey'),
-      alias($._heywood_keyword, 'heywood'),
-      alias($._hkp_keyword, 'hkp'),
-      alias($._hkpower_keyword, 'hkpower'),
-      alias($._maxiter_keyword, 'maxiter'),
-      alias($._method_keyword, 'method'),
-      alias($._min_keyword, 'min'),
-      alias($._mineigen_keyword, 'mineigen'),
-      alias($._msa_keyword, 'msa'),
-      alias($._nfact_keyword, 'nfact'),
-      alias($._nfactors_keyword, 'nfactors'),
-      alias($._nobs_keyword, 'nobs'),
-      alias($._nocorr_keyword, 'nocorr'),
-      alias($._noint_keyword, 'noint'),
-      alias($._noprint_keyword, 'noprint'),
-      alias($._nopromaxnorm_keyword, 'nopromaxnorm'),
-      alias($._norm_keyword, 'norm'),
-      alias($._nplot_keyword, 'nplot'),
-      alias($._nplots_keyword, 'nplots'),
-      alias($._out_keyword, 'out'),
-      alias($._outstat_keyword, 'outstat'),
-      alias($._parprefix_keyword, 'parprefix'),
-      alias($._percent_keyword, 'percent'),
-      alias($._plot_keyword, 'plot'),
-      alias($._plotref_keyword, 'plotref'),
-      alias($._plots_keyword, 'plots'),
-      alias($._power_keyword, 'power'),
-      alias($._pre_keyword, 'pre'),
-      alias($._prefix_keyword, 'prefix'),
-      alias($._preplot_keyword, 'preplot'),
-      alias($._prerotate_keyword, 'prerotate'),
-      alias($._print_keyword, 'print'),
-      alias($._priors_keyword, 'priors'),
-      alias($._proportion_keyword, 'proportion'),
-      alias($._random_keyword, 'random'),
-      alias($._rconv_keyword, 'rconv'),
-      alias($._rconverge_keyword, 'rconverge'),
-      alias($._re_keyword, 're'),
-      alias($._reorder_keyword, 'reorder'),
-      alias($._res_keyword, 'res'),
-      alias($._residuals_keyword, 'residuals'),
-      alias($._riter_keyword, 'riter'),
-      alias($._rotate_keyword, 'rotate'),
-      alias($._round_keyword, 'round'),
-      alias($._score_keyword, 'score'),
-      alias($._scree_keyword, 'scree'),
-      alias($._se_keyword, 'se'),
-      alias($._simple_keyword, 'simple'),
-      alias($._sing_keyword, 'sing'),
-      alias($._singular_keyword, 'singular'),
-      alias($._stderr_keyword, 'stderr'),
-      alias($._target_keyword, 'target'),
-      alias($._tau_keyword, 'tau'),
-      alias($._ultra_keyword, 'ultra'),
-      alias($._ultraheywood_keyword, 'ultraheywood'),
-      alias($._vardef_keyword, 'vardef'),
-      alias($._weight_keyword, 'weight'),
-      $.identifier,
-    ),
-
-    // --- PROC PRINCOMP per-proc struct (Phase 3 D) ---
-    proc_princomp_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_princomp_keyword, 'princomp'),
-      optional(field('options', $.princomp_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    princomp_options: $ => repeat1(choice(
-      $.princomp_option,
-      $.identifier,
-    )),
-
-    princomp_option: $ => seq(
-      $.princomp_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    princomp_option_key: $ => choice(
-      alias($._cov_keyword, 'cov'),
-      alias($._covariance_keyword, 'covariance'),
-      alias($._data_keyword, 'data'),
-      alias($._noint_keyword, 'noint'),
-      alias($._noprint_keyword, 'noprint'),
-      alias($._out_keyword, 'out'),
-      alias($._outstat_keyword, 'outstat'),
-      alias($._parprefix_keyword, 'parprefix'),
-      alias($._plots_keyword, 'plots'),
-      alias($._pprefix_keyword, 'pprefix'),
-      alias($._prefix_keyword, 'prefix'),
-      alias($._sing_keyword, 'sing'),
-      alias($._singular_keyword, 'singular'),
-      alias($._standard_keyword, 'standard'),
-      alias($._std_keyword, 'std'),
-      alias($._vardef_keyword, 'vardef'),
-      $.identifier,
-    ),
-
-    // --- PROC LOGISTIC per-proc struct (Phase 3 D) ---
-    proc_logistic_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_logistic_keyword, 'logistic'),
-      optional(field('options', $.logistic_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    logistic_options: $ => repeat1(choice(
-      $.logistic_option,
-      $.identifier,
-    )),
-
-    logistic_option: $ => seq(
-      $.logistic_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    logistic_option_key: $ => choice(
-      alias($._alpha_keyword, 'alpha'),
-      alias($._covout_keyword, 'covout'),
-      alias($._data_keyword, 'data'),
-      alias($._desc_keyword, 'desc'),
-      alias($._descending_keyword, 'descending'),
-      alias($._exactonly_keyword, 'exactonly'),
-      alias($._exactoptions_keyword, 'exactoptions'),
-      alias($._inest_keyword, 'inest'),
-      alias($._inmodel_keyword, 'inmodel'),
-      alias($._maxresponselevels_keyword, 'maxresponselevels'),
-      alias($._multipass_keyword, 'multipass'),
-      alias($._namelen_keyword, 'namelen'),
-      alias($._nocov_keyword, 'nocov'),
-      alias($._noprint_keyword, 'noprint'),
-      alias($._order_keyword, 'order'),
-      alias($._outdesign_keyword, 'outdesign'),
-      alias($._outdesignonly_keyword, 'outdesignonly'),
-      alias($._outest_keyword, 'outest'),
-      alias($._outmodel_keyword, 'outmodel'),
-      alias($._plots_keyword, 'plots'),
-      alias($._rocoptions_keyword, 'rocoptions'),
-      alias($._rorder_keyword, 'rorder'),
-      alias($._simple_keyword, 'simple'),
-      alias($._truncate_keyword, 'truncate'),
-      $.identifier,
-    ),
-
-    // --- PROC TTEST per-proc struct (Phase 3 D) ---
-    proc_ttest_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_ttest_keyword, 'ttest'),
-      optional(field('options', $.ttest_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    ttest_options: $ => repeat1(choice(
-      $.ttest_option,
-      $.identifier,
-    )),
-
-    ttest_option: $ => seq(
-      $.ttest_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    ttest_option_key: $ => choice(
-      alias($._alpha_keyword, 'alpha'),
-      alias($._byvar_keyword, 'byvar'),
-      alias($._ci_keyword, 'ci'),
-      alias($._cl_keyword, 'cl'),
-      alias($._cochran_keyword, 'cochran'),
-      alias($._data_keyword, 'data'),
-      alias($._dist_keyword, 'dist'),
-      alias($._h0_keyword, 'h0'),
-      alias($._nobyvar_keyword, 'nobyvar'),
-      alias($._order_keyword, 'order'),
-      alias($._plots_keyword, 'plots'),
-      alias($._side_keyword, 'side'),
-      alias($._sided_keyword, 'sided'),
-      alias($._sides_keyword, 'sides'),
-      alias($._test_keyword, 'test'),
-      alias($._tost_keyword, 'tost'),
-      $.identifier,
-    ),
-
-    // --- PROC LIFETEST per-proc struct (Phase 3 D) ---
-    proc_lifetest_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_lifetest_keyword, 'lifetest'),
-      optional(field('options', $.lifetest_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    lifetest_options: $ => repeat1(choice(
-      $.lifetest_option,
-      $.identifier,
-    )),
-
-    lifetest_option: $ => seq(
-      $.lifetest_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    lifetest_option_key: $ => choice(
-      alias($._aalen_keyword, 'aalen'),
-      alias($._alpha_keyword, 'alpha'),
-      alias($._alphaqt_keyword, 'alphaqt'),
-      alias($._atrisk_keyword, 'atrisk'),
-      alias($._bandmax_keyword, 'bandmax'),
-      alias($._bandmaxtime_keyword, 'bandmaxtime'),
-      alias($._bandmin_keyword, 'bandmin'),
-      alias($._bandmintime_keyword, 'bandmintime'),
-      alias($._cifvar_keyword, 'cifvar'),
-      alias($._confband_keyword, 'confband'),
-      alias($._conftype_keyword, 'conftype'),
-      alias($._data_keyword, 'data'),
-      alias($._error_keyword, 'error'),
-      alias($._intervals_keyword, 'intervals'),
-      alias($._maxtime_keyword, 'maxtime'),
-      alias($._method_keyword, 'method'),
-      alias($._missing_keyword, 'missing'),
-      alias($._nelson_keyword, 'nelson'),
-      alias($._ninterval_keyword, 'ninterval'),
-      alias($._noleft_keyword, 'noleft'),
-      alias($._noprint_keyword, 'noprint'),
-      alias($._notable_keyword, 'notable'),
-      alias($._outcif_keyword, 'outcif'),
-      alias($._outs_keyword, 'outs'),
-      alias($._outsurv_keyword, 'outsurv'),
-      alias($._outt_keyword, 'outt'),
-      alias($._outtest_keyword, 'outtest'),
-      alias($._plots_keyword, 'plots'),
-      alias($._reduceout_keyword, 'reduceout'),
-      alias($._singular_keyword, 'singular'),
-      alias($._stderr_keyword, 'stderr'),
-      alias($._timelim_keyword, 'timelim'),
-      alias($._timelist_keyword, 'timelist'),
-      alias($._width_keyword, 'width'),
-      $.identifier,
-    ),
-
-    // --- PROC UNIVARIATE per-proc struct (Phase 3 D) ---
-    proc_univariate_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_univariate_keyword, 'univariate'),
-      optional(field('options', $.univariate_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    univariate_options: $ => repeat1(choice(
-      $.univariate_option,
-      $.identifier,
-    )),
-
-    univariate_option: $ => seq(
-      $.univariate_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    univariate_option_key: $ => choice(
-      alias($._all_keyword, 'all'),
-      alias($._alpha_keyword, 'alpha'),
-      alias($._anno_keyword, 'anno'),
-      alias($._annotate_keyword, 'annotate'),
-      alias($._cibasic_keyword, 'cibasic'),
-      alias($._cipctldf_keyword, 'cipctldf'),
-      alias($._cipctlnormal_keyword, 'cipctlnormal'),
-      alias($._ciquantdf_keyword, 'ciquantdf'),
-      alias($._ciquantnormal_keyword, 'ciquantnormal'),
-      alias($._data_keyword, 'data'),
-      alias($._def_keyword, 'def'),
-      alias($._exclnpwgt_keyword, 'exclnpwgt'),
-      alias($._exclnpwgts_keyword, 'exclnpwgts'),
-      alias($._freq_keyword, 'freq'),
-      alias($._gout_keyword, 'gout'),
-      alias($._idout_keyword, 'idout'),
-      alias($._location_keyword, 'location'),
-      alias($._loccount_keyword, 'loccount'),
-      alias($._mode_keyword, 'mode'),
-      alias($._modes_keyword, 'modes'),
-      alias($._mu0_keyword, 'mu0'),
-      alias($._nextrobs_keyword, 'nextrobs'),
-      alias($._nextrval_keyword, 'nextrval'),
-      alias($._nobyplot_keyword, 'nobyplot'),
-      alias($._noprint_keyword, 'noprint'),
-      alias($._normal_keyword, 'normal'),
-      alias($._normaltest_keyword, 'normaltest'),
-      alias($._notabcontents_keyword, 'notabcontents'),
-      alias($._novarcontents_keyword, 'novarcontents'),
-      alias($._outtable_keyword, 'outtable'),
-      alias($._pctldef_keyword, 'pctldef'),
-      alias($._plot_keyword, 'plot'),
-      alias($._plots_keyword, 'plots'),
-      alias($._plotsize_keyword, 'plotsize'),
-      alias($._robustscale_keyword, 'robustscale'),
-      alias($._round_keyword, 'round'),
-      alias($._summarycontents_keyword, 'summarycontents'),
-      alias($._trim_keyword, 'trim'),
-      alias($._trimmed_keyword, 'trimmed'),
-      alias($._vardef_keyword, 'vardef'),
-      alias($._winsor_keyword, 'winsor'),
-      alias($._winsorized_keyword, 'winsorized'),
-      $.identifier,
-    ),
-
-    // --- PROC SGPLOT per-proc struct (Phase 3 D) ---
-    proc_sgplot_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_sgplot_keyword, 'sgplot'),
-      optional(field('options', $.sgplot_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    sgplot_options: $ => repeat1(choice(
-      $.sgplot_option,
-      $.identifier,
-    )),
-
-    sgplot_option: $ => seq(
-      $.sgplot_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    sgplot_option_key: $ => choice(
-      alias($._aspect_keyword, 'aspect'),
-      alias($._cycleattrs_keyword, 'cycleattrs'),
-      alias($._data_keyword, 'data'),
-      alias($._dattrmap_keyword, 'dattrmap'),
-      alias($._des_keyword, 'des'),
-      alias($._description_keyword, 'description'),
-      alias($._noautolegend_keyword, 'noautolegend'),
-      alias($._noborder_keyword, 'noborder'),
-      alias($._nocycleattrs_keyword, 'nocycleattrs'),
-      alias($._noopaque_keyword, 'noopaque'),
-      alias($._nosubpixel_keyword, 'nosubpixel'),
-      alias($._nowall_keyword, 'nowall'),
-      alias($._opaque_keyword, 'opaque'),
-      alias($._pad_keyword, 'pad'),
-      alias($._pctlevel_keyword, 'pctlevel'),
-      alias($._pctndec_keyword, 'pctndec'),
-      alias($._rattrmap_keyword, 'rattrmap'),
-      alias($._sganno_keyword, 'sganno'),
-      alias($._subpixel_keyword, 'subpixel'),
-      alias($._tmplout_keyword, 'tmplout'),
-      alias($._uniform_keyword, 'uniform'),
-      $.identifier,
-    ),
-
-    // --- PROC GPLOT per-proc struct (Phase 3 D) ---
-    proc_gplot_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_gplot_keyword, 'gplot'),
-      optional(field('options', $.gplot_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    gplot_options: $ => repeat1(choice(
-      $.gplot_option,
-      $.identifier,
-    )),
-
-    gplot_option: $ => seq(
-      $.gplot_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    gplot_option_key: $ => choice(
-      alias($._anno_keyword, 'anno'),
-      alias($._annotate_keyword, 'annotate'),
-      alias($._data_keyword, 'data'),
-      alias($._gout_keyword, 'gout'),
-      alias($._imagemap_keyword, 'imagemap'),
-      alias($._uniform_keyword, 'uniform'),
-      $.identifier,
-    ),
-
-    // --- PROC FORMAT per-proc struct (Phase 3 D) ---
-    proc_format_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_format_keyword, 'format'),
-      optional(field('options', $.format_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    format_options: $ => repeat1(choice(
-      $.format_option,
-      $.identifier,
-    )),
-
-    format_option: $ => seq(
-      $.format_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    format_option_key: $ => choice(
-      alias($._casfmtlib_keyword, 'casfmtlib'),
-      alias($._cntlin_keyword, 'cntlin'),
-      alias($._cntlout_keyword, 'cntlout'),
-      alias($._fmtlib_keyword, 'fmtlib'),
-      alias($._lib_keyword, 'lib'),
-      alias($._library_keyword, 'library'),
-      alias($._locale_keyword, 'locale'),
-      alias($._maxlablen_keyword, 'maxlablen'),
-      alias($._maxselen_keyword, 'maxselen'),
-      alias($._noreplace_keyword, 'noreplace'),
-      alias($._page_keyword, 'page'),
-      $.identifier,
-    ),
-
-    // --- PROC FCMP per-proc struct (Phase 3 D) ---
-    proc_fcmp_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_fcmp_keyword, 'fcmp'),
-      optional(field('options', $.fcmp_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    fcmp_options: $ => repeat1(choice(
-      $.fcmp_option,
-      $.identifier,
-    )),
-
-    fcmp_option: $ => seq(
-      $.fcmp_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    fcmp_option_key: $ => choice(
-      alias($._data_keyword, 'data'),
-      alias($._encrypt_keyword, 'encrypt'),
-      alias($._flow_keyword, 'flow'),
-      alias($._getcascmplib_keyword, 'getcascmplib'),
-      alias($._getcascmpopt_keyword, 'getcascmpopt'),
-      alias($._getcmplib_keyword, 'getcmplib'),
-      alias($._getcmpopt_keyword, 'getcmpopt'),
-      alias($._hide_keyword, 'hide'),
-      alias($._inlib_keyword, 'inlib'),
-      alias($._library_keyword, 'library'),
-      alias($._list_keyword, 'list'),
-      alias($._listall_keyword, 'listall'),
-      alias($._listcode_keyword, 'listcode'),
-      alias($._listfuncs_keyword, 'listfuncs'),
-      alias($._listprog_keyword, 'listprog'),
-      alias($._listsource_keyword, 'listsource'),
-      alias($._out_keyword, 'out'),
-      alias($._outfile_keyword, 'outfile'),
-      alias($._outitemstore_keyword, 'outitemstore'),
-      alias($._outlib_keyword, 'outlib'),
-      alias($._print_keyword, 'print'),
-      alias($._setcascmplib_keyword, 'setcascmplib'),
-      alias($._setcascmpopt_keyword, 'setcascmpopt'),
-      alias($._setcmplib_keyword, 'setcmplib'),
-      alias($._setcmpopt_keyword, 'setcmpopt'),
-      alias($._trace_keyword, 'trace'),
-      $.identifier,
-    ),
-
-    // --- PROC SQL per-proc struct (Phase 3 D) ---
-    proc_sql_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_sql_keyword, 'sql'),
-      optional(field('options', $.sql_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    sql_options: $ => repeat1(choice(
-      $.sql_option,
-      $.identifier,
-    )),
-
-    sql_option: $ => seq(
-      $.sql_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    sql_option_key: $ => choice(
-      alias($._constdatetime_keyword, 'constdatetime'),
-      alias($._dictdiag_keyword, 'dictdiag'),
-      alias($._double_keyword, 'double'),
-      alias($._dquote_keyword, 'dquote'),
-      alias($._errorstop_keyword, 'errorstop'),
-      alias($._exec_keyword, 'exec'),
-      alias($._exitcode_keyword, 'exitcode'),
-      alias($._feedback_keyword, 'feedback'),
-      alias($._flow_keyword, 'flow'),
-      alias($._inobs_keyword, 'inobs'),
-      alias($._ipassthru_keyword, 'ipassthru'),
-      alias($._loops_keyword, 'loops'),
-      alias($._noconstdatetime_keyword, 'noconstdatetime'),
-      alias($._nodictdiag_keyword, 'nodictdiag'),
-      alias($._nodouble_keyword, 'nodouble'),
-      alias($._noerrorstop_keyword, 'noerrorstop'),
-      alias($._noexec_keyword, 'noexec'),
-      alias($._nofeedback_keyword, 'nofeedback'),
-      alias($._noipassthru_keyword, 'noipassthru'),
-      alias($._nonumber_keyword, 'nonumber'),
-      alias($._noprint_keyword, 'noprint'),
-      alias($._noprompt_keyword, 'noprompt'),
-      alias($._noremerge_keyword, 'noremerge'),
-      alias($._nosortmsg_keyword, 'nosortmsg'),
-      alias($._nostimer_keyword, 'nostimer'),
-      alias($._nothreads_keyword, 'nothreads'),
-      alias($._nowarnrecurs_keyword, 'nowarnrecurs'),
-      alias($._number_keyword, 'number'),
-      alias($._outobs_keyword, 'outobs'),
-      alias($._print_keyword, 'print'),
-      alias($._prompt_keyword, 'prompt'),
-      alias($._reduceput_keyword, 'reduceput'),
-      alias($._reduceputobs_keyword, 'reduceputobs'),
-      alias($._reduceputvalues_keyword, 'reduceputvalues'),
-      alias($._remerge_keyword, 'remerge'),
-      alias($._sortmsg_keyword, 'sortmsg'),
-      alias($._sortseq_keyword, 'sortseq'),
-      alias($._stimer_keyword, 'stimer'),
-      alias($._stopontrunc_keyword, 'stopontrunc'),
-      alias($._threads_keyword, 'threads'),
-      alias($._ubufsize_keyword, 'ubufsize'),
-      alias($._undo_policy_keyword, 'undo_policy'),
-      alias($._warnrecurs_keyword, 'warnrecurs'),
-      $.identifier,
-    ),
-
-    // --- PROC REPORT per-proc struct (Phase 3 D) ---
-    proc_report_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_report_keyword, 'report'),
-      optional(field('options', $.report_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    report_options: $ => repeat1(choice(
-      $.report_option,
-      $.identifier,
-    )),
-
-    report_option: $ => seq(
-      $.report_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    report_option_key: $ => choice(
-      alias($._bypageno_keyword, 'bypageno'),
-      alias($._caption_keyword, 'caption'),
-      alias($._center_keyword, 'center'),
-      alias($._completecols_keyword, 'completecols'),
-      alias($._completerows_keyword, 'completerows'),
-      alias($._contents_keyword, 'contents'),
-      alias($._data_keyword, 'data'),
-      alias($._exclnpwgt_keyword, 'exclnpwgt'),
-      alias($._exclnpwgts_keyword, 'exclnpwgts'),
-      alias($._list_keyword, 'list'),
-      alias($._missing_keyword, 'missing'),
-      alias($._named_keyword, 'named'),
-      alias($._noalias_keyword, 'noalias'),
-      alias($._nocenter_keyword, 'nocenter'),
-      alias($._nocompletecols_keyword, 'nocompletecols'),
-      alias($._nocompleterows_keyword, 'nocompleterows'),
-      alias($._noexec_keyword, 'noexec'),
-      alias($._noexecute_keyword, 'noexecute'),
-      alias($._noheader_keyword, 'noheader'),
-      alias($._nothreads_keyword, 'nothreads'),
-      alias($._out_keyword, 'out'),
-      alias($._outrept_keyword, 'outrept'),
-      alias($._pctldef_keyword, 'pctldef'),
-      alias($._qmarkers_keyword, 'qmarkers'),
-      alias($._qmethod_keyword, 'qmethod'),
-      alias($._qntldef_keyword, 'qntldef'),
-      alias($._report_keyword, 'report'),
-      alias($._showall_keyword, 'showall'),
-      alias($._spanrows_keyword, 'spanrows'),
-      alias($._split_keyword, 'split'),
-      alias($._style_keyword, 'style'),
-      alias($._threads_keyword, 'threads'),
-      alias($._vardef_keyword, 'vardef'),
-      $.identifier,
-    ),
-
-    // --- PROC TABULATE per-proc struct (Phase 3 D) ---
-    proc_tabulate_step: $ => seq(
-      alias($._proc_keyword, 'proc'),
-      alias($._proc_tabulate_keyword, 'tabulate'),
-      optional(field('options', $.tabulate_options)),
-      ';',
-      optional(field('body', $.proc_body)),
-      optional(choice(
-        seq(alias($._run_keyword, 'run'), optional(choice('cancel', 'CANCEL')), ';'),
-        seq(alias($._quit_keyword, 'quit'), optional(choice('cancel', 'CANCEL')), ';'),
-      )),
-    ),
-
-    tabulate_options: $ => repeat1(choice(
-      $.tabulate_option,
-      $.identifier,
-    )),
-
-    tabulate_option: $ => seq(
-      $.tabulate_option_key,
-      optional($.proc_option_args),
-      optional(seq('=',
-        choice($.catalog_path, $.expression),
-        optional($.data_set_option),
-      )),
-    ),
-
-    tabulate_option_key: $ => choice(
-      alias($._alpha_keyword, 'alpha'),
-      alias($._classdata_keyword, 'classdata'),
-      alias($._contents_keyword, 'contents'),
-      alias($._data_keyword, 'data'),
-      alias($._exclnpwgt_keyword, 'exclnpwgt'),
-      alias($._exclnpwgts_keyword, 'exclnpwgts'),
-      alias($._exclusive_keyword, 'exclusive'),
-      alias($._format_keyword, 'format'),
-      alias($._formchar_keyword, 'formchar'),
-      alias($._missing_keyword, 'missing'),
-      alias($._noseps_keyword, 'noseps'),
-      alias($._nothreads_keyword, 'nothreads'),
-      alias($._order_keyword, 'order'),
-      alias($._out_keyword, 'out'),
-      alias($._pctldef_keyword, 'pctldef'),
-      alias($._qmarkers_keyword, 'qmarkers'),
-      alias($._qmethod_keyword, 'qmethod'),
-      alias($._qntldef_keyword, 'qntldef'),
-      alias($._style_keyword, 'style'),
-      alias($._threads_keyword, 'threads'),
-      alias($._trap_keyword, 'trap'),
-      alias($._vardef_keyword, 'vardef'),
-      $.identifier,
-    ),
+    // PROC step header. The former 35-branch prec(1, ...) per-proc dispatcher
+    // is collapsed to the single generic step: field('name', $.proc_name) is a
+    // plain identifier, so no per-proc token/alias is needed. The linter reads
+    // the proc name from nameNode.text; option keys are validated via
+    // proc-option_key node + the data layer. (See aggressive-refactor notes.)
+    proc_step: $ => $.proc_generic_step,
 
     proc_generic_step: $ => seq(
       alias($._proc_keyword, 'proc'),
@@ -2944,42 +441,624 @@ module.exports = grammar({
     ),
 
     // A PROC option keyword with no value, e.g. 'replace' in PROC IMPORT.
+    // Merged PROC option flag (boolean, no '= value'): union of every per-proc
+    // flag set. Single named node 'proc_option_flag' for highlighting/linting.
     proc_option_flag: $ => alias(
       choice(
-        $._replace_keyword,
-        $._label_keyword,
+      $._replace_keyword,
+      $._label_keyword,
+      $._accel_keyword,
+      $._noaccel_keyword,
+      $._clone_keyword,
+      $._noclone_keyword,
+      $._force_keyword,
+      $._move_keyword,
+      $._datecopy_keyword,
+      $._asis_keyword,
+      $._nocompress_keyword,
+      $._noedit_keyword,
+      $._nosrc_keyword,
+      $._tape_keyword,
+      $._translate_keyword,
+      $._upcase_keyword,
+      $._new_keyword,
+      $._sort_keyword,
+      $._compress_keyword,
+      $._ascii_keyword,
+      $._danish_keyword,
+      $._ebcdic_keyword,
+      $._finnish_keyword,
+      $._national_keyword,
+      $._norwegian_keyword,
+      $._swedish_keyword,
+      $._reverse_keyword,
+      $._equals_keyword,
+      $._noequals_keyword,
+      $._nodupkey_keyword,
+      $._nouniquekey_keyword,
+      $._nothreads_keyword,
+      $._threads_keyword,
+      $._tagsort_keyword,
+      $._presorted_keyword,
+      $._overwrite_keyword,
+      $._kill_keyword,
+      $._nolist_keyword,
+      $._noprint_keyword,
+      $._nowarn_keyword,
+      $._details_keyword,
+      $._nodetails_keyword,
+      $._getsort_keyword,
+      $._exclnpwgt_keyword,
+      $._exclnpwgts_keyword,
+      $._print_keyword,
+      $._let_keyword,
+      $._directory_keyword,
+      $._nods_keyword,
+      $._short_keyword,
+      $._fmtlen_keyword,
+      $._all_keyword,
+      $._allobs_keyword,
+      $._allstats_keyword,
+      $._allvars_keyword,
+      $._brief_keyword,
+      $._briefsummary_keyword,
+      $._error_keyword,
+      $._list_keyword,
+      $._listall_keyword,
+      $._listbase_keyword,
+      $._listbaseobs_keyword,
+      $._listbasevar_keyword,
+      $._listcomp_keyword,
+      $._listcompare_keyword,
+      $._listcompareobs_keyword,
+      $._listcomparevar_keyword,
+      $._listcomparevars_keyword,
+      $._listcompobs_keyword,
+      $._listcompvar_keyword,
+      $._listeq_keyword,
+      $._listequal_keyword,
+      $._listequalvar_keyword,
+      $._listeqvar_keyword,
+      $._listobs_keyword,
+      $._listvar_keyword,
+      $._nodate_keyword,
+      $._nomiss_keyword,
+      $._nomiss1_keyword,
+      $._nomiss2_keyword,
+      $._nomissbase_keyword,
+      $._nomisscomp_keyword,
+      $._nomisscompare_keyword,
+      $._nomissing_keyword,
+      $._noobs_keyword,
+      $._nosum_keyword,
+      $._nosummary_keyword,
+      $._note_keyword,
+      $._novalues_keyword,
+      $._printall_keyword,
+      $._statistics_keyword,
+      $._stats_keyword,
+      $._trans_keyword,
+      $._proc_transpose_keyword,
+      $._warn_keyword,
+      $._warning_keyword,
+      $._page_keyword,
+      $._expand_keyword,
+      $._noexpand_keyword,
+      $._host_keyword,
+      $._nohost_keyword,
+      $._lognumberformat_keyword,
+      $._nolognumberformat_keyword,
+      $._long_keyword,
+      $._listgroups_keyword,
+      $._listinsertappend_keyword,
+      $._listoptsave_keyword,
+      $._listrestrict_keyword,
+      $._portable_keyword,
+      $._restrict_keyword,
+      $._chartype_keyword,
+      $._completetypes_keyword,
+      $._descendtypes_keyword,
+      $._exclusive_keyword,
+      $._idmin_keyword,
+      $._missing_keyword,
+      $._nolabel_keyword,
+      $._nonobs_keyword,
+      $._notrap_keyword,
+      $._nway_keyword,
+      $._printalltypes_keyword,
+      $._printids_keyword,
+      $._printidvars_keyword,
+      $._stackods_keyword,
+      $._stackodsoutput_keyword,
       ),
       'proc_option_flag',
     ),
-
-    // Option key: known IMPORT/EXPORT keywords (aliased so they appear as
-    // anonymous keyword nodes for highlighting) OR a generic identifier.
+    // Merged PROC option key: union of every per-proc option key (data, out,
+    // library, dbms, noprint, ...). The per-proc partition was removed to kill
+    // the GLR state explosion; the full keyword set is preserved here in one
+    // choice so highlighting (proc_option_key) @keyword is unchanged. Unknown
+    // keys fall through to $.identifier and are validated by the linter.
     proc_option_key: $ => choice(
-      alias($._datafile_keyword, 'datafile'),
-      alias($._out_keyword, 'out'),
-      alias($._dbms_keyword, 'dbms'),
-      alias($._datarow_keyword, 'datarow'),
-      alias($._getnames_keyword, 'getnames'),
-      alias($._sheet_keyword, 'sheet'),
-      alias($._range_keyword, 'range'),
-      alias($._guessingrows_keyword, 'guessingrows'),
-      alias($._outfile_keyword, 'outfile'),
-      alias($._outest_keyword, 'outest'),
-      alias($._in_keyword, 'in'),
-      alias($._library_keyword, 'library'),
-      alias($._file_keyword, 'file'),
-      alias($._memtype_keyword, 'memtype'),
-      alias($._data_keyword, 'data'),
+      alias($._aalen_keyword, 'aalen'),
+      alias($._absolute_keyword, 'absolute'),
+      alias($._after_keyword, 'after'),
+      alias($._all_keyword, 'all'),
+      alias($._alpha_keyword, 'alpha'),
+      alias($._alphaqt_keyword, 'alphaqt'),
+      alias($._alter_keyword, 'alter'),
+      alias($._anno_keyword, 'anno'),
+      alias($._annotate_keyword, 'annotate'),
+      alias($._proc_anova_keyword, 'anova'),
+      alias($._anovaf_keyword, 'anovaf'),
+      alias($._proc_append_keyword, 'append'),
+      alias($._appendver_keyword, 'appendver'),
+      alias($._aspect_keyword, 'aspect'),
+      alias($._asycorr_keyword, 'asycorr'),
+      alias($._asycov_keyword, 'asycov'),
+      alias($._atrisk_keyword, 'atrisk'),
+      alias($._bandmax_keyword, 'bandmax'),
+      alias($._bandmaxtime_keyword, 'bandmaxtime'),
+      alias($._bandmin_keyword, 'bandmin'),
+      alias($._bandmintime_keyword, 'bandmintime'),
       alias($._base_keyword, 'base'),
-      alias($._compare_keyword, 'compare'),
+      alias($._blank_keyword, 'blank'),
+      alias($._blankline_keyword, 'blankline'),
+      alias($._bypageno_keyword, 'bypageno'),
+      alias($._byvar_keyword, 'byvar'),
+      alias($._caption_keyword, 'caption'),
+      alias($._casfmtlib_keyword, 'casfmtlib'),
+      alias($._cat_keyword, 'cat'),
+      alias($._catalog_keyword, 'catalog'),
+      alias($._center_keyword, 'center'),
+      alias($._centiles_keyword, 'centiles'),
+      alias($._ci_keyword, 'ci'),
+      alias($._cibasic_keyword, 'cibasic'),
+      alias($._cifvar_keyword, 'cifvar'),
+      alias($._proc_cimport_keyword, 'cimport'),
+      alias($._cipctldf_keyword, 'cipctldf'),
+      alias($._cipctlnormal_keyword, 'cipctlnormal'),
+      alias($._ciquantdf_keyword, 'ciquantdf'),
+      alias($._ciquantnormal_keyword, 'ciquantnormal'),
+      alias($._cl_keyword, 'cl'),
+      alias($._classdata_keyword, 'classdata'),
+      alias($._clm_keyword, 'clm'),
+      alias($._cntlin_keyword, 'cntlin'),
+      alias($._cntlout_keyword, 'cntlout'),
+      alias($._cochran_keyword, 'cochran'),
+      alias($._comp_keyword, 'comp'),
+      alias($._proc_compare_keyword, 'compare'),
+      alias($._completecols_keyword, 'completecols'),
+      alias($._completerows_keyword, 'completerows'),
+      alias($._compress_keyword, 'compress'),
+      alias($._confband_keyword, 'confband'),
+      alias($._conftype_keyword, 'conftype'),
+      alias($._constdatetime_keyword, 'constdatetime'),
+      alias($._constraint_keyword, 'constraint'),
+      alias($._proc_contents_keyword, 'contents'),
+      alias($._conv_keyword, 'conv'),
+      alias($._converge_keyword, 'converge'),
+      alias($._convf_keyword, 'convf'),
+      alias($._convg_keyword, 'convg'),
+      alias($._convh_keyword, 'convh'),
+      alias($._proc_copy_keyword, 'copy'),
+      alias($._corr_keyword, 'corr'),
+      alias($._cov_keyword, 'cov'),
+      alias($._covariance_keyword, 'covariance'),
+      alias($._cover_keyword, 'cover'),
+      alias($._covm_keyword, 'covm'),
+      alias($._covout_keyword, 'covout'),
+      alias($._covs_keyword, 'covs'),
+      alias($._covsandwich_keyword, 'covsandwich'),
+      alias($._covtest_keyword, 'covtest'),
+      alias($._proc_cport_keyword, 'cport'),
+      alias($._crit_keyword, 'crit'),
+      alias($._criteria_keyword, 'criteria'),
+      alias($._criterion_keyword, 'criterion'),
+      alias($._css_keyword, 'css'),
+      alias($._cycleattrs_keyword, 'cycleattrs'),
+      alias($._d_keyword, 'd'),
+      alias($._data_keyword, 'data'),
+      alias($._proc_datasets_keyword, 'datasets'),
+      alias($._dattrmap_keyword, 'dattrmap'),
+      alias($._dd_keyword, 'dd'),
+      alias($._ddname_keyword, 'ddname'),
+      alias($._def_keyword, 'def'),
+      alias($._define_keyword, 'define'),
+      alias($._delim_keyword, 'delim'),
+      alias($._delimiter_keyword, 'delimiter'),
+      alias($._des_keyword, 'des'),
+      alias($._desc_keyword, 'desc'),
+      alias($._descend_keyword, 'descend'),
+      alias($._descending_keyword, 'descending'),
+      alias($._description_keyword, 'description'),
+      alias($._dfbw_keyword, 'dfbw'),
+      alias($._dictdiag_keyword, 'dictdiag'),
+      alias($._dist_keyword, 'dist'),
+      alias($._double_keyword, 'double'),
+      alias($._dquote_keyword, 'dquote'),
+      alias($._ds_keyword, 'ds'),
+      alias($._dupout_keyword, 'dupout'),
+      alias($._edf_keyword, 'edf'),
+      alias($._eet_keyword, 'eet'),
+      alias($._eigenvectors_keyword, 'eigenvectors'),
+      alias($._empirical_keyword, 'empirical'),
+      alias($._encodinginfo_keyword, 'encodinginfo'),
+      alias($._encrypt_keyword, 'encrypt'),
+      alias($._encryptkey_keyword, 'encryptkey'),
+      alias($._error_keyword, 'error'),
+      alias($._errorstop_keyword, 'errorstop'),
+      alias($._et_keyword, 'et'),
+      alias($._ev_keyword, 'ev'),
+      alias($._exactonly_keyword, 'exactonly'),
+      alias($._exactoptions_keyword, 'exactoptions'),
+      alias($._exclnpwgt_keyword, 'exclnpwgt'),
+      alias($._exclnpwgts_keyword, 'exclnpwgts'),
+      alias($._exclusive_keyword, 'exclusive'),
+      alias($._exec_keyword, 'exec'),
+      alias($._exitcode_keyword, 'exitcode'),
+      alias($._extendformat_keyword, 'extendformat'),
+      alias($._extendsn_keyword, 'extendsn'),
+      alias($._extendvar_keyword, 'extendvar'),
+      alias($._proc_factor_keyword, 'factor'),
+      alias($._proc_fcmp_keyword, 'fcmp'),
+      alias($._feedback_keyword, 'feedback'),
+      alias($._file_keyword, 'file'),
+      alias($._flag_keyword, 'flag'),
+      alias($._flow_keyword, 'flow'),
+      alias($._fmtlib_keyword, 'fmtlib'),
+      alias($._proc_format_keyword, 'format'),
+      alias($._formchar_keyword, 'formchar'),
+      alias($._proc_freq_keyword, 'freq'),
+      alias($._fuzz_keyword, 'fuzz'),
+      alias($._fw_keyword, 'fw'),
+      alias($._gamma_keyword, 'gamma'),
+      alias($._generation_keyword, 'generation'),
+      alias($._proc_genmod_keyword, 'genmod'),
+      alias($._gennum_keyword, 'gennum'),
+      alias($._getcascmplib_keyword, 'getcascmplib'),
+      alias($._getcascmpopt_keyword, 'getcascmpopt'),
+      alias($._getcmplib_keyword, 'getcmplib'),
+      alias($._getcmpopt_keyword, 'getcmpopt'),
+      alias($._proc_glm_keyword, 'glm'),
+      alias($._gout_keyword, 'gout'),
+      alias($._proc_gplot_keyword, 'gplot'),
+      alias($._grand_label_keyword, 'grand_label'),
+      alias($._grandtot_label_keyword, 'grandtot_label'),
+      alias($._grandtotal_label_keyword, 'grandtotal_label'),
+      alias($._group_keyword, 'group'),
+      alias($._gtot_label_keyword, 'gtot_label'),
+      alias($._gtotal_label_keyword, 'gtotal_label'),
+      alias($._heading_keyword, 'heading'),
+      alias($._hexvalue_keyword, 'hexvalue'),
+      alias($._hey_keyword, 'hey'),
+      alias($._heywood_keyword, 'heywood'),
+      alias($._hide_keyword, 'hide'),
+      alias($._hkp_keyword, 'hkp'),
+      alias($._hkpower_keyword, 'hkpower'),
+      alias($._ic_keyword, 'ic'),
+      alias($._idout_keyword, 'idout'),
+      alias($._imagemap_keyword, 'imagemap'),
+      alias($._in_keyword, 'in'),
+      alias($._incas_keyword, 'incas'),
+      alias($._index_keyword, 'index'),
+      alias($._inest_keyword, 'inest'),
+      alias($._infile_keyword, 'infile'),
+      alias($._info_keyword, 'info'),
+      alias($._inlib_keyword, 'inlib'),
+      alias($._inmodel_keyword, 'inmodel'),
+      alias($._inobs_keyword, 'inobs'),
+      alias($._intervals_keyword, 'intervals'),
+      alias($._intype_keyword, 'intype'),
+      alias($._ipassthru_keyword, 'ipassthru'),
+      alias($._itdetails_keyword, 'itdetails'),
+      alias($._kurt_keyword, 'kurt'),
+      alias($._kurtosis_keyword, 'kurtosis'),
+      alias($._l_keyword, 'l'),
+      alias($._label_keyword, 'label'),
+      alias($._lclm_keyword, 'lclm'),
+      alias($._lib_keyword, 'lib'),
+      alias($._library_keyword, 'library'),
+      alias($._libref_keyword, 'libref'),
+      alias($._proc_lifetest_keyword, 'lifetest'),
+      alias($._lineprinter_keyword, 'lineprinter'),
+      alias($._list_keyword, 'list'),
+      alias($._listall_keyword, 'listall'),
+      alias($._listcode_keyword, 'listcode'),
+      alias($._listfuncs_keyword, 'listfuncs'),
+      alias($._listprog_keyword, 'listprog'),
+      alias($._listsource_keyword, 'listsource'),
+      alias($._locale_keyword, 'locale'),
+      alias($._location_keyword, 'location'),
+      alias($._loccount_keyword, 'loccount'),
+      alias($._log_keyword, 'log'),
+      alias($._proc_logistic_keyword, 'logistic'),
+      alias($._lognote_keyword, 'lognote'),
+      alias($._loops_keyword, 'loops'),
+      alias($._m_keyword, 'm'),
+      alias($._manova_keyword, 'manova'),
+      alias($._max_keyword, 'max'),
+      alias($._maxdec_keyword, 'maxdec'),
+      alias($._maxfunc_keyword, 'maxfunc'),
+      alias($._maxiter_keyword, 'maxiter'),
+      alias($._maxlablen_keyword, 'maxlablen'),
+      alias($._maxprint_keyword, 'maxprint'),
+      alias($._maxresponselevels_keyword, 'maxresponselevels'),
+      alias($._maxselen_keyword, 'maxselen'),
+      alias($._maxtime_keyword, 'maxtime'),
+      alias($._mean_keyword, 'mean'),
+      alias($._proc_means_keyword, 'means'),
+      alias($._median_keyword, 'median'),
+      alias($._memtype_keyword, 'memtype'),
+      alias($._meth_keyword, 'meth'),
+      alias($._method_keyword, 'method'),
+      alias($._min_keyword, 'min'),
+      alias($._mineigen_keyword, 'mineigen'),
+      alias($._missing_keyword, 'missing'),
+      alias($._proc_mixed_keyword, 'mixed'),
+      alias($._mmeq_keyword, 'mmeq'),
+      alias($._mmeqsol_keyword, 'mmeqsol'),
+      alias($._mode_keyword, 'mode'),
+      alias($._modes_keyword, 'modes'),
+      alias($._msa_keyword, 'msa'),
+      alias($._mt_keyword, 'mt'),
+      alias($._mtype_keyword, 'mtype'),
+      alias($._multipass_keyword, 'multipass'),
+      alias($._n_keyword, 'n'),
+      alias($._name_keyword, 'name'),
+      alias($._named_keyword, 'named'),
+      alias($._namelen_keyword, 'namelen'),
+      alias($._nelson_keyword, 'nelson'),
+      alias($._new_keyword, 'new'),
+      alias($._nextrobs_keyword, 'nextrobs'),
+      alias($._nextrval_keyword, 'nextrval'),
+      alias($._nfact_keyword, 'nfact'),
+      alias($._nfactors_keyword, 'nfactors'),
+      alias($._ninterval_keyword, 'ninterval'),
+      alias($._nlevels_keyword, 'nlevels'),
+      alias($._nmiss_keyword, 'nmiss'),
+      alias($._noalias_keyword, 'noalias'),
+      alias($._noautolegend_keyword, 'noautolegend'),
+      alias($._noborder_keyword, 'noborder'),
+      alias($._nobound_keyword, 'nobound'),
+      alias($._nobs_keyword, 'nobs'),
+      alias($._nobyplot_keyword, 'nobyplot'),
+      alias($._nobyvar_keyword, 'nobyvar'),
+      alias($._nocenter_keyword, 'nocenter'),
+      alias($._noclprint_keyword, 'noclprint'),
+      alias($._nocompletecols_keyword, 'nocompletecols'),
+      alias($._nocompleterows_keyword, 'nocompleterows'),
+      alias($._noconstdatetime_keyword, 'noconstdatetime'),
+      alias($._nocorr_keyword, 'nocorr'),
+      alias($._nocov_keyword, 'nocov'),
+      alias($._nocycleattrs_keyword, 'nocycleattrs'),
+      alias($._nodictdiag_keyword, 'nodictdiag'),
+      alias($._nodouble_keyword, 'nodouble'),
+      alias($._noerrorstop_keyword, 'noerrorstop'),
+      alias($._noexec_keyword, 'noexec'),
+      alias($._noexecute_keyword, 'noexecute'),
+      alias($._nofeedback_keyword, 'nofeedback'),
+      alias($._noheader_keyword, 'noheader'),
+      alias($._noinfo_keyword, 'noinfo'),
+      alias($._noint_keyword, 'noint'),
+      alias($._noipassthru_keyword, 'noipassthru'),
+      alias($._noitprint_keyword, 'noitprint'),
+      alias($._noleft_keyword, 'noleft'),
+      alias($._nonumber_keyword, 'nonumber'),
+      alias($._noopaque_keyword, 'noopaque'),
+      alias($._noprint_keyword, 'noprint'),
+      alias($._noprofile_keyword, 'noprofile'),
+      alias($._nopromaxnorm_keyword, 'nopromaxnorm'),
+      alias($._noprompt_keyword, 'noprompt'),
+      alias($._noremerge_keyword, 'noremerge'),
+      alias($._noreplace_keyword, 'noreplace'),
+      alias($._norm_keyword, 'norm'),
+      alias($._normal_keyword, 'normal'),
+      alias($._normaltest_keyword, 'normaltest'),
+      alias($._noseps_keyword, 'noseps'),
+      alias($._nosortmsg_keyword, 'nosortmsg'),
+      alias($._nostimer_keyword, 'nostimer'),
+      alias($._nosubpixel_keyword, 'nosubpixel'),
+      alias($._nosumlabel_keyword, 'nosumlabel'),
+      alias($._nosummary_keyword, 'nosummary'),
+      alias($._notabcontents_keyword, 'notabcontents'),
+      alias($._notable_keyword, 'notable'),
+      alias($._nothreads_keyword, 'nothreads'),
+      alias($._novarcontents_keyword, 'novarcontents'),
+      alias($._nowall_keyword, 'nowall'),
+      alias($._nowarnrecurs_keyword, 'nowarnrecurs'),
+      alias($._nplot_keyword, 'nplot'),
+      alias($._nplots_keyword, 'nplots'),
+      alias($._nsrc_keyword, 'nsrc'),
+      alias($._number_keyword, 'number'),
+      alias($._obs_keyword, 'obs'),
+      alias($._opaque_keyword, 'opaque'),
+      alias($._option_keyword, 'option'),
+      alias($._proc_options_keyword, 'options'),
+      alias($._ord_keyword, 'ord'),
+      alias($._order_keyword, 'order'),
+      alias($._out_keyword, 'out'),
+      alias($._outall_keyword, 'outall'),
+      alias($._outbase_keyword, 'outbase'),
+      alias($._outcif_keyword, 'outcif'),
+      alias($._outcomp_keyword, 'outcomp'),
+      alias($._outcompare_keyword, 'outcompare'),
+      alias($._outdesign_keyword, 'outdesign'),
+      alias($._outdesignonly_keyword, 'outdesignonly'),
+      alias($._outdif_keyword, 'outdif'),
+      alias($._outdiff_keyword, 'outdiff'),
+      alias($._outest_keyword, 'outest'),
+      alias($._outfile_keyword, 'outfile'),
+      alias($._outitemstore_keyword, 'outitemstore'),
+      alias($._outlib_keyword, 'outlib'),
+      alias($._outmodel_keyword, 'outmodel'),
+      alias($._outnoeq_keyword, 'outnoeq'),
+      alias($._outnoequal_keyword, 'outnoequal'),
+      alias($._outobs_keyword, 'outobs'),
+      alias($._outpercent_keyword, 'outpercent'),
+      alias($._outrept_keyword, 'outrept'),
+      alias($._outs_keyword, 'outs'),
+      alias($._outseb_keyword, 'outseb'),
+      alias($._outsscp_keyword, 'outsscp'),
+      alias($._outstat_keyword, 'outstat'),
+      alias($._outstats_keyword, 'outstats'),
+      alias($._outstb_keyword, 'outstb'),
+      alias($._outsurv_keyword, 'outsurv'),
+      alias($._outt_keyword, 'outt'),
+      alias($._outtable_keyword, 'outtable'),
+      alias($._outtest_keyword, 'outtest'),
+      alias($._outtype_keyword, 'outtype'),
+      alias($._outvif_keyword, 'outvif'),
+      alias($._override_keyword, 'override'),
+      alias($._pad_keyword, 'pad'),
+      alias($._page_keyword, 'page'),
+      alias($._parprefix_keyword, 'parprefix'),
+      alias($._pbt_keyword, 'pbt'),
+      alias($._pcomit_keyword, 'pcomit'),
+      alias($._pctldef_keyword, 'pctldef'),
+      alias($._pctlevel_keyword, 'pctlevel'),
+      alias($._pctndec_keyword, 'pctndec'),
+      alias($._percent_keyword, 'percent'),
+      alias($._proc_phreg_keyword, 'phreg'),
+      alias($._plot_keyword, 'plot'),
+      alias($._plotref_keyword, 'plotref'),
+      alias($._plots_keyword, 'plots'),
+      alias($._plotsize_keyword, 'plotsize'),
+      alias($._port_keyword, 'port'),
+      alias($._power_keyword, 'power'),
+      alias($._pprefix_keyword, 'pprefix'),
+      alias($._pre_keyword, 'pre'),
+      alias($._prefix_keyword, 'prefix'),
+      alias($._preplot_keyword, 'preplot'),
+      alias($._prerotate_keyword, 'prerotate'),
+      alias($._preserverawbyvalues_keyword, 'preserverawbyvalues'),
+      alias($._press_keyword, 'press'),
+      alias($._proc_princomp_keyword, 'princomp'),
+      alias($._print_keyword, 'print'),
+      alias($._proc_printto_keyword, 'printto'),
+      alias($._priors_keyword, 'priors'),
+      alias($._probt_keyword, 'probt'),
+      alias($._proc_keyword, 'proc'),
+      alias($._prompt_keyword, 'prompt'),
+      alias($._proportion_keyword, 'proportion'),
+      alias($._pw_keyword, 'pw'),
+      alias($._qmarkers_keyword, 'qmarkers'),
+      alias($._qmethod_keyword, 'qmethod'),
+      alias($._qntldef_keyword, 'qntldef'),
+      alias($._qrange_keyword, 'qrange'),
+      alias($._quit_keyword, 'quit'),
+      alias($._r_keyword, 'r'),
+      alias($._random_keyword, 'random'),
+      alias($._range_keyword, 'range'),
+      alias($._ranks_keyword, 'ranks'),
+      alias($._ratio_keyword, 'ratio'),
+      alias($._rattrmap_keyword, 'rattrmap'),
+      alias($._rconv_keyword, 'rconv'),
+      alias($._rconverge_keyword, 'rconverge'),
+      alias($._re_keyword, 're'),
+      alias($._read_keyword, 'read'),
+      alias($._reduceout_keyword, 'reduceout'),
+      alias($._reduceput_keyword, 'reduceput'),
+      alias($._reduceputobs_keyword, 'reduceputobs'),
+      alias($._reduceputvalues_keyword, 'reduceputvalues'),
+      alias($._proc_reg_keyword, 'reg'),
+      alias($._remerge_keyword, 'remerge'),
+      alias($._reorder_keyword, 'reorder'),
+      alias($._proc_report_keyword, 'report'),
+      alias($._res_keyword, 'res'),
+      alias($._residuals_keyword, 'residuals'),
+      alias($._ridge_keyword, 'ridge'),
+      alias($._riter_keyword, 'riter'),
+      alias($._robustscale_keyword, 'robustscale'),
+      alias($._rocoptions_keyword, 'rocoptions'),
+      alias($._rorder_keyword, 'rorder'),
+      alias($._rotate_keyword, 'rotate'),
+      alias($._round_keyword, 'round'),
+      alias($._rows_keyword, 'rows'),
+      alias($._rsquare_keyword, 'rsquare'),
+      alias($._run_keyword, 'run'),
+      alias($._s_keyword, 's'),
+      alias($._score_keyword, 'score'),
+      alias($._scoring_keyword, 'scoring'),
+      alias($._scree_keyword, 'scree'),
+      alias($._se_keyword, 'se'),
+      alias($._setcascmplib_keyword, 'setcascmplib'),
+      alias($._setcascmpopt_keyword, 'setcascmpopt'),
+      alias($._setcmplib_keyword, 'setcmplib'),
+      alias($._setcmpopt_keyword, 'setcmpopt'),
+      alias($._sganno_keyword, 'sganno'),
+      alias($._proc_sgplot_keyword, 'sgplot'),
+      alias($._showall_keyword, 'showall'),
+      alias($._side_keyword, 'side'),
+      alias($._sided_keyword, 'sided'),
+      alias($._sides_keyword, 'sides'),
+      alias($._sigiter_keyword, 'sigiter'),
+      alias($._simple_keyword, 'simple'),
+      alias($._sing_keyword, 'sing'),
+      alias($._singular_keyword, 'singular'),
+      alias($._skew_keyword, 'skew'),
+      alias($._skewness_keyword, 'skewness'),
+      alias($._sort_keyword, 'sort'),
+      alias($._sortmsg_keyword, 'sortmsg'),
+      alias($._sortseq_keyword, 'sortseq'),
+      alias($._sortsize_keyword, 'sortsize'),
+      alias($._spanrows_keyword, 'spanrows'),
+      alias($._split_keyword, 'split'),
+      alias($._proc_sql_keyword, 'sql'),
+      alias($._proc_standard_keyword, 'standard'),
+      alias($._std_keyword, 'std'),
+      alias($._stddev_keyword, 'stddev'),
+      alias($._stderr_keyword, 'stderr'),
+      alias($._stimer_keyword, 'stimer'),
+      alias($._stopontrunc_keyword, 'stopontrunc'),
+      alias($._style_keyword, 'style'),
+      alias($._subpixel_keyword, 'subpixel'),
+      alias($._suffix_keyword, 'suffix'),
+      alias($._sum_keyword, 'sum'),
+      alias($._sumlabel_keyword, 'sumlabel'),
+      alias($._summarycontents_keyword, 'summarycontents'),
+      alias($._sumsize_keyword, 'sumsize'),
+      alias($._sumwgt_keyword, 'sumwgt'),
+      alias($._tableout_keyword, 'tableout'),
+      alias($._proc_tabulate_keyword, 'tabulate'),
+      alias($._target_keyword, 'target'),
+      alias($._tau_keyword, 'tau'),
+      alias($._test_keyword, 'test'),
+      alias($._threads_keyword, 'threads'),
+      alias($._timelim_keyword, 'timelim'),
+      alias($._timelist_keyword, 'timelist'),
+      alias($._tmplout_keyword, 'tmplout'),
+      alias($._tost_keyword, 'tost'),
+      alias($._trace_keyword, 'trace'),
+      alias($._proc_transpose_keyword, 'transpose'),
+      alias($._trap_keyword, 'trap'),
+      alias($._trim_keyword, 'trim'),
+      alias($._trimmed_keyword, 'trimmed'),
+      alias($._truncate_keyword, 'truncate'),
+      alias($._proc_ttest_keyword, 'ttest'),
+      alias($._ubufsize_keyword, 'ubufsize'),
+      alias($._uclm_keyword, 'uclm'),
+      alias($._ultra_keyword, 'ultra'),
+      alias($._ultraheywood_keyword, 'ultraheywood'),
+      alias($._undo_policy_keyword, 'undo_policy'),
+      alias($._uniform_keyword, 'uniform'),
+      alias($._uniqueout_keyword, 'uniqueout'),
+      alias($._unit_keyword, 'unit'),
+      alias($._proc_univariate_keyword, 'univariate'),
+      alias($._upcase_keyword, 'upcase'),
+      alias($._update_keyword, 'update'),
+      alias($._uss_keyword, 'uss'),
+      alias($._usscp_keyword, 'usscp'),
+      alias($._value_keyword, 'value'),
+      alias($._var_keyword, 'var'),
+      alias($._vardef_keyword, 'vardef'),
+      alias($._varnum_keyword, 'varnum'),
+      alias($._warnrecurs_keyword, 'warnrecurs'),
+      alias($._weight_keyword, 'weight'),
+      alias($._width_keyword, 'width'),
+      alias($._winsor_keyword, 'winsor'),
+      alias($._winsorized_keyword, 'winsorized'),
       $.identifier,
     ),
-
-    // PROC body: flat dispatch with all PROC-specific statement rules as unique named types.
-    // Each PROC's statements are prefixed (e.g., sql_select_statement, means_var_statement)
-    // so they produce distinct node types in the parse tree. The proc_body repeat1(choice(...))
-    // pattern means any PROC body can contain any mix of these statements plus shared statements
-    // (by_statement, where_statement, macro_statement) and the bare_statement fallback.
     proc_body: $ => repeat1(choice(
       // PROC SQL statements (PARSE-07 -- enables SQL injection via unique node types)
       // sql_select_statement includes FROM/WHERE/JOIN/GROUP BY/HAVING/ORDER BY as sub-clauses
@@ -3165,12 +1244,23 @@ module.exports = grammar({
     // Macro language (PARSE-01, PARSE-03, PARSE-06) -- D-02: full macro support
     // ========================================================================
 
+    // NOTE on macro bodies: they intentionally do NOT embed $.data_step or
+    // $.proc_step. Doing so forced tree-sitter to duplicate the entire DATA/PROC
+    // parse-state machinery into every macro context (macro_definition,
+    // macro_do_block, macro_if_statement), exploding STATE_COUNT and making
+    // parser.c too large to compile to WASM. Macro bodies still parse base SAS
+    // statements ($.statement -- assignments, do-blocks, etc.) and all macro
+    // constructs ($.macro_statement -- %let/%if/%do/%sysfunc/&vars/...), so
+    // macro keywords, macro variables, and macro functions highlight/lint
+    // correctly. DATA/PROC steps written inside a macro are matched by
+    // $.statement's bare_statement fallback (no ERROR node), but their internals
+    // are not parsed -- an accepted tradeoff to keep the parser buildable.
     macro_definition: $ => seq(
       alias($._macro_keyword, '%macro'),
       field('name', $.identifier),
       optional(field('params', $.macro_parameters)),
       ';',
-      repeat(choice($.data_step, $.proc_step, $.statement, $.macro_statement)),
+      repeat(choice($.statement, $.macro_statement)),
       alias($._mend_keyword, '%mend'),
       optional(field('name', $.identifier)),
       ';'
@@ -3282,7 +1372,7 @@ module.exports = grammar({
         seq($.identifier, "=", $.macro_expression, alias($._macro_to_keyword, "%to"), $.macro_expression, optional(seq(alias($._macro_by_keyword, "%by"), $.macro_expression)), ";"),
         ';'
       )),
-      repeat(choice($.data_step, $.proc_step, $.statement, $.macro_statement)),
+      repeat(choice($.statement, $.macro_statement)),
       alias($._macro_end_keyword, '%end'),
       ';'
     ),
@@ -3293,13 +1383,13 @@ module.exports = grammar({
       field('condition', $.macro_expression),
       alias($._macro_then_keyword, '%then'),
       choice(
-        seq('%do', ';', repeat(choice($.data_step, $.proc_step, $.statement, $.macro_statement)), alias($._macro_end_keyword, '%end'), ';',
+        seq('%do', ';', repeat(choice($.statement, $.macro_statement)), alias($._macro_end_keyword, '%end'), ';',
           optional(seq(alias($._macro_else_keyword, '%else'), choice(
-            seq('%do', ';', repeat(choice($.data_step, $.proc_step, $.statement, $.macro_statement)), alias($._macro_end_keyword, '%end'), ';'),
+            seq('%do', ';', repeat(choice($.statement, $.macro_statement)), alias($._macro_end_keyword, '%end'), ';'),
             $.statement,
           )))),
         seq($.statement, optional(seq(alias($._macro_else_keyword, '%else'), choice(
-          seq('%do', ';', repeat(choice($.data_step, $.proc_step, $.statement, $.macro_statement)), alias($._macro_end_keyword, '%end'), ';'),
+          seq('%do', ';', repeat(choice($.statement, $.macro_statement)), alias($._macro_end_keyword, '%end'), ';'),
           $.statement,
         ))))
       )
@@ -5179,7 +3269,6 @@ module.exports = grammar({
     _byvar_keyword: $ => /[Bb][Yy][Vv][Aa][Rr]/,
     _cochran_keyword: $ => /[Cc][Oo][Cc][Hh][Rr][Aa][Nn]/,
     _dist_keyword: $ => /[Dd][Ii][Ss][Tt]/,
-    _h0_keyword: $ => /[Hh]0/,
     _nobyvar_keyword: $ => /[Nn][Oo][Bb][Yy][Vv][Aa][Rr]/,
     _side_keyword: $ => /[Ss][Ii][Dd][Ee]/,
     _sided_keyword: $ => /[Ss][Ii][Dd][Ee][Dd]/,
@@ -5221,7 +3310,6 @@ module.exports = grammar({
     _location_keyword: $ => /[Ll][Oo][Cc][Aa][Tt][Ii][Oo][Nn]/,
     _loccount_keyword: $ => /[Ll][Oo][Cc][Cc][Oo][Uu][Nn][Tt]/,
     _modes_keyword: $ => /[Mm][Oo][Dd][Ee][Ss]/,
-    _mu0_keyword: $ => /[Mm][Uu]0/,
     _nextrobs_keyword: $ => /[Nn][Ee][Xx][Tt][Rr][Oo][Bb][Ss]/,
     _nextrval_keyword: $ => /[Nn][Ee][Xx][Tt][Rr][Vv][Aa][Ll]/,
     _nobyplot_keyword: $ => /[Nn][Oo][Bb][Yy][Pp][Ll][Oo][Tt]/,
@@ -5529,7 +3617,6 @@ module.exports = grammar({
     _extendsn_keyword: $ => /[eE][xX][tT][eE][nN][dD][sS][nN]/,
     _extendvar_keyword: $ => /[eE][xX][tT][eE][nN][dD][vV][aA][rR]/,
     _infile_keyword: $ => /[iI][nN][fF][iI][lL][eE]/,
-    _isfileutf8_keyword: $ => /[iI][sS][fF][iI][lL][eE][uU][tT][fF]8/,
     _new_keyword: $ => /[nN][eE][wW]/,
     _sort_keyword: $ => /[sS][oO][rR][tT]/,
     _upcase_keyword: $ => /[uU][pP][cC][aA][sS][eE]/,
@@ -5649,7 +3736,6 @@ module.exports = grammar({
     // Value-option keys (used by contents_option_key):
     _centiles_keyword: $ => /[cC][eE][nN][tT][iI][lL][eE][sS]/,
     _order_keyword: $ => /[oO][rR][dD][eE][rR]/,
-    _out2_keyword: $ => /[oO][uU][tT]2/,
     _varnum_keyword: $ => /[vV][aA][rR][nN][uU][mM]/,
     // Boolean flags (no '= value') used by contents_option_flag:
     _directory_keyword: $ => /[dD][iI][rR][eE][cC][tT][oO][rR][yY]/,
@@ -5894,8 +3980,6 @@ module.exports = grammar({
     _nmiss_keyword: $ => /[nN][mM][iI][sS][sS]/,
     _pbt_keyword: $ => /[pP][bB][tT]/,
     _probt_keyword: $ => /[pP][rR][oO][bB][tT]/,
-    _q1_keyword: $ => /[qQ]1/,
-    _q3_keyword: $ => /[qQ]3/,
     _qrange_keyword: $ => /[qQ][rR][aA][nN][gG][eE]/,
     _skew_keyword: $ => /[sS][kK][eE][wW]/,
     _skewness_keyword: $ => /[sS][kK][eE][wW][nN][eE][sS][sS]/,
@@ -5905,28 +3989,12 @@ module.exports = grammar({
     _sumwgt_keyword: $ => /[sS][uU][mM][wW][gG][tT]/,
     _uclm_keyword: $ => /[uU][cC][lL][mM]/,
     _uss_keyword: $ => /[uU][sS][sS]/,
-    // Percentile statistic keywords (p1/p5/p10/p20/p25/p30/p40/p50/p60/p70/p75/
-    // p80/p90/p95/p99). The digit is a literal char in the regex char-class.
-    // Longest-match resolves 'p10' over 'p1' (3 vs 2 chars) — see block comment.
-    _p1_keyword: $ => /[pP]1/,
-    _p5_keyword: $ => /[pP]5/,
-    _p10_keyword: $ => /[pP]10/,
-    _p20_keyword: $ => /[pP]20/,
-    _p25_keyword: $ => /[pP]25/,
-    _p30_keyword: $ => /[pP]30/,
-    _p40_keyword: $ => /[pP]40/,
-    _p50_keyword: $ => /[pP]50/,
-    _p60_keyword: $ => /[pP]60/,
-    _p70_keyword: $ => /[pP]70/,
-    _p75_keyword: $ => /[pP]75/,
-    _p80_keyword: $ => /[pP]80/,
-    _p90_keyword: $ => /[pP]90/,
-    _p95_keyword: $ => /[pP]95/,
-    _p99_keyword: $ => /[pP]99/,
-    // Single-letter statistic shorthand (t). See the block comment above for the
-    // longest-match rationale and the empirical no-regression check. (n reuses
-    // _n_keyword defined in the PRINT block above.)
-    _t_keyword: $ => /[tT]/,
+    // Percentile (p1..p99), quartile (q1/q3), and single-letter (t) statistic
+    // keyword tokens REMOVED to shrink parser.c (SYMBOL_COUNT). These options
+    // now parse as $.identifier and are validated by the linter via
+    // proc-options.generated.json text lookup; highlighting still applies via
+    // the (means_option_key) @keyword node-type capture. (n reuses _n_keyword
+    // from the PRINT block and is retained there.)
 
     // --- Operators and punctuation ---
     _semicolon: $ => ';',

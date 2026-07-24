@@ -208,71 +208,6 @@
     ]
   },
   {
-    "type": "anova_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "anova_option_key",
-          "named": true
-        },
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "anova_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "anova_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "anova_option",
-          "named": true
-        },
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "append_base_statement",
     "named": true,
     "fields": {},
@@ -311,80 +246,6 @@
     "type": "append_getsort_statement",
     "named": true,
     "fields": {}
-  },
-  {
-    "type": "append_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "append_option_key",
-          "named": true
-        },
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "append_option_flag",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "append_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "append_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "append_option",
-          "named": true
-        },
-        {
-          "type": "append_option_flag",
-          "named": true
-        },
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
   },
   {
     "type": "array_element",
@@ -731,85 +592,6 @@
     }
   },
   {
-    "type": "cimport_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "cimport_option_key",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "cimport_option_flag",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "cimport_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "cimport_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "cimport_option",
-          "named": true
-        },
-        {
-          "type": "cimport_option_flag",
-          "named": true
-        },
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "compare",
-    "named": false,
-    "fields": {}
-  },
-  {
     "type": "compare_base_statement",
     "named": true,
     "fields": {},
@@ -858,80 +640,6 @@
         },
         {
           "type": "macro_variable_reference",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "compare_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "compare_option_key",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "compare_option_flag",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "compare_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "compare_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "compare_option",
-          "named": true
-        },
-        {
-          "type": "compare_option_flag",
-          "named": true
-        },
-        {
-          "type": "identifier",
           "named": true
         }
       ]
@@ -991,11 +699,6 @@
     }
   },
   {
-    "type": "contents",
-    "named": false,
-    "fields": {}
-  },
-  {
     "type": "contents_data_statement",
     "named": true,
     "fields": {},
@@ -1016,80 +719,6 @@
     "fields": {}
   },
   {
-    "type": "contents_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "contents_option_key",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "contents_option_flag",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "contents_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "contents_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "contents_option",
-          "named": true
-        },
-        {
-          "type": "contents_option_flag",
-          "named": true
-        },
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "contents_out_statement",
     "named": true,
     "fields": {},
@@ -1097,154 +726,6 @@
       "multiple": false,
       "required": true,
       "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "copy_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "copy_option_key",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "copy_option_flag",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "copy_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "copy_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "copy_option",
-          "named": true
-        },
-        {
-          "type": "copy_option_flag",
-          "named": true
-        },
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "cport_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "cport_option_key",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "cport_option_flag",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "cport_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "cport_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "cport_option",
-          "named": true
-        },
-        {
-          "type": "cport_option_flag",
-          "named": true
-        },
         {
           "type": "identifier",
           "named": true
@@ -1499,80 +980,6 @@
     "fields": {}
   },
   {
-    "type": "datasets_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "datasets_option_key",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "datasets_option_flag",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "datasets_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "datasets_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "datasets_option",
-          "named": true
-        },
-        {
-          "type": "datasets_option_flag",
-          "named": true
-        },
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "datasets_repair_statement",
     "named": true,
     "fields": {},
@@ -1743,71 +1150,6 @@
     }
   },
   {
-    "type": "factor_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "factor_option_key",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "factor_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "factor_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "factor_option",
-          "named": true
-        },
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "fcmp_function_block",
     "named": true,
     "fields": {
@@ -1866,71 +1208,6 @@
         },
         {
           "type": "statement",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "fcmp_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "fcmp_option_key",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "fcmp_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "fcmp_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "fcmp_option",
-          "named": true
-        },
-        {
-          "type": "identifier",
           "named": true
         }
       ]
@@ -2084,71 +1361,6 @@
     }
   },
   {
-    "type": "format_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "format_option_key",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "format_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "format_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "format_option",
-          "named": true
-        },
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "format_specifier",
     "named": true,
     "fields": {},
@@ -2235,80 +1447,6 @@
       "types": [
         {
           "type": "expression",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "freq_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "freq_option_key",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "freq_option_flag",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "freq_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "freq_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "freq_option",
-          "named": true
-        },
-        {
-          "type": "freq_option_flag",
-          "named": true
-        },
-        {
-          "type": "identifier",
           "named": true
         }
       ]
@@ -2419,136 +1557,6 @@
       "types": [
         {
           "type": "expression",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "genmod_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "genmod_option_key",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "genmod_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "genmod_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "genmod_option",
-          "named": true
-        },
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "glm_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "glm_option_key",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "glm_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "glm_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "glm_option",
-          "named": true
-        },
-        {
-          "type": "identifier",
           "named": true
         }
       ]
@@ -2667,71 +1675,6 @@
       "types": [
         {
           "type": "quoted_string",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "gplot_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "gplot_option_key",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "gplot_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "gplot_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "gplot_option",
-          "named": true
-        },
-        {
-          "type": "identifier",
           "named": true
         }
       ]
@@ -3180,71 +2123,6 @@
     }
   },
   {
-    "type": "lifetest_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "lifetest_option_key",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "lifetest_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "lifetest_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "lifetest_option",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "lifetest_strata_statement",
     "named": true,
     "fields": {},
@@ -3323,71 +2201,6 @@
         },
         {
           "type": "quoted_string",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "logistic_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "logistic_option_key",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "logistic_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "logistic_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "logistic_option",
           "named": true
         }
       ]
@@ -3606,14 +2419,6 @@
       "required": false,
       "types": [
         {
-          "type": "data_step",
-          "named": true
-        },
-        {
-          "type": "proc_step",
-          "named": true
-        },
-        {
           "type": "statement",
           "named": true
         }
@@ -3629,19 +2434,11 @@
       "required": false,
       "types": [
         {
-          "type": "data_step",
-          "named": true
-        },
-        {
           "type": "identifier",
           "named": true
         },
         {
           "type": "macro_expression",
-          "named": true
-        },
-        {
-          "type": "proc_step",
           "named": true
         },
         {
@@ -3806,14 +2603,6 @@
       "multiple": true,
       "required": false,
       "types": [
-        {
-          "type": "data_step",
-          "named": true
-        },
-        {
-          "type": "proc_step",
-          "named": true
-        },
         {
           "type": "statement",
           "named": true
@@ -4201,80 +2990,6 @@
     }
   },
   {
-    "type": "means_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "means_option_key",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "means_option_flag",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "means_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "means_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "means_option",
-          "named": true
-        },
-        {
-          "type": "means_option_flag",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "means_output_statement",
     "named": true,
     "fields": {},
@@ -4425,71 +3140,6 @@
     }
   },
   {
-    "type": "mixed_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "mixed_option_key",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "mixed_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "mixed_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "mixed_option",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "model_option",
     "named": true,
     "fields": {},
@@ -4579,57 +3229,6 @@
     }
   },
   {
-    "type": "options_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "options_option_key",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "options_option_flag",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "options_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "options_option_statement",
     "named": true,
     "fields": {},
@@ -4639,29 +3238,6 @@
       "types": [
         {
           "type": "expression",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "options_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "options_option",
-          "named": true
-        },
-        {
-          "type": "options_option_flag",
           "named": true
         }
       ]
@@ -4760,141 +3336,6 @@
     }
   },
   {
-    "type": "phreg_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "phreg_option_key",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "phreg_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "phreg_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "phreg_option",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "princomp_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "princomp_option_key",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "princomp_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "princomp_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "princomp_option",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "print",
-    "named": false,
-    "fields": {}
-  },
-  {
     "type": "print_id_statement",
     "named": true,
     "fields": {},
@@ -4908,80 +3349,6 @@
         },
         {
           "type": "macro_variable_reference",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "print_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "print_option_key",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "print_option_flag",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "print_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "print_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "print_option",
-          "named": true
-        },
-        {
-          "type": "print_option_flag",
           "named": true
         }
       ]
@@ -5042,132 +3409,6 @@
           "named": true
         }
       ]
-    }
-  },
-  {
-    "type": "printto_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "printto_option_key",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "printto_option_flag",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "printto_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "printto_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "printto_option",
-          "named": true
-        },
-        {
-          "type": "printto_option_flag",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "proc_anova_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "anova_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_append_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "append_options",
-            "named": true
-          }
-        ]
-      }
     }
   },
   {
@@ -5730,266 +3971,6 @@
     }
   },
   {
-    "type": "proc_cimport_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "cimport_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_compare_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "compare_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_contents_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "contents_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_copy_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "copy_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_cport_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "cport_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_datasets_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "datasets_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_factor_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "factor_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_fcmp_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "fcmp_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_format_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "format_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_freq_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "freq_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
     "type": "proc_generic_step",
     "named": true,
     "fields": {
@@ -6019,188 +4000,6 @@
         "types": [
           {
             "type": "proc_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_genmod_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "genmod_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_glm_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "glm_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_gplot_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "gplot_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_lifetest_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "lifetest_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_logistic_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "logistic_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_means_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "means_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_mixed_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "mixed_options",
             "named": true
           }
         ]
@@ -6312,292 +4111,6 @@
     }
   },
   {
-    "type": "proc_options_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "options_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_phreg_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "phreg_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_princomp_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "princomp_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_print_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "print_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_printto_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "printto_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_reg_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "reg_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_report_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "report_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_sgplot_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "sgplot_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_sort_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "sort_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_sql_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "sql_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_standard_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "standard_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
     "type": "proc_step",
     "named": true,
     "fields": {},
@@ -6606,250 +4119,10 @@
       "required": true,
       "types": [
         {
-          "type": "proc_anova_step",
-          "named": true
-        },
-        {
-          "type": "proc_append_step",
-          "named": true
-        },
-        {
-          "type": "proc_cimport_step",
-          "named": true
-        },
-        {
-          "type": "proc_compare_step",
-          "named": true
-        },
-        {
-          "type": "proc_contents_step",
-          "named": true
-        },
-        {
-          "type": "proc_copy_step",
-          "named": true
-        },
-        {
-          "type": "proc_cport_step",
-          "named": true
-        },
-        {
-          "type": "proc_datasets_step",
-          "named": true
-        },
-        {
-          "type": "proc_factor_step",
-          "named": true
-        },
-        {
-          "type": "proc_fcmp_step",
-          "named": true
-        },
-        {
-          "type": "proc_format_step",
-          "named": true
-        },
-        {
-          "type": "proc_freq_step",
-          "named": true
-        },
-        {
           "type": "proc_generic_step",
-          "named": true
-        },
-        {
-          "type": "proc_genmod_step",
-          "named": true
-        },
-        {
-          "type": "proc_glm_step",
-          "named": true
-        },
-        {
-          "type": "proc_gplot_step",
-          "named": true
-        },
-        {
-          "type": "proc_lifetest_step",
-          "named": true
-        },
-        {
-          "type": "proc_logistic_step",
-          "named": true
-        },
-        {
-          "type": "proc_means_step",
-          "named": true
-        },
-        {
-          "type": "proc_mixed_step",
-          "named": true
-        },
-        {
-          "type": "proc_options_step",
-          "named": true
-        },
-        {
-          "type": "proc_phreg_step",
-          "named": true
-        },
-        {
-          "type": "proc_princomp_step",
-          "named": true
-        },
-        {
-          "type": "proc_print_step",
-          "named": true
-        },
-        {
-          "type": "proc_printto_step",
-          "named": true
-        },
-        {
-          "type": "proc_reg_step",
-          "named": true
-        },
-        {
-          "type": "proc_report_step",
-          "named": true
-        },
-        {
-          "type": "proc_sgplot_step",
-          "named": true
-        },
-        {
-          "type": "proc_sort_step",
-          "named": true
-        },
-        {
-          "type": "proc_sql_step",
-          "named": true
-        },
-        {
-          "type": "proc_standard_step",
-          "named": true
-        },
-        {
-          "type": "proc_tabulate_step",
-          "named": true
-        },
-        {
-          "type": "proc_transpose_step",
-          "named": true
-        },
-        {
-          "type": "proc_ttest_step",
-          "named": true
-        },
-        {
-          "type": "proc_univariate_step",
           "named": true
         }
       ]
-    }
-  },
-  {
-    "type": "proc_tabulate_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "tabulate_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_transpose_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "transpose_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_ttest_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "ttest_options",
-            "named": true
-          }
-        ]
-      }
-    }
-  },
-  {
-    "type": "proc_univariate_step",
-    "named": true,
-    "fields": {
-      "body": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "proc_body",
-            "named": true
-          }
-        ]
-      },
-      "options": {
-        "multiple": false,
-        "required": false,
-        "types": [
-          {
-            "type": "univariate_options",
-            "named": true
-          }
-        ]
-      }
     }
   },
   {
@@ -6968,71 +4241,6 @@
     }
   },
   {
-    "type": "reg_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        },
-        {
-          "type": "reg_option_key",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "reg_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "reg_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "reg_option",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "reg_output_statement",
     "named": true,
     "fields": {},
@@ -7133,11 +4341,6 @@
         }
       ]
     }
-  },
-  {
-    "type": "report",
-    "named": false,
-    "fields": {}
   },
   {
     "type": "report_break_statement",
@@ -7269,71 +4472,6 @@
         },
         {
           "type": "quoted_string",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "report_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        },
-        {
-          "type": "report_option_key",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "report_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "report_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "report_option",
           "named": true
         }
       ]
@@ -7745,52 +4883,6 @@
     }
   },
   {
-    "type": "sgplot_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        },
-        {
-          "type": "sgplot_option_key",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "sgplot_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "sgplot_option_list",
     "named": true,
     "fields": {},
@@ -7808,25 +4900,6 @@
         },
         {
           "type": "quoted_string",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "sgplot_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "sgplot_option",
           "named": true
         }
       ]
@@ -8047,80 +5120,6 @@
         },
         {
           "type": "sgplot_option_list",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "sort_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        },
-        {
-          "type": "sort_option_key",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "sort_option_flag",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "sort_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "sort_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "sort_option",
-          "named": true
-        },
-        {
-          "type": "sort_option_flag",
           "named": true
         }
       ]
@@ -8487,71 +5486,6 @@
     }
   },
   {
-    "type": "sql_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        },
-        {
-          "type": "sql_option_key",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "sql_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "sql_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "sql_option",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "sql_order_by_clause",
     "named": true,
     "fields": {},
@@ -8816,80 +5750,6 @@
     }
   },
   {
-    "type": "standard_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        },
-        {
-          "type": "standard_option_key",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "standard_option_flag",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "standard_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "standard_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "standard_option",
-          "named": true
-        },
-        {
-          "type": "standard_option_flag",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "sum_statement",
     "named": true,
     "fields": {
@@ -8974,71 +5834,6 @@
         },
         {
           "type": "quoted_string",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "tabulate_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        },
-        {
-          "type": "tabulate_option_key",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "tabulate_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "tabulate_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "tabulate_option",
           "named": true
         }
       ]
@@ -9167,80 +5962,6 @@
     }
   },
   {
-    "type": "transpose_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        },
-        {
-          "type": "transpose_option_key",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "transpose_option_flag",
-    "named": true,
-    "fields": {}
-  },
-  {
-    "type": "transpose_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "transpose_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "transpose_option",
-          "named": true
-        },
-        {
-          "type": "transpose_option_flag",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
     "type": "transpose_var_statement",
     "named": true,
     "fields": {},
@@ -9254,71 +5975,6 @@
         },
         {
           "type": "macro_variable_reference",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "ttest_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        },
-        {
-          "type": "ttest_option_key",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "ttest_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "ttest_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "ttest_option",
           "named": true
         }
       ]
@@ -9474,71 +6130,6 @@
         },
         {
           "type": "quoted_string",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "univariate_option",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "catalog_path",
-          "named": true
-        },
-        {
-          "type": "data_set_option",
-          "named": true
-        },
-        {
-          "type": "expression",
-          "named": true
-        },
-        {
-          "type": "proc_option_args",
-          "named": true
-        },
-        {
-          "type": "univariate_option_key",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "univariate_option_key",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": false,
-      "required": false,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        }
-      ]
-    }
-  },
-  {
-    "type": "univariate_options",
-    "named": true,
-    "fields": {},
-    "children": {
-      "multiple": true,
-      "required": true,
-      "types": [
-        {
-          "type": "identifier",
-          "named": true
-        },
-        {
-          "type": "univariate_option",
           "named": true
         }
       ]
@@ -10016,10 +6607,6 @@
     "named": false
   },
   {
-    "type": "append_option_flag",
-    "named": false
-  },
-  {
     "type": "appendver",
     "named": false
   },
@@ -10201,10 +6788,6 @@
     "named": false
   },
   {
-    "type": "cimport_option_flag",
-    "named": false
-  },
-  {
     "type": "cipctldf",
     "named": false
   },
@@ -10265,10 +6848,6 @@
     "named": false
   },
   {
-    "type": "compare_option_flag",
-    "named": false
-  },
-  {
     "type": "completecols",
     "named": false
   },
@@ -10305,10 +6884,6 @@
     "named": false
   },
   {
-    "type": "contents_option_flag",
-    "named": false
-  },
-  {
     "type": "conv",
     "named": false
   },
@@ -10330,10 +6905,6 @@
   },
   {
     "type": "copy",
-    "named": false
-  },
-  {
-    "type": "copy_option_flag",
     "named": false
   },
   {
@@ -10377,10 +6948,6 @@
     "named": false
   },
   {
-    "type": "cport_option_flag",
-    "named": false
-  },
-  {
     "type": "create",
     "named": false
   },
@@ -10417,10 +6984,6 @@
     "named": false
   },
   {
-    "type": "datafile",
-    "named": false
-  },
-  {
     "type": "datalines",
     "named": false
   },
@@ -10437,15 +7000,7 @@
     "named": false
   },
   {
-    "type": "datasets_option_flag",
-    "named": false
-  },
-  {
     "type": "dattrmap",
-    "named": false
-  },
-  {
-    "type": "dbms",
     "named": false
   },
   {
@@ -10729,10 +7284,6 @@
     "named": false
   },
   {
-    "type": "freq_option_flag",
-    "named": false
-  },
-  {
     "type": "from",
     "named": false
   },
@@ -10842,10 +7393,6 @@
   },
   {
     "type": "guessingrows",
-    "named": false
-  },
-  {
-    "type": "h0",
     "named": false
   },
   {
@@ -11006,10 +7553,6 @@
   },
   {
     "type": "is",
-    "named": false
-  },
-  {
-    "type": "isfileutf8",
     "named": false
   },
   {
@@ -11229,10 +7772,6 @@
     "named": false
   },
   {
-    "type": "means_option_flag",
-    "named": false
-  },
-  {
     "type": "median",
     "named": false
   },
@@ -11310,10 +7849,6 @@
   },
   {
     "type": "mtype",
-    "named": false
-  },
-  {
-    "type": "mu0",
     "named": false
   },
   {
@@ -11645,10 +8180,6 @@
     "named": false
   },
   {
-    "type": "options_option_flag",
-    "named": false
-  },
-  {
     "type": "or",
     "named": false
   },
@@ -11666,10 +8197,6 @@
   },
   {
     "type": "out",
-    "named": false
-  },
-  {
-    "type": "out2",
     "named": false
   },
   {
@@ -11813,66 +8340,6 @@
     "named": false
   },
   {
-    "type": "p1",
-    "named": false
-  },
-  {
-    "type": "p10",
-    "named": false
-  },
-  {
-    "type": "p20",
-    "named": false
-  },
-  {
-    "type": "p25",
-    "named": false
-  },
-  {
-    "type": "p30",
-    "named": false
-  },
-  {
-    "type": "p40",
-    "named": false
-  },
-  {
-    "type": "p5",
-    "named": false
-  },
-  {
-    "type": "p50",
-    "named": false
-  },
-  {
-    "type": "p60",
-    "named": false
-  },
-  {
-    "type": "p70",
-    "named": false
-  },
-  {
-    "type": "p75",
-    "named": false
-  },
-  {
-    "type": "p80",
-    "named": false
-  },
-  {
-    "type": "p90",
-    "named": false
-  },
-  {
-    "type": "p95",
-    "named": false
-  },
-  {
-    "type": "p99",
-    "named": false
-  },
-  {
     "type": "pad",
     "named": false
   },
@@ -11989,15 +8456,11 @@
     "named": false
   },
   {
-    "type": "print_option_flag",
+    "type": "print",
     "named": false
   },
   {
     "type": "printto",
-    "named": false
-  },
-  {
-    "type": "printto_option_flag",
     "named": false
   },
   {
@@ -12038,14 +8501,6 @@
   },
   {
     "type": "pw",
-    "named": false
-  },
-  {
-    "type": "q1",
-    "named": false
-  },
-  {
-    "type": "q3",
     "named": false
   },
   {
@@ -12158,6 +8613,10 @@
   },
   {
     "type": "repair",
+    "named": false
+  },
+  {
+    "type": "report",
     "named": false
   },
   {
@@ -12374,10 +8833,6 @@
     "named": false
   },
   {
-    "type": "sort_option_flag",
-    "named": false
-  },
-  {
     "type": "sortmsg",
     "named": false
   },
@@ -12403,10 +8858,6 @@
   },
   {
     "type": "standard",
-    "named": false
-  },
-  {
-    "type": "standard_option_flag",
     "named": false
   },
   {
@@ -12482,10 +8933,6 @@
     "named": false
   },
   {
-    "type": "t",
-    "named": false
-  },
-  {
     "type": "table",
     "named": false
   },
@@ -12555,10 +9002,6 @@
   },
   {
     "type": "transpose",
-    "named": false
-  },
-  {
-    "type": "transpose_option_flag",
     "named": false
   },
   {
