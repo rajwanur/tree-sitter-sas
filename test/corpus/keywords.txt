@@ -39,7 +39,9 @@ proc print; run;
 
 (source_file
   (proc_step
-    (proc_print_step)))
+    (proc_generic_step
+      (proc_name
+        (identifier)))))
 
 ================================================================================
 Keywords are case insensitive - PROC
@@ -49,7 +51,9 @@ PROC PRINT; RUN;
 
 (source_file
   (proc_step
-    (proc_print_step)))
+    (proc_generic_step
+      (proc_name
+        (identifier)))))
 
 ================================================================================
 Keywords are case insensitive - set
@@ -95,6 +99,7 @@ data a; set b; where x > 1; run;
     (where_statement
       (binary_expression
         left: (identifier)
+        operator: (comparison_operator)
         right: (number)))))
 
 ================================================================================
@@ -110,6 +115,7 @@ data a; if x > 1 then y = 2; else y = 3; run;
     (if_statement
       condition: (binary_expression
         left: (identifier)
+        operator: (comparison_operator)
         right: (number))
       consequence: (assignment_statement
         target: (identifier)

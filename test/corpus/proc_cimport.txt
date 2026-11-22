@@ -8,18 +8,23 @@ run;
 
 (source_file
   (proc_step
-    (proc_cimport_step
-      options: (cimport_options
-        (cimport_option
-          (cimport_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (cimport_option
-          (cimport_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (cimport_option
-          (cimport_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier)))
       body: (proc_body
         (sql_select_statement
@@ -36,15 +41,26 @@ run;
 
 (source_file
   (proc_step
-    (proc_cimport_step
-      options: (cimport_options
-        (cimport_option
-          (cimport_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (cimport_option_flag)
-        (cimport_option_flag)
-        (cimport_option_flag)
-        (cimport_option_flag)))))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))))))
 
 ================================================================================
 PROC CIMPORT with no options
@@ -55,7 +71,9 @@ run;
 
 (source_file
   (proc_step
-    (proc_cimport_step)))
+    (proc_generic_step
+      (proc_name
+        (identifier)))))
 
 ================================================================================
 PROC CIMPORT with unknown option key (linter fallback)
@@ -66,10 +84,12 @@ run;
 
 (source_file
   (proc_step
-    (proc_cimport_step
-      options: (cimport_options
-        (cimport_option
-          (cimport_option_key
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
             (identifier))
           (identifier))))))
 
@@ -82,20 +102,27 @@ run;
 
 (source_file
   (proc_step
-    (proc_cimport_step
-      options: (cimport_options
-        (cimport_option
-          (cimport_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (cimport_option
-          (cimport_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (cimport_option
-          (cimport_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (cimport_option
-          (cimport_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (cimport_option
-          (cimport_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))))))

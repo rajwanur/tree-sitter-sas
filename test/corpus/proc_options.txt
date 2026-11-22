@@ -7,7 +7,9 @@ run;
 
 (source_file
   (proc_step
-    (proc_options_step)))
+    (proc_generic_step
+      (proc_name
+        (identifier)))))
 
 ================================================================================
 PROC OPTIONS single value-option: option=linesize
@@ -18,10 +20,13 @@ run;
 
 (source_file
   (proc_step
-    (proc_options_step
-      options: (options_options
-        (options_option
-          (options_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))))))
 
 ================================================================================
@@ -33,10 +38,13 @@ run;
 
 (source_file
   (proc_step
-    (proc_options_step
-      options: (options_options
-        (options_option
-          (options_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))))))
 
 ================================================================================
@@ -48,15 +56,20 @@ run;
 
 (source_file
   (proc_step
-    (proc_options_step
-      options: (options_options
-        (options_option
-          (options_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (options_option
-          (options_option_key))
-        (options_option
-          (options_option_key)
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))))))
 
 ================================================================================
@@ -68,14 +81,28 @@ run;
 
 (source_file
   (proc_step
-    (proc_options_step
-      options: (options_options
-        (options_option_flag)
-        (options_option_flag)
-        (options_option_flag)
-        (options_option_flag)
-        (options_option_flag)
-        (options_option_flag)))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))))))
 
 ================================================================================
 PROC OPTIONS list/restrict flags
@@ -86,16 +113,34 @@ run;
 
 (source_file
   (proc_step
-    (proc_options_step
-      options: (options_options
-        (options_option_flag)
-        (options_option_flag)
-        (options_option_flag)
-        (options_option_flag)
-        (options_option_flag)
-        (options_option_flag)
-        (options_option_flag)
-        (options_option_flag)))))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))))))
 
 ================================================================================
 PROC OPTIONS with body (option statement) — header-only struct
@@ -107,8 +152,11 @@ run;
 
 (source_file
   (proc_step
-    (proc_options_step
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
       body: (proc_body
-        (options_option_statement
+        (proc_statement
+          keyword: (proc_statement_keyword)
           (identifier)
           (number))))))

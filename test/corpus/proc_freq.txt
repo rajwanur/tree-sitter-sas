@@ -8,10 +8,13 @@ run;
 
 (source_file
   (proc_step
-    (proc_freq_step
-      options: (freq_options
-        (freq_option
-          (freq_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier)))
       body: (proc_body
         (freq_tables_statement
@@ -27,10 +30,13 @@ run;
 
 (source_file
   (proc_step
-    (proc_freq_step
-      options: (freq_options
-        (freq_option
-          (freq_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier)))
       body: (proc_body
         (freq_tables_statement
@@ -48,15 +54,19 @@ run;
 
 (source_file
   (proc_step
-    (proc_freq_step
-      options: (freq_options
-        (freq_option
-          (freq_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier)))
       body: (proc_body
         (where_statement
           (binary_expression
             left: (identifier)
+            operator: (comparison_operator)
             right: (number)))
         (freq_tables_statement
           (identifier))))))
@@ -71,24 +81,31 @@ run;
 
 (source_file
   (proc_step
-    (proc_freq_step
-      options: (freq_options
-        (freq_option
-          (freq_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (freq_option
-          (freq_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (freq_option
-          (freq_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (freq_option
-          (freq_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (number))
-        (freq_option
-          (freq_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (quoted_string
             (double_quoted_string))))
       body: (proc_body
@@ -105,15 +122,22 @@ run;
 
 (source_file
   (proc_step
-    (proc_freq_step
-      options: (freq_options
-        (freq_option
-          (freq_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (freq_option_flag)
-        (freq_option_flag))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier))))
       body: (proc_body
         (freq_tables_statement
           (identifier))))))
@@ -128,15 +152,19 @@ run;
 
 (source_file
   (proc_step
-    (proc_tabulate_step
-      options: (tabulate_options
-        (tabulate_option
-          (tabulate_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier))))
       body: (proc_body
-        (tabulate_table_statement
+        (proc_statement
+          keyword: (proc_statement_keyword)
           (identifier)
           (identifier)
           (identifier)
@@ -146,5 +174,4 @@ run;
           (quoted_string
             (single_quoted_string))
           (identifier)
-          (format_specifier
-            (number)))))))
+          (number))))))

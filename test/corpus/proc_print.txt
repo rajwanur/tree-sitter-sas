@@ -7,10 +7,13 @@ run;
 
 (source_file
   (proc_step
-    (proc_print_step
-      options: (print_options
-        (print_option
-          (print_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))))))
 
 ================================================================================
@@ -23,13 +26,17 @@ run;
 
 (source_file
   (proc_step
-    (proc_print_step
-      options: (print_options
-        (print_option
-          (print_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier)))
       body: (proc_body
-        (tabulate_var_statement
+        (proc_statement
+          keyword: (proc_statement_keyword)
           (identifier)
           (identifier))))))
 
@@ -44,17 +51,22 @@ run;
 
 (source_file
   (proc_step
-    (proc_print_step
-      options: (print_options
-        (print_option
-          (print_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier)))
       body: (proc_body
         (where_statement
           (binary_expression
             left: (identifier)
+            operator: (comparison_operator)
             right: (number)))
-        (tabulate_var_statement
+        (proc_statement
+          keyword: (proc_statement_keyword)
           (identifier))))))
 
 ================================================================================
@@ -66,22 +78,30 @@ run;
 
 (source_file
   (proc_step
-    (proc_print_step
-      options: (print_options
-        (print_option
-          (print_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (print_option
-          (print_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (number))
-        (print_option
-          (print_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (number))
-        (print_option
-          (print_option_key))
-        (print_option_flag)))))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))))))
 
 ================================================================================
 PROC PRINT single-letter shorthand keys (d=/l/r/s)
@@ -92,17 +112,23 @@ run;
 
 (source_file
   (proc_step
-    (proc_print_step
-      options: (print_options
-        (print_option
-          (print_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (print_option
-          (print_option_key))
-        (print_option
-          (print_option_key))
-        (print_option
-          (print_option_key))))))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))))))
 
 ================================================================================
 PROC PRINT underscore value-option keys (grand_label=/grandtot_label=/grandtotal_label=/gtot_label=/gtotal_label=/sumlabel=/nosumlabel)
@@ -113,31 +139,40 @@ run;
 
 (source_file
   (proc_step
-    (proc_print_step
-      options: (print_options
-        (print_option
-          (print_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (quoted_string
             (single_quoted_string)))
-        (print_option
-          (print_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (quoted_string
             (single_quoted_string)))
-        (print_option
-          (print_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (quoted_string
             (single_quoted_string)))
-        (print_option
-          (print_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (quoted_string
             (single_quoted_string)))
-        (print_option
-          (print_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (quoted_string
             (single_quoted_string)))
-        (print_option
-          (print_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (quoted_string
             (single_quoted_string)))
-        (print_option
-          (print_option_key))))))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))))))

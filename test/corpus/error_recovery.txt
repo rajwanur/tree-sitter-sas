@@ -1,16 +1,20 @@
 ================================================================================
 Missing semicolon after DATA statement
 ================================================================================
-data a set b;
+data a
   y = 2;
+  z = 3;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (data_step
     name: (data_name
       (identifier))
-    (ERROR
+    name: (data_name
       (identifier))
+    (ERROR
+      (number))
     (assignment_statement
       target: (identifier)
       value: (number))))
@@ -23,15 +27,18 @@ data a;
   y = 2;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (data_step
     name: (data_name
       (identifier))
-    (bare_statement
-      (identifier)
-      (number)
-      (identifier)
-      (number))))
+    (assignment_statement
+      target: (identifier)
+      (ERROR
+        (number))
+      value: (binary_expression
+        left: (identifier)
+        right: (number)))))
 
 ================================================================================
 Unclosed DO block - missing END
@@ -41,10 +48,12 @@ data a;
     x = i;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
+  (data_step
+    name: (data_name
+      (identifier)))
   (ERROR
-    (data_name
-      (identifier))
     (identifier)
     (number)
     (number)
@@ -61,6 +70,7 @@ data a;
   x = (1 + 2;
 run;
 --------------------------------------------------------------------------------
+
 (source_file
   (data_step
     name: (data_name

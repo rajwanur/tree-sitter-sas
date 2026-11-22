@@ -17,6 +17,7 @@ run;
     (where_statement
       (binary_expression
         left: (identifier)
+        operator: (comparison_operator)
         right: (number)))))
 
 ================================================================================
@@ -47,7 +48,8 @@ run;
 
 (source_file
   (data_step
-    name: (data_name)
+    name: (data_name
+      (identifier))
     (assignment_statement
       target: (identifier)
       value: (number))))
@@ -92,6 +94,7 @@ run;
     (if_statement
       condition: (binary_expression
         left: (identifier)
+        operator: (comparison_operator)
         right: (number))
       consequence: (assignment_statement
         target: (identifier)
@@ -186,11 +189,14 @@ run;
 
 (source_file
   (proc_step
-    (proc_print_step
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
       body: (proc_body
         (where_statement
           (binary_expression
             left: (identifier)
+            operator: (comparison_operator)
             right: (number)))))))
 
 ================================================================================
@@ -203,9 +209,10 @@ quit;
 
 (source_file
   (proc_step
-    (proc_datasets_step
+    (proc_generic_step
+      name: (proc_name)
       body: (proc_body
-        (datasets_delete_statement
+        (delete_statement
           (identifier))))))
 
 ================================================================================
@@ -226,7 +233,9 @@ run;
       target: (identifier)
       value: (number)))
   (proc_step
-    (proc_print_step)))
+    (proc_generic_step
+      name: (proc_name
+        (identifier)))))
 
 ================================================================================
 LIBNAME statement
@@ -349,7 +358,7 @@ run;
     name: (data_name
       (identifier))
     (call_statement
-      (identifier)
+      name: (identifier)
       (identifier))))
 
 ================================================================================
@@ -369,6 +378,7 @@ run;
     (do_block
       (binary_expression
         left: (identifier)
+        operator: (comparison_operator)
         right: (number))
       (assignment_statement
         target: (identifier)
@@ -470,9 +480,7 @@ run;
       dataset: (identifier))
     (format_statement
       (identifier)
-      (format_specifier
-        (identifier)
-        (missing_value)))))
+      (format_specifier))))
 
 ================================================================================
 INFORMAT with named format
@@ -489,9 +497,7 @@ run;
       dataset: (identifier))
     (informat_statement
       (identifier)
-      (format_specifier
-        (identifier)
-        (missing_value)))))
+      (format_specifier))))
 
 ================================================================================
 FORMAT with character width format
@@ -508,9 +514,7 @@ run;
       dataset: (identifier))
     (format_statement
       (identifier)
-      (format_specifier
-        (number)
-        (missing_value)))))
+      (format_specifier))))
 
 ================================================================================
 INPUT with bare variable names
@@ -562,9 +566,7 @@ run;
       dataset: (identifier))
     (input_statement
       (identifier)
-      (format_specifier
-        (number)
-        (missing_value)))))
+      (format_specifier))))
 
 ================================================================================
 INPUT with named character format (name $charN.)
@@ -581,9 +583,7 @@ run;
       dataset: (identifier))
     (input_statement
       (identifier)
-      (format_specifier
-        (identifier)
-        (missing_value)))))
+      (format_specifier))))
 
 ================================================================================
 INPUT with informative modifier (name :format.)
@@ -600,9 +600,7 @@ run;
       dataset: (identifier))
     (input_statement
       (identifier)
-      (format_specifier
-        (identifier)
-        (missing_value)))))
+      (format_specifier))))
 
 ================================================================================
 INPUT with bare named format (variable then standalone format)
@@ -618,9 +616,7 @@ run;
       (identifier))
     (input_statement
       (identifier)
-      (format_specifier
-        (identifier)
-        (missing_value)))))
+      (format_specifier))))
 
 ================================================================================
 SET with rename=() dataset option
@@ -640,11 +636,14 @@ run;
         (identifier)
         (identifier)
         (data_set_option
-          (identifier)
-          (identifier)
-          (identifier)
-          (identifier)
-          (identifier))))))
+          (data_set_option_key
+            (identifier))
+          (binary_expression
+            left: (identifier)
+            right: (identifier))
+          (binary_expression
+            left: (identifier)
+            right: (identifier)))))))
 
 ================================================================================
 SET with name_literal and end= option
@@ -727,6 +726,7 @@ run;
         left: (method_call
           object: (identifier)
           method: (identifier))
+        operator: (comparison_operator)
         right: (number))
       consequence: (assignment_statement
         target: (identifier)
@@ -749,14 +749,10 @@ run;
     (input_statement
       (number)
       (identifier)
-      (format_specifier
-        (number)
-        (missing_value))
+      (format_specifier)
       (number)
       (identifier)
-      (format_specifier
-        (number)
-        (missing_value)))
+      (format_specifier))
     (put_statement
       (quoted_string
         (single_quoted_string))

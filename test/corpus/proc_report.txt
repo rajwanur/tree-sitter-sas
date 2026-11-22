@@ -13,10 +13,13 @@ run;
 
 (source_file
   (proc_step
-    (proc_report_step
-      options: (report_options
-        (report_option
-          (report_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier)))
       body: (proc_body
         (report_column_statement
@@ -55,10 +58,13 @@ run;
 
 (source_file
   (proc_step
-    (proc_report_step
-      options: (report_options
-        (report_option
-          (report_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier)))
       body: (proc_body
         (report_column_statement
@@ -77,9 +83,10 @@ run;
           (if_statement
             condition: (binary_expression
               left: (identifier)
+              operator: (comparison_operator)
               right: (number))
             consequence: (call_statement
-              (identifier)
+              name: (identifier)
               (identifier)
               (quoted_string
                 (single_quoted_string))
@@ -99,10 +106,13 @@ run;
 
 (source_file
   (proc_step
-    (proc_report_step
-      options: (report_options
-        (report_option
-          (report_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier))))

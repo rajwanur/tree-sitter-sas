@@ -7,21 +7,27 @@ run;
 
 (source_file
   (proc_step
-    (proc_standard_step
-      options: (standard_options
-        (standard_option
-          (standard_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (standard_option
-          (standard_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (number))
-        (standard_option
-          (standard_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (number))
-        (standard_option
-          (standard_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))))))
 
 ================================================================================
@@ -33,19 +39,28 @@ quit;
 
 (source_file
   (proc_step
-    (proc_standard_step
-      options: (standard_options
-        (standard_option
-          (standard_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (standard_option
-          (standard_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (number))
-        (standard_option
-          (standard_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (number))
-        (standard_option_flag)
-        (standard_option_flag)))))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))))))
 
 ================================================================================
 PROC STANDARD single-letter shorthand value-options (m=, s=)
@@ -56,16 +71,21 @@ run;
 
 (source_file
   (proc_step
-    (proc_standard_step
-      options: (standard_options
-        (standard_option
-          (standard_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (standard_option
-          (standard_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (number))
-        (standard_option
-          (standard_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (number))))))
 
 ================================================================================
@@ -77,20 +97,31 @@ run;
 
 (source_file
   (proc_step
-    (proc_standard_step
-      options: (standard_options
-        (standard_option
-          (standard_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (standard_option
-          (standard_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (standard_option
-          (standard_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (standard_option_flag)
-        (standard_option_flag)
-        (standard_option_flag)))))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))))))
 
 ================================================================================
 PROC STANDARD no options (bare header)
@@ -101,4 +132,6 @@ run;
 
 (source_file
   (proc_step
-    (proc_standard_step)))
+    (proc_generic_step
+      (proc_name
+        (identifier)))))

@@ -43,10 +43,10 @@ User macro call inside a macro body (G-03 Phase 1)
     (identifier)
     (macro_statement
       (macro_call_statement
-        (identifier)
-        (macro_expression
+        (macro_call_name)
+        (macro_param_text
           (number))
-        (macro_expression
+        (macro_param_text
           (number))))
     (identifier)))
 
@@ -83,8 +83,8 @@ Nested macro definition + call (G-03 Phase 1)
         (identifier)))
     (macro_statement
       (macro_call_statement
-        (identifier)
-        (macro_expression
+        (macro_call_name)
+        (macro_param_text
           (identifier))))
     (identifier)))
 
@@ -102,7 +102,6 @@ Nested macro definition + call (G-03 Phase 1)
       (macro_text_token)))
   (macro_put_statement
     (macro_text
-      (macro_text_token)
       (macro_variable_reference
         (identifier)))))
 
@@ -261,10 +260,13 @@ run;
 
 (source_file
   (proc_step
-    (proc_sort_step
-      (sort_options
-        (sort_option
-          (sort_option_key)
+    (proc_generic_step
+      (proc_name
+        (identifier))
+      (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier)))
       (proc_body
         (by_statement
@@ -311,16 +313,21 @@ run;
 
 (source_file
   (proc_step
-    (proc_means_step
-      (means_options
-        (means_option
-          (means_option_key)
+    (proc_generic_step
+      (proc_name
+        (identifier))
+      (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier)))
       (proc_body
-        (means_class_statement
+        (proc_statement
+          (proc_statement_keyword)
           (macro_variable_reference
             (identifier)))
-        (tabulate_var_statement
+        (proc_statement
+          (proc_statement_keyword)
           (identifier))))))
 
 ================================================================================
@@ -344,33 +351,38 @@ Keyword parameters with space-list and %str() defaults (G-06 Phase 4)
       (macro_parameter
         (identifier)
         (macro_parameter_default
-          (macro_param_text
-            (macro_param_text_token))))
+          (macro_param_value
+            (identifier)
+            (macro_param_punct)
+            (identifier))))
       (macro_parameter
         (identifier)
         (macro_parameter_default
-          (macro_param_text
-            (macro_param_text_token))))
+          (macro_param_value
+            (identifier)
+            (identifier)
+            (identifier)
+            (identifier)
+            (identifier))))
       (macro_parameter
         (identifier)
         (macro_parameter_default
-          (macro_param_text
-            (macro_param_text_token)
-            (macro_quoting_function))))
+          (macro_param_value
+            (macro_quoting_function
+              (macro_function_name)))))
       (macro_parameter
         (identifier)
         (macro_parameter_default
-          (macro_param_text
-            (macro_param_text_token))))
+          (macro_param_value
+            (number))))
       (macro_parameter
         (identifier)
         (macro_parameter_default
-          (macro_param_text
-            (macro_param_text_token)))))
+          (macro_param_value
+            (identifier)))))
     (macro_statement
       (macro_put_statement
         (macro_text
-          (macro_text_token)
           (macro_variable_reference
             (identifier)))))
     (identifier)))
@@ -394,26 +406,25 @@ Positional + keyword params with default (G-06 Phase 4)
       (macro_parameter
         (identifier)
         (macro_parameter_default
-          (macro_param_text
-            (macro_param_text_token))))
+          (macro_param_value
+            (identifier)
+            (identifier)
+            (identifier))))
       (macro_parameter
         (identifier)
         (macro_parameter_default
-          (macro_param_text
-            (macro_quoting_function)))))
+          (macro_param_value
+            (macro_quoting_function
+              (macro_function_name))))))
     (macro_statement
       (macro_put_statement
         (macro_text
-          (macro_text_token)
           (macro_variable_reference
             (identifier))
-          (macro_text_token)
           (macro_variable_reference
             (identifier))
-          (macro_text_token)
           (macro_variable_reference
             (identifier))
-          (macro_text_token)
           (macro_variable_reference
             (identifier)))))
     (identifier)))

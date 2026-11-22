@@ -8,16 +8,21 @@ run;
 
 (source_file
   (proc_step
-    (proc_copy_step
-      options: (copy_options
-        (copy_option
-          (copy_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (copy_option
-          (copy_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (copy_option
-          (copy_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier)))
       body: (proc_body
         (sql_select_statement
@@ -34,18 +39,30 @@ run;
 
 (source_file
   (proc_step
-    (proc_copy_step
-      options: (copy_options
-        (copy_option
-          (copy_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (copy_option
-          (copy_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (copy_option_flag)
-        (copy_option_flag)
-        (copy_option_flag)
-        (copy_option_flag)))))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))))))
 
 ================================================================================
 PROC COPY with no options
@@ -56,7 +73,9 @@ run;
 
 (source_file
   (proc_step
-    (proc_copy_step)))
+    (proc_generic_step
+      (proc_name
+        (identifier)))))
 
 ================================================================================
 PROC COPY with unknown option key (linter fallback)
@@ -67,9 +86,11 @@ run;
 
 (source_file
   (proc_step
-    (proc_copy_step
-      options: (copy_options
-        (copy_option
-          (copy_option_key
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
             (identifier))
           (identifier))))))

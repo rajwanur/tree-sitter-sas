@@ -7,13 +7,19 @@ quit;
 
 (source_file
   (proc_step
-    (proc_datasets_step
-      options: (datasets_options
-        (datasets_option
-          (datasets_option_key)
+    (proc_generic_step
+      name: (proc_name)
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (datasets_option_flag)
-        (datasets_option_flag)))))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))))))
 
 ================================================================================
 PROC DATASETS comprehensive value-options
@@ -24,46 +30,68 @@ run;
 
 (source_file
   (proc_step
-    (proc_datasets_step
-      options: (datasets_options
-        (datasets_option
-          (datasets_option_key)
+    (proc_generic_step
+      name: (proc_name)
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (datasets_option
-          (datasets_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (datasets_option
-          (datasets_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (number))
-        (datasets_option
-          (datasets_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (datasets_option
-          (datasets_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (datasets_option
-          (datasets_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (datasets_option
-          (datasets_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (datasets_option
-          (datasets_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (datasets_option
-          (datasets_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (datasets_option
-          (datasets_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (datasets_option
-          (datasets_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (datasets_option_flag)
-        (datasets_option_flag)
-        (datasets_option_flag)
-        (datasets_option_flag)
-        (datasets_option_flag)))))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))))))
 
 ================================================================================
 PROC DATASETS header options + body statements (contents/delete/change/modify/save)
@@ -80,25 +108,33 @@ quit;
 
 (source_file
   (proc_step
-    (proc_datasets_step
-      options: (datasets_options
-        (datasets_option
-          (datasets_option_key)
+    (proc_generic_step
+      name: (proc_name)
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (datasets_option_flag))
+        (proc_option_flag
+          (proc_option_key
+            (identifier))))
       body: (proc_body
-        (datasets_contents_statement
+        (proc_statement
+          keyword: (proc_statement_keyword)
+          (identifier)
           (identifier))
-        (datasets_delete_statement
+        (delete_statement
           (identifier))
-        (datasets_change_statement
+        (proc_statement
+          keyword: (proc_statement_keyword)
           (identifier)
           (identifier))
         (datasets_modify_statement
           (identifier)
           (identifier)
           (identifier))
-        (datasets_save_statement
+        (proc_statement
+          keyword: (proc_statement_keyword)
           (identifier))))))
 
 ================================================================================
@@ -110,13 +146,15 @@ run;
 
 (source_file
   (proc_step
-    (proc_datasets_step
-      options: (datasets_options
-        (datasets_option
-          (datasets_option_key)
+    (proc_generic_step
+      name: (proc_name)
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (datasets_option
-          (datasets_option_key
+        (proc_option
+          (proc_option_key
             (identifier))
           (identifier))))))
 
@@ -132,14 +170,19 @@ quit;
 
 (source_file
   (proc_step
-    (proc_datasets_step
-      options: (datasets_options
-        (datasets_option
-          (datasets_option_key)
+    (proc_generic_step
+      name: (proc_name)
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (datasets_option_flag))
+        (proc_option_flag
+          (proc_option_key
+            (identifier))))
       body: (proc_body
-        (datasets_nolist_statement)
-        (datasets_copy_statement
+        (proc_statement
+          keyword: (proc_statement_keyword))
+        (copy_statement
           (identifier)
           (identifier))))))

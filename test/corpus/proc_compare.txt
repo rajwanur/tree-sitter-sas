@@ -9,23 +9,29 @@ run;
 
 (source_file
   (proc_step
-    (proc_compare_step
-      options: (compare_options
-        (compare_option
-          (compare_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (compare_option
-          (compare_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier))))
       body: (proc_body
-        (tabulate_var_statement
+        (proc_statement
+          keyword: (proc_statement_keyword)
           (identifier)
           (identifier))
-        (compare_with_statement
+        (proc_statement
+          keyword: (proc_statement_keyword)
           (identifier)
           (identifier))))))
 
@@ -38,22 +44,25 @@ run;
 
 (source_file
   (proc_step
-    (proc_compare_step
-      options: (compare_options
-        (compare_option
-          (compare_option_key
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
             (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (compare_option
-          (compare_option_key
+        (proc_option
+          (proc_option_key
             (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (compare_option
-          (compare_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))))))
 
 ================================================================================
@@ -65,38 +74,49 @@ run;
 
 (source_file
   (proc_step
-    (proc_compare_step
-      options: (compare_options
-        (compare_option
-          (compare_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (compare_option
-          (compare_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (compare_option
-          (compare_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (number))
-        (compare_option
-          (compare_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (number))
-        (compare_option
-          (compare_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (number))
-        (compare_option
-          (compare_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (number))
-        (compare_option
-          (compare_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (compare_option
-          (compare_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (compare_option
-          (compare_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))))))
@@ -110,38 +130,91 @@ run;
 
 (source_file
   (proc_step
-    (proc_compare_step
-      options: (compare_options
-        (compare_option
-          (compare_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)))))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))))))
 
 ================================================================================
 PROC COMPARE no*/stats*/trans/warn family flags
@@ -152,34 +225,79 @@ run;
 
 (source_file
   (proc_step
-    (proc_compare_step
-      options: (compare_options
-        (compare_option
-          (compare_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)
-        (compare_option_flag)))))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))))))
 
 ================================================================================
 PROC COMPARE header + body statements (id/var/with/out-noequal/out-base preserved)
@@ -195,34 +313,44 @@ run;
 
 (source_file
   (proc_step
-    (proc_compare_step
-      options: (compare_options
-        (compare_option
-          (compare_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (compare_option
-          (compare_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (compare_option
-          (compare_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier))))
       body: (proc_body
-        (means_id_statement
+        (proc_statement
+          keyword: (proc_statement_keyword)
           (identifier))
-        (tabulate_var_statement
+        (proc_statement
+          keyword: (proc_statement_keyword)
           (identifier)
           (identifier))
-        (compare_with_statement
+        (proc_statement
+          keyword: (proc_statement_keyword)
           (identifier)
           (identifier))
-        (compare_flag_statement)
-        (compare_flag_statement)))))
+        (proc_statement
+          keyword: (proc_statement_keyword))
+        (proc_statement
+          keyword: (proc_statement_keyword))))))
 
 ================================================================================
 PROC COMPARE no options (bare header)
@@ -233,4 +361,6 @@ run;
 
 (source_file
   (proc_step
-    (proc_compare_step)))
+    (proc_generic_step
+      (proc_name
+        (identifier)))))

@@ -8,7 +8,9 @@ quit;
 
 (source_file
   (proc_step
-    (proc_sql_step
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -29,7 +31,9 @@ quit;
 
 (source_file
   (proc_step
-    (proc_sql_step
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -42,6 +46,7 @@ quit;
             (sql_expression
               (binary_expression
                 left: (identifier)
+                operator: (comparison_operator)
                 right: (number)))))))))
 
 ================================================================================
@@ -54,7 +59,9 @@ quit;
 
 (source_file
   (proc_step
-    (proc_sql_step
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -80,7 +87,9 @@ quit;
 
 (source_file
   (proc_step
-    (proc_sql_step
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -95,6 +104,7 @@ quit;
             (sql_expression
               (binary_expression
                 left: (identifier)
+                operator: (comparison_operator)
                 right: (number)))))))))
 
 ================================================================================
@@ -107,7 +117,9 @@ quit;
 
 (source_file
   (proc_step
-    (proc_sql_step
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -129,7 +141,9 @@ quit;
 
 (source_file
   (proc_step
-    (proc_sql_step
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
       body: (proc_body
         (sql_create_table
           (identifier)
@@ -149,7 +163,9 @@ quit;
 
 (source_file
   (proc_step
-    (proc_sql_step
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
       body: (proc_body
         (sql_create_view
           (identifier)
@@ -169,7 +185,9 @@ quit;
 
 (source_file
   (proc_step
-    (proc_sql_step
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
       body: (proc_body
         (sql_insert_into
           (identifier)
@@ -186,7 +204,9 @@ quit;
 
 (source_file
   (proc_step
-    (proc_sql_step
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -203,6 +223,7 @@ quit;
             (sql_expression
               (binary_expression
                 left: (identifier)
+                operator: (comparison_operator)
                 right: (number)))))))))
 
 ================================================================================
@@ -215,7 +236,9 @@ quit;
 
 (source_file
   (proc_step
-    (proc_sql_step
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -247,13 +270,15 @@ quit;
 
 (source_file
   (proc_step
-    (proc_sql_step
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
       body: (proc_body
         (sql_select_statement
           (sql_select_list
             (sql_expression
-              (identifier)
-              (identifier)))
+              (identifier))
+            (identifier))
           (sql_from_clause
             (sql_table_ref
               (identifier))))))))
@@ -268,7 +293,9 @@ quit;
 
 (source_file
   (proc_step
-    (proc_sql_step
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
       body: (proc_body
         (sql_drop_statement
           (identifier))))))
@@ -283,7 +310,9 @@ quit;
 
 (source_file
   (proc_step
-    (proc_sql_step
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
       body: (proc_body
         (sql_disconnect
           (identifier))))))
@@ -298,7 +327,9 @@ quit;
 
 (source_file
   (proc_step
-    (proc_sql_step
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
       body: (proc_body
         (sql_reset
           (identifier))))))
@@ -313,7 +344,9 @@ quit;
 
 (source_file
   (proc_step
-    (proc_sql_step
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -335,7 +368,9 @@ quit;
 
 (source_file
   (proc_step
-    (proc_sql_step
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -361,7 +396,9 @@ quit;
 
 (source_file
   (proc_step
-    (proc_sql_step
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -386,17 +423,20 @@ quit;
 
 (source_file
   (proc_step
-    (proc_sql_step
-      options: (sql_options
-        (sql_option
-          (sql_option_key)))
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option_flag
+          (proc_option_key
+            (identifier))))
       body: (proc_body
         (sql_select_statement
           (sql_select_list
             (sql_expression
               (function_call
-                name: (identifier))
-              (identifier)))
+                name: (identifier)))
+            (identifier))
           (sql_into_clause
             (identifier)
             (quoted_string
@@ -409,6 +449,7 @@ quit;
               (binary_expression
                 left: (function_call
                   name: (identifier))
+                operator: (comparison_operator)
                 right: (number)))))))))
 
 ================================================================================
@@ -422,7 +463,9 @@ quit;
 
 (source_file
   (proc_step
-    (proc_sql_step
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
       body: (proc_body
         (sql_select_statement
           (sql_select_list
@@ -431,6 +474,7 @@ quit;
                 (sql_expression
                   (binary_expression
                     left: (identifier)
+                    operator: (comparison_operator)
                     right: (number)))
                 (sql_expression
                   (quoted_string
@@ -446,6 +490,7 @@ quit;
             (sql_expression
               (binary_expression
                 left: (identifier)
+                operator: (comparison_operator)
                 right: (parenthesized_expression
                   (sql_select_list
                     (sql_expression

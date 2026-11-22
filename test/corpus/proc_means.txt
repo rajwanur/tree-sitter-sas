@@ -7,10 +7,13 @@ run;
 
 (source_file
   (proc_step
-    (proc_means_step
-      options: (means_options
-        (means_option
-          (means_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))))))
 
 ================================================================================
@@ -23,13 +26,17 @@ run;
 
 (source_file
   (proc_step
-    (proc_means_step
-      options: (means_options
-        (means_option
-          (means_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier)))
       body: (proc_body
-        (tabulate_var_statement
+        (proc_statement
+          keyword: (proc_statement_keyword)
           (identifier)
           (identifier))))))
 
@@ -44,13 +51,17 @@ run;
 
 (source_file
   (proc_step
-    (proc_means_step
-      options: (means_options
-        (means_option
-          (means_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier)))
       body: (proc_body
-        (means_class_statement
+        (proc_statement
+          keyword: (proc_statement_keyword)
           (identifier))
         (by_statement
           (identifier))))))
@@ -66,15 +77,19 @@ run;
 
 (source_file
   (proc_step
-    (proc_means_step
-      options: (means_options
-        (means_option
-          (means_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier)))
       body: (proc_body
-        (tabulate_var_statement
+        (proc_statement
+          keyword: (proc_statement_keyword)
           (identifier))
-        (freq_output_statement
+        (proc_output_statement
           (data_reference
             (identifier))
           (identifier)
@@ -96,12 +111,14 @@ run;
         (identifier))
       options: (proc_options
         (proc_option
-          (proc_option_key)
+          (proc_option_key
+            (identifier))
           (identifier)))
       body: (proc_body
-        (tabulate_var_statement
+        (proc_statement
+          keyword: (proc_statement_keyword)
           (identifier))
-        (means_output_statement
+        (proc_output_statement
           (data_reference
             (identifier)))))))
 
@@ -114,27 +131,35 @@ run;
 
 (source_file
   (proc_step
-    (proc_means_step
-      options: (means_options
-        (means_option
-          (means_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (means_option
-          (means_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (number))
-        (means_option
-          (means_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (number))
-        (means_option
-          (means_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (number))
-        (means_option
-          (means_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (means_option
-          (means_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))))))
 
 ================================================================================
@@ -146,31 +171,44 @@ run;
 
 (source_file
   (proc_step
-    (proc_means_step
-      options: (means_options
-        (means_option
-          (means_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (means_option
-          (means_option_key))
-        (means_option
-          (means_option_key))
-        (means_option
-          (means_option_key))
-        (means_option
-          (means_option_key))
-        (means_option
-          (means_option_key))
-        (means_option
-          (means_option_key))
-        (means_option
-          (means_option_key))
-        (means_option
-          (means_option_key))
-        (means_option
-          (means_option_key))
-        (means_option
-          (means_option_key))))))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))))))
 
 ================================================================================
 PROC MEANS percentiles (p1/p10/p25/p50/p75/p99 longest-match)
@@ -181,31 +219,44 @@ run;
 
 (source_file
   (proc_step
-    (proc_means_step
-      options: (means_options
-        (means_option
-          (means_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (means_option
-          (means_option_key))
-        (means_option
-          (means_option_key))
-        (means_option
-          (means_option_key))
-        (means_option
-          (means_option_key))
-        (means_option
-          (means_option_key))
-        (means_option
-          (means_option_key))
-        (means_option
-          (means_option_key))
-        (means_option
-          (means_option_key))
-        (means_option
-          (means_option_key))
-        (means_option
-          (means_option_key))))))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))))))
 
 ================================================================================
 PROC MEANS boolean flags (noprint/missing/nway/exclnpwgt/nothreads/threads/print)
@@ -216,15 +267,32 @@ run;
 
 (source_file
   (proc_step
-    (proc_means_step
-      options: (means_options
-        (means_option
-          (means_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (means_option_flag)
-        (means_option_flag)
-        (means_option_flag)
-        (means_option_flag)
-        (means_option_flag)
-        (means_option_flag)
-        (means_option_flag)))))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))))))

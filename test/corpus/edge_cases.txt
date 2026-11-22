@@ -193,6 +193,7 @@ Run;
     (where_statement
       (binary_expression
         left: (identifier)
+        operator: (comparison_operator)
         right: (number)))))
 
 ================================================================================
@@ -293,3 +294,55 @@ run;
     (assignment_statement
       target: (identifier)
       value: (number))))
+
+================================================================================
+INFILE statement with options
+================================================================================
+data a;
+  infile 'x.csv' dlm=',' dsd firstobs=2;
+  input x y;
+run;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (infile_statement
+      (quoted_string
+        (single_quoted_string))
+      (proc_option
+        (proc_option_key
+          (identifier))
+        (quoted_string
+          (single_quoted_string)))
+      (proc_option_flag
+        (proc_option_key
+          (identifier)))
+      (proc_option
+        (proc_option_key
+          (identifier))
+        (number)))
+    (input_statement
+      (identifier)
+      (identifier))))
+
+================================================================================
+FILE statement with options
+================================================================================
+data a;
+  file print;
+  put x;
+run;
+
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    name: (data_name
+      (identifier))
+    (file_statement
+      (identifier))
+    (put_statement
+      (identifier))))

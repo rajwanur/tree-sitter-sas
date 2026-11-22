@@ -1,0 +1,1032 @@
+================================================================================
+Prefix-collision identifiers do not split on keyword prefixes
+================================================================================
+data work.prefix_check;
+  set work.in_src(keep=end_var set_var where_var select_var LBCAT src dbms dlm dsd dow running_total order);
+  end_var = 1;
+  set_var = 2;
+  where_var = 3;
+  select_var = 4;
+  endlayout = 5;
+  LBCAT = 'CHEM';
+  src = 'A';
+  dbms = 'CSV';
+  dlm = ',';
+  dsd = 1;
+  dow = 7;
+  running_total = end_var + order;
+run;
+%macro do_analysis;
+  %do_analysis;
+%mend do_analysis;
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    (data_name
+      (identifier)
+      (identifier))
+    (set_statement
+      (data_reference
+        (identifier)
+        (identifier)
+        (data_set_option
+          (data_set_option_key
+            (identifier))
+          (identifier)
+          (data_set_option_key
+            (identifier))
+          (data_set_option_key
+            (identifier))
+          (data_set_option_key
+            (identifier))
+          (data_set_option_key
+            (identifier))
+          (data_set_option_key
+            (identifier))
+          (data_set_option_key
+            (identifier))
+          (data_set_option_key
+            (identifier))
+          (data_set_option_key
+            (identifier))
+          (data_set_option_key
+            (identifier))
+          (data_set_option_key
+            (identifier))
+          (data_set_option_key
+            (identifier)))))
+    (assignment_statement
+      (identifier)
+      (number))
+    (assignment_statement
+      (identifier)
+      (number))
+    (assignment_statement
+      (identifier)
+      (number))
+    (assignment_statement
+      (identifier)
+      (number))
+    (assignment_statement
+      (identifier)
+      (number))
+    (assignment_statement
+      (identifier)
+      (quoted_string
+        (single_quoted_string)))
+    (assignment_statement
+      (identifier)
+      (quoted_string
+        (single_quoted_string)))
+    (assignment_statement
+      (identifier)
+      (quoted_string
+        (single_quoted_string)))
+    (assignment_statement
+      (identifier)
+      (quoted_string
+        (single_quoted_string)))
+    (assignment_statement
+      (identifier)
+      (number))
+    (assignment_statement
+      (identifier)
+      (number))
+    (assignment_statement
+      (identifier)
+      (binary_expression
+        (identifier)
+        (identifier))))
+  (macro_definition
+    (identifier)
+    (macro_statement
+      (macro_call_statement
+        (macro_call_name)))
+    (identifier)))
+
+================================================================================
+Keyword-named assignment targets, X statement vs variable X, and function calls
+================================================================================
+data work.kw_vars;
+  format = 'best12.';
+  length = 12;
+  label = 'desc';
+  set = 99;
+  select = 1;
+  where = 2;
+  x = 'hello';
+  y = format(123, best.);
+  z = length(x);
+run;
+x 'ls -la';
+X "echo hi";
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    (data_name
+      (identifier)
+      (identifier))
+    (assignment_statement
+      (identifier)
+      (quoted_string
+        (single_quoted_string)))
+    (assignment_statement
+      (identifier)
+      (number))
+    (assignment_statement
+      (identifier)
+      (quoted_string
+        (single_quoted_string)))
+    (assignment_statement
+      (identifier)
+      (number))
+    (assignment_statement
+      (identifier)
+      (number))
+    (assignment_statement
+      (identifier)
+      (number))
+    (assignment_statement
+      (identifier)
+      (quoted_string
+        (single_quoted_string)))
+    (assignment_statement
+      (identifier)
+      (function_call
+        (identifier)
+        (number)
+        (format_specifier)))
+    (assignment_statement
+      (identifier)
+      (function_call
+        (identifier)
+        (identifier))))
+  (global_statement
+    (x_statement))
+  (global_statement
+    (x_statement)))
+
+================================================================================
+Uppercase SAS, SQL COUNT(DISTINCT), and macro keywords
+================================================================================
+DATA WORK.OUT;
+  SET WORK.IN;
+  LENGTH X 8;
+RUN;
+PROC SQL;
+  SELECT COUNT(DISTINCT USUBJID) INTO :NSUBJ TRIMMED
+  FROM WORK.OUT
+  WHERE AGE >= 18;
+QUIT;
+%MACRO UPPER_M(N=3);
+  %DO I = 1 %TO &N;
+    %PUT &I;
+  %END;
+%MEND UPPER_M;
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    (data_name
+      (identifier)
+      (identifier))
+    (set_statement
+      (data_reference
+        (identifier)
+        (identifier)))
+    (length_statement
+      (identifier)
+      (number)))
+  (proc_step
+    (proc_generic_step
+      (proc_name
+        (identifier))
+      (proc_body
+        (sql_select_statement
+          (sql_select_list
+            (sql_expression
+              (function_call
+                (identifier)
+                (identifier))))
+          (sql_into_clause
+            (identifier))
+          (sql_from_clause
+            (sql_table_ref
+              (identifier)
+              (identifier)))
+          (sql_where_clause
+            (sql_expression
+              (binary_expression
+                (identifier)
+                (comparison_operator)
+                (number))))))))
+  (macro_definition
+    (identifier)
+    (macro_parameters
+      (macro_parameter
+        (identifier)
+        (macro_parameter_default
+          (macro_param_value
+            (number)))))
+    (macro_statement
+      (macro_do_block
+        (identifier)
+        (macro_expression
+          (number))
+        (macro_expression
+          (macro_variable_reference
+            (identifier)))
+        (macro_statement
+          (macro_put_statement
+            (macro_text
+              (macro_variable_reference
+                (identifier)))))))
+    (identifier)))
+
+================================================================================
+DATA step expressions, operators, subsetting IF, OF lists, and prefix lists
+================================================================================
+data work.expr_ops;
+  set work.in;
+  if flag = 'Y';
+  if a in ('X', 'Y') and b not in (1, 2);
+  if name =: 'SUB' or grp in: ('A', 'B');
+  full = trim(first) || ' ' !! last;
+  hi = a <> b;
+  lo = a >< b;
+  total = sum(of x1-x10);
+  keep x:;
+  where x between 1 and 10 and y is not missing;
+run;
+proc datasets lib=work nolist;
+  delete ___log:;
+quit;
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    (data_name
+      (identifier)
+      (identifier))
+    (set_statement
+      (data_reference
+        (identifier)
+        (identifier)))
+    (if_statement
+      (binary_expression
+        (identifier)
+        (quoted_string
+          (single_quoted_string))))
+    (if_statement
+      (binary_expression
+        (binary_expression
+          (binary_expression
+            (identifier)
+            (in_list
+              (quoted_string
+                (single_quoted_string))
+              (quoted_string
+                (single_quoted_string))))
+          (identifier))
+        (in_list
+          (number)
+          (number))))
+    (if_statement
+      (binary_expression
+        (binary_expression
+          (binary_expression
+            (identifier)
+            (comparison_operator)
+            (quoted_string
+              (single_quoted_string)))
+          (identifier))
+        (in_list
+          (quoted_string
+            (single_quoted_string))
+          (quoted_string
+            (single_quoted_string)))))
+    (assignment_statement
+      (identifier)
+      (binary_expression
+        (binary_expression
+          (function_call
+            (identifier)
+            (identifier))
+          (quoted_string
+            (single_quoted_string)))
+        (identifier)))
+    (assignment_statement
+      (identifier)
+      (binary_expression
+        (identifier)
+        (identifier)))
+    (assignment_statement
+      (identifier)
+      (binary_expression
+        (identifier)
+        (identifier)))
+    (assignment_statement
+      (identifier)
+      (function_call
+        (identifier)
+        (var_range
+          (identifier)
+          (identifier))))
+    (keep_statement
+      (prefix_list
+        (identifier)))
+    (where_statement
+      (binary_expression
+        (binary_expression
+          (identifier)
+          (binary_expression
+            (number)
+            (number))
+          (identifier)))))
+  (proc_step
+    (proc_generic_step
+      (proc_name)
+      (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
+          (identifier))
+        (proc_option_flag
+          (proc_option_key
+            (identifier))))
+      (proc_body
+        (delete_statement
+          (prefix_list
+            (identifier)))))))
+
+================================================================================
+Literals, nested block comments, macro comments before %else, line comments before else
+================================================================================
+data work.lit_cmts;
+  dt = '01JAN2024'd;
+  tm = '12:30:00't;
+  dttm = '01JAN2024:12:30:00'dt;
+  hx = '4142'x;
+  /* outer /* inner comment */ back to outer */
+  if x = 1 then y = 1;
+  ** comment before else if;
+  else if x = 2 then y = 2;
+  else y = 3;
+run;
+%macro cmt_else(flag);
+  %if &flag = 1 %then %do;
+    %put yes;
+  %end;
+  %* macro comment between end and else;
+  %else %do;
+    %put no;
+  %end;
+%mend cmt_else;
+--------------------------------------------------------------------------------
+
+(source_file
+  (data_step
+    (data_name
+      (identifier)
+      (identifier))
+    (assignment_statement
+      (identifier)
+      (date_literal))
+    (assignment_statement
+      (identifier)
+      (time_literal))
+    (assignment_statement
+      (identifier)
+      (datetime_literal))
+    (assignment_statement
+      (identifier)
+      (hex_literal))
+    (block_comment)
+    (if_statement
+      (binary_expression
+        (identifier)
+        (number))
+      (assignment_statement
+        (identifier)
+        (number))
+      (line_comment)
+      (if_statement
+        (binary_expression
+          (identifier)
+          (number))
+        (assignment_statement
+          (identifier)
+          (number))
+        (assignment_statement
+          (identifier)
+          (number)))))
+  (macro_definition
+    (identifier)
+    (macro_parameters
+      (macro_parameter
+        (identifier)))
+    (macro_statement
+      (macro_if_statement
+        (macro_expression
+          (macro_binary_expression
+            (macro_expression
+              (macro_variable_reference
+                (identifier)))
+            (macro_expression
+              (number))))
+        (macro_statement
+          (macro_do_block
+            (macro_statement
+              (macro_put_statement
+                (macro_text
+                  (macro_text_token))))))
+        (macro_comment)
+        (macro_statement
+          (macro_do_block
+            (macro_statement
+              (macro_put_statement
+                (macro_text
+                  (macro_text_token))))))))
+    (identifier)))
+
+================================================================================
+DATA and PROC steps inside %macro, %do, and %if
+================================================================================
+%macro build_steps(n=2);
+  %if &n > 0 %then %do i = 1 %to &n;
+    data work.ds_&i;
+      set work.src;
+      iter = &i;
+    run;
+    proc sort data=work.ds_&i;
+      by usubjid;
+    run;
+  %end;
+%mend build_steps;
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    (identifier)
+    (macro_parameters
+      (macro_parameter
+        (identifier)
+        (macro_parameter_default
+          (macro_param_value
+            (number)))))
+    (macro_statement
+      (macro_if_statement
+        (macro_expression
+          (macro_binary_expression
+            (macro_expression
+              (macro_variable_reference
+                (identifier)))
+            (comparison_operator)
+            (macro_expression
+              (number))))
+        (macro_statement
+          (macro_do_block
+            (identifier)
+            (macro_expression
+              (number))
+            (macro_expression
+              (macro_variable_reference
+                (identifier)))
+            (data_step
+              (data_name
+                (identifier)
+                (macro_compound_name
+                  (identifier)
+                  (macro_variable_reference
+                    (identifier))))
+              (set_statement
+                (data_reference
+                  (identifier)
+                  (identifier)))
+              (assignment_statement
+                (identifier)
+                (macro_variable_reference
+                  (identifier))))
+            (proc_step
+              (proc_generic_step
+                (proc_name
+                  (identifier))
+                (proc_options
+                  (proc_option
+                    (proc_option_key
+                      (identifier))
+                    (dotted_identifier
+                      (identifier)
+                      (macro_compound_name
+                        (identifier)
+                        (macro_variable_reference
+                          (identifier))))))
+                (proc_body
+                  (by_statement
+                    (identifier)))))))))
+    (identifier)))
+
+================================================================================
+Compound macro names and indirect references
+================================================================================
+%macro indirect(i=1);
+  data work._cont_&i;
+    cnt&___max. = 1;
+    val = symget(cats('col_', &i));
+  run;
+  %put NOTE: &&cat_&i;
+%mend indirect;
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    (identifier)
+    (macro_parameters
+      (macro_parameter
+        (identifier)
+        (macro_parameter_default
+          (macro_param_value
+            (number)))))
+    (data_step
+      (data_name
+        (identifier)
+        (macro_compound_name
+          (identifier)
+          (macro_variable_reference
+            (identifier))))
+      (assignment_statement
+        (macro_compound_name
+          (identifier)
+          (macro_variable_reference
+            (identifier)))
+        (number))
+      (assignment_statement
+        (identifier)
+        (function_call
+          (identifier)
+          (function_call
+            (identifier)
+            (quoted_string
+              (single_quoted_string))
+            (macro_variable_reference
+              (identifier))))))
+    (macro_statement
+      (macro_put_statement
+        (macro_text
+          (macro_text_token)
+          (macro_variable_reference
+            (identifier))
+          (macro_variable_reference
+            (identifier)))))
+    (identifier)))
+
+================================================================================
+Macro labels, %goto, %return, %symdel, / parmbuff, and empty %if comparison
+================================================================================
+%macro ctrl / parmbuff;
+  %local rc;
+  %if &syspbuff = %then %do;
+    %goto err_exit;
+  %end;
+  %put OK: &syspbuff;
+  %return;
+%err_exit:
+  %put ERROR: missing args;
+  %symdel rc / nowarn;
+%mend ctrl;
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    (identifier)
+    (identifier)
+    (macro_statement
+      (macro_local_statement
+        (identifier)))
+    (macro_statement
+      (macro_if_statement
+        (macro_expression
+          (macro_binary_expression
+            (macro_expression
+              (macro_variable_reference
+                (identifier)))))
+        (macro_statement
+          (macro_do_block
+            (macro_statement
+              (macro_goto_statement
+                (identifier)))))))
+    (macro_statement
+      (macro_put_statement
+        (macro_text
+          (macro_text_token)
+          (macro_variable_reference
+            (identifier)))))
+    (macro_statement
+      (macro_return_statement))
+    (macro_statement
+      (macro_label_statement
+        (macro_call_name)))
+    (macro_statement
+      (macro_put_statement
+        (macro_text
+          (macro_text_token))))
+    (macro_statement
+      (macro_symdel_statement
+        (identifier)
+        (identifier)))
+    (identifier)))
+
+================================================================================
+Macro quoting %bquote(50% > 25%), %symget(cats), and nested %sysfunc(dosubl(%str))
+================================================================================
+%macro quote_suite(i=1);
+  %put NOTE: %bquote(50% > 25%);
+  %let v = %symget(cats('row_', &i));
+  %let rc = %sysfunc(dosubl(%str(
+    proc sql noprint;
+      select count(*) into :nobs from work.adsl;
+    quit;
+  )));
+%mend quote_suite;
+--------------------------------------------------------------------------------
+
+(source_file
+  (macro_definition
+    (identifier)
+    (macro_parameters
+      (macro_parameter
+        (identifier)
+        (macro_parameter_default
+          (macro_param_value
+            (number)))))
+    (macro_statement
+      (macro_put_statement
+        (macro_text
+          (macro_text_token)
+          (macro_quoting_function
+            (macro_function_name)
+            (macro_quoted_text
+              (macro_quoted_text_token)
+              (macro_quoted_text_token))))))
+    (macro_statement
+      (macro_let_statement
+        (identifier)
+        (macro_text
+          (macro_function_call
+            (macro_function_name)
+            (macro_param_value
+              (identifier)
+              (quoted_string
+                (single_quoted_string))
+              (macro_variable_reference
+                (identifier)))))))
+    (macro_statement
+      (macro_let_statement
+        (identifier)
+        (macro_text
+          (macro_function_call
+            (macro_function_name)
+            (function_call
+              (identifier)
+              (macro_param_value
+                (macro_quoting_function
+                  (macro_function_name)
+                  (macro_quoted_text
+                    (macro_quoted_text_token)
+                    (macro_quoted_text
+                      (macro_quoted_text_token))
+                    (macro_quoted_text_token)))))))))
+    (identifier)))
+
+================================================================================
+PROC DATASETS multi-RUN, PROC FORMAT with %do, and PROC REPORT style units
+================================================================================
+proc datasets lib=work memtype=data nolist;
+  delete a b;
+run;
+  modify c;
+  rename x = y;
+run;
+quit;
+proc format;
+  value subjfmt
+  %do i = 1 %to 3;
+    &i = "Subj &i"
+  %end;
+    other = 'Other';
+run;
+proc report data=work.tfl nowd;
+  column trt val;
+  define trt / group style(column)=[cellwidth=1.5in just=l];
+  define val / analysis mean style(header)=[cellwidth=2in];
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_generic_step
+      (proc_name)
+      (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
+          (identifier))
+        (proc_option
+          (proc_option_key
+            (identifier))
+          (identifier))
+        (proc_option_flag
+          (proc_option_key
+            (identifier))))
+      (proc_body
+        (delete_statement
+          (identifier)
+          (identifier)))
+      (proc_body
+        (datasets_modify_statement
+          (identifier)
+          (identifier)
+          (identifier)))))
+  (proc_step
+    (proc_generic_step
+      (proc_name
+        (identifier))
+      (proc_body
+        (format_value_statement
+          (identifier)
+          (macro_do_block
+            (identifier)
+            (macro_expression
+              (number))
+            (macro_expression
+              (number))
+            (macro_variable_reference
+              (identifier))
+            (quoted_string
+              (double_quoted_string)))
+          (identifier)
+          (quoted_string
+            (single_quoted_string))))))
+  (proc_step
+    (proc_generic_step
+      (proc_name
+        (identifier))
+      (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
+          (dotted_identifier
+            (identifier)
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier))))
+      (proc_body
+        (report_column_statement
+          (identifier)
+          (identifier))
+        (report_define_statement
+          (identifier)
+          (report_usage_keyword)
+          (identifier)
+          (identifier)
+          (number)
+          (identifier)
+          (identifier)
+          (identifier))
+        (report_define_statement
+          (identifier)
+          (report_usage_keyword)
+          (identifier)
+          (identifier)
+          (identifier)
+          (number)
+          (identifier))))))
+
+================================================================================
+PROC FCMP, GTL define statgraph, PROC SGPLOT, PROC COPY select, PROC LIFETEST, and PROC OUTPUT
+================================================================================
+proc fcmp outlib=work.funcs.trial;
+  function bmi(w, h);
+    if h <= 0 then return(.);
+    return(w / (h**2));
+  endsub;
+run;
+proc template;
+  define statgraph mygraph;
+    begingraph;
+      entrytitle "Profile";
+      layout overlay;
+        seriesplot x=avisit y=aval / group=trt;
+      endlayout;
+    endgraph;
+  end;
+run;
+proc sgplot data=work.adsl;
+  scatter x=age y=wt / group=sex;
+  xaxis label="Age";
+run;
+proc copy in=work out=perm;
+  select sales sales_imported;
+run;
+proc lifetest data=work.adtte plots=survival(cl atrisk);
+  time aval * cnsr(1);
+  strata trtp;
+run;
+proc univariate data=___logfiles noprint;
+  by filenm;
+  var cnt0-cnt&___max.;
+  output out=___logstat1 max=max0-max&___max.;
+run;
+proc means data=work.adsl noprint;
+  output out=work.stats mean= std= / autoname;
+run;
+--------------------------------------------------------------------------------
+
+(source_file
+  (proc_step
+    (proc_generic_step
+      (proc_name
+        (identifier))
+      (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
+          (catalog_path
+            (identifier)
+            (identifier)
+            (identifier))))
+      (proc_body
+        (fcmp_function_block
+          (identifier)
+          (identifier)
+          (identifier)
+          (if_statement
+            (binary_expression
+              (identifier)
+              (comparison_operator)
+              (number))
+            (return_statement
+              (missing_value)))
+          (return_statement
+            (binary_expression
+              (identifier)
+              (parenthesized_expression
+                (binary_expression
+                  (identifier)
+                  (number)))))))))
+  (proc_step
+    (proc_generic_step
+      (proc_name
+        (identifier))
+      (proc_body
+        (gtl_define_block
+          (identifier)
+          (proc_statement
+            (proc_statement_keyword))
+          (proc_statement
+            (proc_statement_keyword)
+            (quoted_string
+              (double_quoted_string)))
+          (proc_statement
+            (proc_statement_keyword)
+            (identifier))
+          (proc_statement
+            (proc_statement_keyword)
+            (identifier)
+            (identifier)
+            (identifier)
+            (identifier)
+            (identifier)
+            (identifier))
+          (proc_statement
+            (proc_statement_keyword))
+          (proc_statement
+            (proc_statement_keyword))))))
+  (proc_step
+    (proc_generic_step
+      (proc_name
+        (identifier))
+      (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
+          (dotted_identifier
+            (identifier)
+            (identifier))))
+      (proc_body
+        (proc_statement
+          (proc_statement_keyword)
+          (identifier)
+          (identifier)
+          (identifier)
+          (identifier)
+          (identifier)
+          (identifier))
+        (proc_statement
+          (proc_statement_keyword)
+          (identifier)
+          (quoted_string
+            (double_quoted_string))))))
+  (proc_step
+    (proc_generic_step
+      (proc_name
+        (identifier))
+      (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
+          (identifier))
+        (proc_option
+          (proc_option_key
+            (identifier))
+          (identifier)))
+      (proc_body
+        (proc_select_statement
+          (identifier)
+          (identifier)))))
+  (proc_step
+    (proc_generic_step
+      (proc_name
+        (identifier))
+      (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
+          (dotted_identifier
+            (identifier)
+            (identifier)))
+        (proc_option
+          (proc_option_key
+            (identifier))
+          (identifier)
+          (proc_option_args
+            (identifier)
+            (identifier))))
+      (proc_body
+        (proc_statement
+          (proc_statement_keyword)
+          (identifier)
+          (identifier)
+          (number))
+        (proc_statement
+          (proc_statement_keyword)
+          (identifier)))))
+  (proc_step
+    (proc_generic_step
+      (proc_name
+        (identifier))
+      (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
+          (identifier))
+        (proc_option_flag
+          (proc_option_key
+            (identifier))))
+      (proc_body
+        (by_statement
+          (identifier))
+        (proc_statement
+          (proc_statement_keyword)
+          (var_range
+            (identifier)
+            (macro_compound_name
+              (identifier)
+              (macro_variable_reference
+                (identifier))))
+          (missing_value))
+        (proc_output_statement
+          (data_reference
+            (identifier))
+          (identifier)
+          (var_range
+            (identifier)
+            (macro_compound_name
+              (identifier)
+              (macro_variable_reference
+                (identifier))))))))
+  (proc_step
+    (proc_generic_step
+      (proc_name
+        (identifier))
+      (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
+          (dotted_identifier
+            (identifier)
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier))))
+      (proc_body
+        (proc_output_statement
+          (data_reference
+            (identifier)
+            (identifier))
+          (identifier)
+          (identifier)
+          (identifier))))))

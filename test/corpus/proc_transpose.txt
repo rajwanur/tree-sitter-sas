@@ -7,23 +7,29 @@ run;
 
 (source_file
   (proc_step
-    (proc_transpose_step
-      options: (transpose_options
-        (transpose_option
-          (transpose_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (transpose_option
-          (transpose_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (transpose_option
-          (transpose_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (transpose_option
-          (transpose_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))))))
 
 ================================================================================
@@ -35,26 +41,34 @@ run;
 
 (source_file
   (proc_step
-    (proc_transpose_step
-      options: (transpose_options
-        (transpose_option
-          (transpose_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (transpose_option
-          (transpose_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (transpose_option
-          (transpose_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (transpose_option
-          (transpose_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (quoted_string
             (double_quoted_string)))
-        (transpose_option_flag)))))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))))))
 
 ================================================================================
 PROC TRANSPOSE delimiter= value-option (quoted) terminated by quit
@@ -65,19 +79,24 @@ quit;
 
 (source_file
   (proc_step
-    (proc_transpose_step
-      options: (transpose_options
-        (transpose_option
-          (transpose_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (transpose_option
-          (transpose_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (quoted_string
             (double_quoted_string)))
-        (transpose_option
-          (transpose_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))))))
 
 ================================================================================
@@ -89,7 +108,9 @@ run;
 
 (source_file
   (proc_step
-    (proc_transpose_step)))
+    (proc_generic_step
+      (proc_name
+        (identifier)))))
 
 ================================================================================
 PROC TRANSPOSE header options + body statements (id/copy preserved)
@@ -102,20 +123,25 @@ run;
 
 (source_file
   (proc_step
-    (proc_transpose_step
-      options: (transpose_options
-        (transpose_option
-          (transpose_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (transpose_option
-          (transpose_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier))))
       body: (proc_body
-        (means_id_statement
+        (proc_statement
+          keyword: (proc_statement_keyword)
           (identifier))
-        (transpose_copy_statement
+        (copy_statement
           (identifier))))))

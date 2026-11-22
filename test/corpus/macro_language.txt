@@ -36,8 +36,8 @@ Macro with parameters
       (macro_let_statement
         name: (identifier)
         value: (macro_text
-          (macro_text_token)
           (macro_function_call
+            name: (macro_function_name)
             (macro_expression
               (macro_binary_expression
                 left: (macro_expression
@@ -63,13 +63,13 @@ Macro with default parameter values
       (macro_parameter
         name: (identifier)
         default: (macro_parameter_default
-          (macro_param_text
-            (macro_param_text_token))))
+          (macro_param_value
+            (number))))
       (macro_parameter
         name: (identifier)
         default: (macro_parameter_default
-          (macro_param_text
-            (macro_param_text_token)))))))
+          (macro_param_value
+            (identifier)))))))
 
 ================================================================================
 %LET statement
@@ -150,7 +150,7 @@ run;
 %DO iterative
 ================================================================================
 %macro test;
-%do i = 1 to 5;
+%do i = 1 %to 5;
   x = i;
 %end;
 %mend;
@@ -162,10 +162,10 @@ run;
     name: (identifier)
     (macro_statement
       (macro_do_block
-        (bare_statement
-          (identifier)
-          (number)
-          (identifier)
+        (identifier)
+        (macro_expression
+          (number))
+        (macro_expression
           (number))
         (assignment_statement
           target: (identifier)
@@ -195,14 +195,19 @@ run;
             left: (macro_expression
               (macro_variable_reference
                 name: (identifier)))
+            operator: (comparison_operator)
             right: (macro_expression
               (number))))
-        (assignment_statement
-          target: (identifier)
-          value: (number))
-        (assignment_statement
-          target: (identifier)
-          value: (number))))))
+        (macro_statement
+          (macro_do_block
+            (assignment_statement
+              target: (identifier)
+              value: (number))))
+        (macro_statement
+          (macro_do_block
+            (assignment_statement
+              target: (identifier)
+              value: (number))))))))
 
 ================================================================================
 %GLOBAL statement
@@ -240,11 +245,10 @@ run;
   (macro_let_statement
     name: (identifier)
     value: (macro_text
-      (macro_text_token)
       (macro_function_call
-        (macro_expression
-          (function_call
-            name: (identifier)))))))
+        name: (macro_function_name)
+        (function_call
+          name: (identifier))))))
 
 ================================================================================
 %SCAN call
@@ -257,14 +261,14 @@ run;
   (macro_let_statement
     name: (identifier)
     value: (macro_text
-      (macro_text_token)
       (macro_function_call
-        (macro_expression
+        name: (macro_function_name)
+        (macro_param_value
           (macro_variable_reference
             name: (identifier)))
-        (macro_expression
+        (macro_param_value
           (number))
-        (macro_expression
+        (macro_param_value
           (quoted_string
             (double_quoted_string)))))))
 
@@ -324,8 +328,8 @@ run;
   (macro_let_statement
     name: (identifier)
     value: (macro_text
-      (macro_text_token)
       (macro_function_call
+        name: (macro_function_name)
         (macro_expression
           (macro_binary_expression
             left: (macro_expression
@@ -355,6 +359,7 @@ run;
             left: (macro_expression
               (macro_variable_reference
                 name: (identifier)))
+            operator: (comparison_operator)
             right: (macro_expression
               (number))))
         (expression_statement
@@ -374,6 +379,7 @@ run;
   (macro_let_statement
     name: (identifier)
     value: (macro_text
+      (macro_text_token)
       (macro_text_token)))
   (global_statement
     (include_statement
@@ -396,6 +402,7 @@ Macro quoting functions with freeform text
   %let n = %sysfunc(countw(&list, %str(,)));
 %mend;
 --------------------------------------------------------------------------------
+
 (source_file
   (macro_definition
     name: (identifier)
@@ -403,22 +410,27 @@ Macro quoting functions with freeform text
       (macro_let_statement
         name: (identifier)
         value: (macro_text
-          (macro_text_token)
           (macro_quoting_function
+            name: (macro_function_name)
             (macro_quoted_text
-              (macro_quoted_text_token))))))
+              (macro_quoted_text_token)
+              (macro_quoted_text_token)
+              (macro_variable_reference
+                name: (identifier)))))))
     (macro_statement
       (macro_let_statement
         name: (identifier)
         value: (macro_text
-          (macro_text_token)
           (macro_function_call
-            (macro_expression
-              (function_call
-                name: (identifier)
+            name: (macro_function_name)
+            (function_call
+              name: (identifier)
+              (macro_param_value
                 (macro_variable_reference
-                  name: (identifier))
+                  name: (identifier)))
+              (macro_param_value
                 (macro_quoting_function
+                  name: (macro_function_name)
                   (macro_quoted_text
                     (macro_quoted_text_token)))))))))))
 
@@ -431,6 +443,7 @@ Macro control: %abort, %sysmacexist, empty param defaults, empty-value %if
   %if &val = %then %do; %end;
 %mend;
 --------------------------------------------------------------------------------
+
 (source_file
   (macro_definition
     name: (identifier)
@@ -446,15 +459,20 @@ Macro control: %abort, %sysmacexist, empty param defaults, empty-value %if
       (macro_if_statement
         condition: (macro_expression
           (macro_function_call
-            (macro_expression
-              (identifier))))))
+            name: (macro_function_name)
+            (macro_param_value
+              (identifier))))
+        (macro_statement
+          (macro_do_block))))
     (macro_statement
       (macro_if_statement
         condition: (macro_expression
           (macro_binary_expression
             left: (macro_expression
               (macro_variable_reference
-                name: (identifier)))))))))
+                name: (identifier)))))
+        (macro_statement
+          (macro_do_block))))))
 
 ================================================================================
 Macro %put with user macro call inside text
@@ -463,6 +481,7 @@ Macro %put with user macro call inside text
   %put NOTE: result = %factorial(5);
 %mend;
 --------------------------------------------------------------------------------
+
 (source_file
   (macro_definition
     name: (identifier)
@@ -470,6 +489,6 @@ Macro %put with user macro call inside text
       (macro_put_statement
         (macro_text
           (macro_text_token)
-          (identifier)
-          (macro_expression
+          (macro_call_name)
+          (macro_param_value
             (number)))))))

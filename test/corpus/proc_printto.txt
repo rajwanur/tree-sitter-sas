@@ -7,13 +7,18 @@ run;
 
 (source_file
   (proc_step
-    (proc_printto_step
-      options: (printto_options
-        (printto_option
-          (printto_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (quoted_string
             (single_quoted_string)))
-        (printto_option_flag)))))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))))))
 
 ================================================================================
 PROC PRINTTO log=/file= value-options (quoted paths)
@@ -24,14 +29,18 @@ run;
 
 (source_file
   (proc_step
-    (proc_printto_step
-      options: (printto_options
-        (printto_option
-          (printto_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (quoted_string
             (single_quoted_string)))
-        (printto_option
-          (printto_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (quoted_string
             (single_quoted_string)))))))
 
@@ -44,10 +53,13 @@ quit;
 
 (source_file
   (proc_step
-    (proc_printto_step
-      options: (printto_options
-        (printto_option
-          (printto_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (number))))))
 
 ================================================================================
@@ -59,13 +71,17 @@ run;
 
 (source_file
   (proc_step
-    (proc_printto_step
-      options: (printto_options
-        (printto_option
-          (printto_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (printto_option
-          (printto_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (quoted_string
             (single_quoted_string)))))))
 
@@ -78,4 +94,6 @@ run;
 
 (source_file
   (proc_step
-    (proc_printto_step)))
+    (proc_generic_step
+      (proc_name
+        (identifier)))))

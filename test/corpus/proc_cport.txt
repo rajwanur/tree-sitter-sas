@@ -8,16 +8,21 @@ run;
 
 (source_file
   (proc_step
-    (proc_cport_step
-      options: (cport_options
-        (cport_option
-          (cport_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (cport_option
-          (cport_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (cport_option
-          (cport_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier)))
       body: (proc_body
         (sql_select_statement
@@ -34,15 +39,26 @@ run;
 
 (source_file
   (proc_step
-    (proc_cport_step
-      options: (cport_options
-        (cport_option
-          (cport_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (cport_option_flag)
-        (cport_option_flag)
-        (cport_option_flag)
-        (cport_option_flag)))))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))))))
 
 ================================================================================
 PROC CPORT with no options
@@ -53,7 +69,9 @@ run;
 
 (source_file
   (proc_step
-    (proc_cport_step)))
+    (proc_generic_step
+      (proc_name
+        (identifier)))))
 
 ================================================================================
 PROC CPORT with unknown option key (linter fallback)
@@ -64,9 +82,11 @@ run;
 
 (source_file
   (proc_step
-    (proc_cport_step
-      options: (cport_options
-        (cport_option
-          (cport_option_key
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
             (identifier))
           (identifier))))))

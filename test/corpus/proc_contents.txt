@@ -7,25 +7,31 @@ run;
 
 (source_file
   (proc_step
-    (proc_contents_step
-      options: (contents_options
-        (contents_option
-          (contents_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (contents_option
-          (contents_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (contents_option
-          (contents_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (contents_option
-          (contents_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))))))
 
 ================================================================================
@@ -37,25 +43,42 @@ run;
 
 (source_file
   (proc_step
-    (proc_contents_step
-      options: (contents_options
-        (contents_option
-          (contents_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (contents_option
-          (contents_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (number))
-        (contents_option
-          (contents_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (contents_option_flag)
-        (contents_option_flag)
-        (contents_option_flag)
-        (contents_option_flag)
-        (contents_option_flag)
-        (contents_option_flag)))))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))))))
 
 ================================================================================
 PROC CONTENTS mt=/mtype= short value-options terminated by quit
@@ -66,20 +89,27 @@ quit;
 
 (source_file
   (proc_step
-    (proc_contents_step
-      options: (contents_options
-        (contents_option
-          (contents_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (contents_option
-          (contents_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (contents_option
-          (contents_option_key)
+        (proc_option
+          (proc_option_key
+            (identifier))
           (identifier))
-        (contents_option_flag)))))
+        (proc_option_flag
+          (proc_option_key
+            (identifier)))))))
 
 ================================================================================
 PROC CONTENTS no options (bare header)
@@ -90,7 +120,9 @@ run;
 
 (source_file
   (proc_step
-    (proc_contents_step)))
+    (proc_generic_step
+      (proc_name
+        (identifier)))))
 
 ================================================================================
 PROC CONTENTS header options + body statements (out/flag preserved)
@@ -104,17 +136,24 @@ run;
 
 (source_file
   (proc_step
-    (proc_contents_step
-      options: (contents_options
-        (contents_option
-          (contents_option_key)
+    (proc_generic_step
+      name: (proc_name
+        (identifier))
+      options: (proc_options
+        (proc_option
+          (proc_option_key
+            (identifier))
           (dotted_identifier
             base: (identifier)
             member: (identifier)))
-        (contents_option
-          (contents_option_key)))
+        (proc_option_flag
+          (proc_option_key
+            (identifier))))
       body: (proc_body
-        (contents_out_statement
+        (proc_statement
+          keyword: (proc_statement_keyword)
           (identifier))
-        (contents_flag_statement)
-        (contents_flag_statement)))))
+        (proc_statement
+          keyword: (proc_statement_keyword))
+        (proc_statement
+          keyword: (proc_statement_keyword))))))

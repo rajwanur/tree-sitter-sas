@@ -1,30 +1,51 @@
-// External scanner for CARDS/DATALINES freeform data blocks and nested block comments.
-//
-// CARDS/DATALINES blocks contain freeform data (not SAS code) between
-// the keyword+semicolon and a terminating delimiter:
-//   - CARDS/DATALINES: terminated by a bare semicolon on its own line
-//   - CARDS4/DATALINES4: terminated by ;;;; on its own line
-//
-// Block comments: SAS supports NESTED /* ... */ comments, unlike C.
-//   /* outer /* inner */ still outer */  → one comment
-// The scanner counts nesting depth to find the true closing */.
+// External scanner for SAS:
+//   1. _CARDS_BLOCK  - CARDS/DATALINES freeform data blocks (terminated by ; on its own line)
+//   2. _CARDS4_BLOCK - CARDS4/DATALINES4 freeform data blocks (terminated by ;;;; on its own line)
+//   3. BLOCK_COMMENT - Nested /* ... */ block comments (SAS allows arbitrary nesting)
+//   4. FORMAT_SPECIFIER - Atomic SAS format/informat specifiers ($20., $char40., yymmdd10., dollar12.2, best.)
+//   5. MISSING_VALUE - SAS numeric missing values (. or .A-.Z or ._), boundary-checked against dotted names
+//   6. _ERROR_SENTINEL - Error-recovery detection sentinel (never referenced in grammar rules)
 
 #include "tree_sitter/parser.h"
 #include "tree_sitter/alloc.h"
 
 // Maximum iteration count as safety guard against infinite loops.
-// 1M characters is more than any reasonable CARDS block.
 #define MAX_ITERATIONS 1000000
 
 enum TokenType {
-  _CARDS_BLOCK,      // matches grammar.js externals[0] = $._cards_block
-  _CARDS4_BLOCK,     // matches grammar.js externals[1] = $._cards4_block
+  _CARDS_BLOCK,      // externals[0] = $._cards_block
+  _CARDS4_BLOCK,     // externals[1] = $._cards4_block
+  BLOCK_COMMENT,     // externals[2] = $.block_comment
+  FORMAT_SPECIFIER,  // externals[3] = $.format_specifier
+  MISSING_VALUE,     // externals[4] = $.missing_value
+  _ERROR_SENTINEL,   // externals[5] = $._error_sentinel
 };
 
 typedef struct {
   bool in_cards;
   bool in_cards4;
 } ScannerState;
+
+static inline bool is_any_ws(int32_t c) {
+  return c == ' ' || c == '\t' || c == '\n' || c == '\r' || c == '\v' || c == '\f';
+}
+
+static inline bool is_digit(int32_t c) {
+  return c >= '0' && c <= '9';
+}
+
+static inline bool is_ident_start(int32_t c) {
+  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+}
+
+static inline bool is_ident_char(int32_t c) {
+  return is_ident_start(c) || is_digit(c);
+}
+
+static inline bool is_bad_format_follower(int32_t next) {
+  return is_ident_char(next) || next == '*' || next == '&' || next == '%' ||
+         next == '\'' || next == '"' || next == '.';
+}
 
 void *tree_sitter_sas_external_scanner_create(void) {
   ScannerState *s = ts_calloc(1, sizeof(ScannerState));
@@ -39,7 +60,7 @@ unsigned tree_sitter_sas_external_scanner_serialize(void *payload, char *buffer)
   ScannerState *s = payload;
   buffer[0] = s->in_cards ? 1 : 0;
   buffer[1] = s->in_cards4 ? 1 : 0;
-  return 2;  // 2 bytes serialized
+  return 2;
 }
 
 void tree_sitter_sas_external_scanner_deserialize(void *payload, const char *buffer, unsigned length) {
@@ -55,164 +76,40 @@ void tree_sitter_sas_external_scanner_deserialize(void *payload, const char *buf
 
 bool tree_sitter_sas_external_scanner_scan(void *payload, TSLexer *lexer, const bool *valid_symbols) {
   ScannerState *state = payload;
-  (void)state;  // State tracking reserved for future incremental parsing use
+  (void)state;
 
-  // ERROR-RECOVERY GUARD (Task 7).
-  //
-  // The CARDS/DATALINES block scanner consumes freeform data to EOF (or the
-  // terminating semicolon line). The parser lists _CARDS_BLOCK and
-  // _CARDS4_BLOCK as valid at every "statement-start" position inside a data
-  // step (because cards_statement/cards4_statement are alternatives of the
-  // statement repeat). During ERROR RECOVERY, tree-sitter explores those
-  // alternatives at positions where NO cards/datalines keyword was actually
-  // shifted. If this scanner then fires, it greedily swallows the rest of the
-  // file into one _cards_block token, turning a local statement failure into a
-  // whole-file ERROR and hiding every downstream statement.
-  //
-  // The discriminator: tree-sitter assigns DISTINCT external-scanner states
-  // depending on how much of a cards statement has already been matched.
-  //   - After the parser has shifted `cards`/`datalines` + `;`, ONLY
-  //     _CARDS_BLOCK is in valid_symbols (external state 2).
-  //   - After `cards4`/`datalines4` + `;`, ONLY _CARDS4_BLOCK is valid
-  //     (external state 3).
-  //   - At an uncommitted statement-start / recovery position, BOTH tokens are
-  //     valid simultaneously (external state 1).
-  // So when BOTH tokens are valid at once, we are NOT in a legitimate
-  // cards-following position: refuse to scan. This localizes errors without
-  // affecting real cards/datalines blocks (where exactly one token is valid).
-  if (valid_symbols[_CARDS_BLOCK] && valid_symbols[_CARDS4_BLOCK]) {
-    return false;
-  }
+  bool in_error_recovery = valid_symbols[_ERROR_SENTINEL];
 
-  // CARDS/DATALINES block: terminated by a bare semicolon on its own line.
-  // The token includes all data lines AND the terminating semicolon line.
-  if (valid_symbols[_CARDS_BLOCK]) {
-    unsigned iterations = 0;
-    bool at_line_start = true;
+  // -------------------------------------------------------------------------
+  // 1. CARDS / DATALINES and CARDS4 / DATALINES4 blocks
+  // -------------------------------------------------------------------------
+  // Guard: refuse during error recovery or when both _CARDS_BLOCK and
+  // _CARDS4_BLOCK are simultaneously valid (uncommitted state).
+  if (!in_error_recovery && !(valid_symbols[_CARDS_BLOCK] && valid_symbols[_CARDS4_BLOCK])) {
+    if (valid_symbols[_CARDS_BLOCK]) {
+      unsigned iterations = 0;
+      bool at_line_start = true;
 
-    while (!lexer->eof(lexer) && iterations < MAX_ITERATIONS) {
-      iterations++;
+      while (!lexer->eof(lexer) && iterations < MAX_ITERATIONS) {
+        iterations++;
 
-      if (at_line_start) {
-        // Save position in case we need to check for terminator.
-        // We look ahead without consuming to check if this line is the terminator.
-
-        // Skip leading whitespace to check for terminator
-        while (!lexer->eof(lexer) && (lexer->lookahead == ' ' || lexer->lookahead == '\t')) {
-          lexer->advance(lexer, false);
-          iterations++;
-        }
-
-        if (!lexer->eof(lexer) && lexer->lookahead == ';') {
-          // Found a semicolon after optional whitespace.
-          // Check that the rest of the line is empty (newline or eof).
-          lexer->advance(lexer, false);
-          iterations++;
-
-          // Skip any trailing whitespace after the semicolon on the same line
+        if (at_line_start) {
           while (!lexer->eof(lexer) && (lexer->lookahead == ' ' || lexer->lookahead == '\t')) {
             lexer->advance(lexer, false);
             iterations++;
           }
 
-          // If we are at end of line or end of file, this is the terminator.
-          if (lexer->eof(lexer) || lexer->lookahead == '\n' || lexer->lookahead == '\r') {
-            // Include the terminator semicolon in the token.
-            // Mark end here, AFTER the semicolon (and any trailing whitespace).
-            lexer->mark_end(lexer);
-
-            // Advance past newline so parsing resumes on the next line.
-            if (!lexer->eof(lexer) && lexer->lookahead == '\r') {
-              lexer->advance(lexer, false);
-              iterations++;
-            }
-            if (!lexer->eof(lexer) && lexer->lookahead == '\n') {
-              lexer->advance(lexer, false);
-              iterations++;
-            }
-
-            lexer->result_symbol = _CARDS_BLOCK;
-            return true;
-          }
-          // Not a terminator -- semicolon was not alone on the line.
-          at_line_start = false;
-          continue;
-        }
-
-        // Line has non-semicolon content or was an empty line.
-        // If we're at EOF on what looks like an empty line, return the token.
-        if (lexer->eof(lexer)) {
-          lexer->mark_end(lexer);
-          lexer->result_symbol = _CARDS_BLOCK;
-          return true;
-        }
-
-        // Not a terminator line, continue reading content.
-        at_line_start = false;
-        continue;
-      }
-
-      // Advance through the current character
-      if (!lexer->eof(lexer)) {
-        if (lexer->lookahead == '\n') {
-          lexer->advance(lexer, false);
-          at_line_start = true;
-        } else if (lexer->lookahead == '\r') {
-          lexer->advance(lexer, false);
-          iterations++;
-          if (!lexer->eof(lexer) && lexer->lookahead == '\n') {
-            lexer->advance(lexer, false);
-          }
-          at_line_start = true;
-        } else {
-          lexer->advance(lexer, false);
-        }
-      }
-    }
-
-    // Hit max iterations -- return token for what we consumed.
-    lexer->mark_end(lexer);
-    lexer->result_symbol = _CARDS_BLOCK;
-    return true;
-  }
-
-  // CARDS4/DATALINES4 block: terminated by ;;;; (four semicolons) on its own line.
-  // Same logic as CARDS but looks for four consecutive semicolons after whitespace.
-  if (valid_symbols[_CARDS4_BLOCK]) {
-    unsigned iterations = 0;
-    bool at_line_start = true;
-
-    while (!lexer->eof(lexer) && iterations < MAX_ITERATIONS) {
-      iterations++;
-
-      if (at_line_start) {
-        // Skip leading whitespace to check for terminator
-        while (!lexer->eof(lexer) && (lexer->lookahead == ' ' || lexer->lookahead == '\t')) {
-          lexer->advance(lexer, false);
-          iterations++;
-        }
-
-        if (!lexer->eof(lexer) && lexer->lookahead == ';') {
-          // Potential ;;;; terminator -- check for four consecutive semicolons.
-          int semicolon_count = 0;
-          while (!lexer->eof(lexer) && lexer->lookahead == ';' && semicolon_count < 4) {
+          if (!lexer->eof(lexer) && lexer->lookahead == ';') {
             lexer->advance(lexer, false);
             iterations++;
-            semicolon_count++;
-          }
 
-          if (semicolon_count == 4) {
-            // Check that the rest of the line is empty.
             while (!lexer->eof(lexer) && (lexer->lookahead == ' ' || lexer->lookahead == '\t')) {
               lexer->advance(lexer, false);
               iterations++;
             }
 
             if (lexer->eof(lexer) || lexer->lookahead == '\n' || lexer->lookahead == '\r') {
-              // Include the terminator ;;;; in the token.
               lexer->mark_end(lexer);
-
-              // Advance past newline.
               if (!lexer->eof(lexer) && lexer->lookahead == '\r') {
                 lexer->advance(lexer, false);
                 iterations++;
@@ -221,47 +118,266 @@ bool tree_sitter_sas_external_scanner_scan(void *payload, TSLexer *lexer, const 
                 lexer->advance(lexer, false);
                 iterations++;
               }
-
-              lexer->result_symbol = _CARDS4_BLOCK;
+              lexer->result_symbol = _CARDS_BLOCK;
               return true;
             }
+            at_line_start = false;
+            continue;
           }
 
-          // Not a terminator -- fewer than 4 semicolons or not alone on line.
+          if (lexer->eof(lexer)) {
+            lexer->mark_end(lexer);
+            lexer->result_symbol = _CARDS_BLOCK;
+            return true;
+          }
+
           at_line_start = false;
           continue;
         }
 
-        if (lexer->eof(lexer)) {
-          lexer->mark_end(lexer);
-          lexer->result_symbol = _CARDS4_BLOCK;
-          return true;
-        }
-
-        at_line_start = false;
-        continue;
-      }
-
-      if (!lexer->eof(lexer)) {
-        if (lexer->lookahead == '\n') {
-          lexer->advance(lexer, false);
-          at_line_start = true;
-        } else if (lexer->lookahead == '\r') {
-          lexer->advance(lexer, false);
-          iterations++;
-          if (!lexer->eof(lexer) && lexer->lookahead == '\n') {
+        if (!lexer->eof(lexer)) {
+          if (lexer->lookahead == '\n') {
+            lexer->advance(lexer, false);
+            at_line_start = true;
+          } else if (lexer->lookahead == '\r') {
+            lexer->advance(lexer, false);
+            iterations++;
+            if (!lexer->eof(lexer) && lexer->lookahead == '\n') {
+              lexer->advance(lexer, false);
+            }
+            at_line_start = true;
+          } else {
             lexer->advance(lexer, false);
           }
-          at_line_start = true;
+        }
+      }
+
+      lexer->mark_end(lexer);
+      lexer->result_symbol = _CARDS_BLOCK;
+      return true;
+    }
+
+    if (valid_symbols[_CARDS4_BLOCK]) {
+      unsigned iterations = 0;
+      bool at_line_start = true;
+
+      while (!lexer->eof(lexer) && iterations < MAX_ITERATIONS) {
+        iterations++;
+
+        if (at_line_start) {
+          while (!lexer->eof(lexer) && (lexer->lookahead == ' ' || lexer->lookahead == '\t')) {
+            lexer->advance(lexer, false);
+            iterations++;
+          }
+
+          if (!lexer->eof(lexer) && lexer->lookahead == ';') {
+            int semicolon_count = 0;
+            while (!lexer->eof(lexer) && lexer->lookahead == ';' && semicolon_count < 4) {
+              lexer->advance(lexer, false);
+              iterations++;
+              semicolon_count++;
+            }
+
+            if (semicolon_count == 4) {
+              while (!lexer->eof(lexer) && (lexer->lookahead == ' ' || lexer->lookahead == '\t')) {
+                lexer->advance(lexer, false);
+                iterations++;
+              }
+
+              if (lexer->eof(lexer) || lexer->lookahead == '\n' || lexer->lookahead == '\r') {
+                lexer->mark_end(lexer);
+                if (!lexer->eof(lexer) && lexer->lookahead == '\r') {
+                  lexer->advance(lexer, false);
+                  iterations++;
+                }
+                if (!lexer->eof(lexer) && lexer->lookahead == '\n') {
+                  lexer->advance(lexer, false);
+                  iterations++;
+                }
+                lexer->result_symbol = _CARDS4_BLOCK;
+                return true;
+              }
+            }
+
+            at_line_start = false;
+            continue;
+          }
+
+          if (lexer->eof(lexer)) {
+            lexer->mark_end(lexer);
+            lexer->result_symbol = _CARDS4_BLOCK;
+            return true;
+          }
+
+          at_line_start = false;
+          continue;
+        }
+
+        if (!lexer->eof(lexer)) {
+          if (lexer->lookahead == '\n') {
+            lexer->advance(lexer, false);
+            at_line_start = true;
+          } else if (lexer->lookahead == '\r') {
+            lexer->advance(lexer, false);
+            iterations++;
+            if (!lexer->eof(lexer) && lexer->lookahead == '\n') {
+              lexer->advance(lexer, false);
+            }
+            at_line_start = true;
+          } else {
+            lexer->advance(lexer, false);
+          }
+        }
+      }
+
+      lexer->mark_end(lexer);
+      lexer->result_symbol = _CARDS4_BLOCK;
+      return true;
+    }
+  }
+
+  // Nothing else can match if none of the remaining external tokens are valid.
+  if (!valid_symbols[BLOCK_COMMENT] &&
+      !( !in_error_recovery && (valid_symbols[FORMAT_SPECIFIER] || valid_symbols[MISSING_VALUE]) )) {
+    return false;
+  }
+
+  // Skip leading whitespace before checking BLOCK_COMMENT / FORMAT_SPECIFIER / MISSING_VALUE.
+  while (!lexer->eof(lexer) && is_any_ws(lexer->lookahead)) {
+    lexer->advance(lexer, true);
+  }
+
+  if (lexer->eof(lexer)) {
+    return false;
+  }
+
+  // -------------------------------------------------------------------------
+  // 2. Nested block comments: /* ... /* ... */ ... */
+  // -------------------------------------------------------------------------
+  if (valid_symbols[BLOCK_COMMENT] && lexer->lookahead == '/') {
+    lexer->advance(lexer, false);
+    if (lexer->lookahead == '*') {
+      lexer->advance(lexer, false);
+      int depth = 1;
+      unsigned iterations = 0;
+
+      while (!lexer->eof(lexer) && depth > 0 && iterations < MAX_ITERATIONS) {
+        iterations++;
+        if (lexer->lookahead == '/') {
+          lexer->advance(lexer, false);
+          if (!lexer->eof(lexer) && lexer->lookahead == '*') {
+            lexer->advance(lexer, false);
+            depth++;
+          }
+        } else if (lexer->lookahead == '*') {
+          lexer->advance(lexer, false);
+          if (!lexer->eof(lexer) && lexer->lookahead == '/') {
+            lexer->advance(lexer, false);
+            depth--;
+          }
         } else {
           lexer->advance(lexer, false);
         }
       }
+
+      if (depth == 0) {
+        lexer->mark_end(lexer);
+        lexer->result_symbol = BLOCK_COMMENT;
+        return true;
+      }
+      return false;
+    }
+    return false;
+  }
+
+  if (in_error_recovery) {
+    return false;
+  }
+
+  // -------------------------------------------------------------------------
+  // 3. SAS missing values: . or .A-.Z or ._
+  // -------------------------------------------------------------------------
+  if (valid_symbols[MISSING_VALUE] && lexer->lookahead == '.') {
+    lexer->advance(lexer, false);
+    int32_t next = lexer->lookahead;
+
+    // Reject .5 (decimal number), .* (SQL qualified star), .. (double dot)
+    if (is_digit(next) || next == '*' || next == '.') {
+      return false;
+    }
+
+    // .A-.Z or ._ is valid ONLY as a single character after the dot
+    if (is_ident_start(next)) {
+      lexer->advance(lexer, false);
+      if (is_ident_char(lexer->lookahead)) {
+        // Multi-character suffix like .id or .log -> NOT a missing value
+        return false;
+      }
     }
 
     lexer->mark_end(lexer);
-    lexer->result_symbol = _CARDS4_BLOCK;
+    lexer->result_symbol = MISSING_VALUE;
     return true;
+  }
+
+  // -------------------------------------------------------------------------
+  // 4. Atomic SAS format/informat specifiers: $20., $char40., yymmdd10., dollar12.2, best.
+  // -------------------------------------------------------------------------
+  if (valid_symbols[FORMAT_SPECIFIER]) {
+    if (lexer->lookahead == '$') {
+      lexer->advance(lexer, false);
+      if (is_ident_start(lexer->lookahead)) {
+        while (!lexer->eof(lexer) && is_ident_char(lexer->lookahead)) {
+          lexer->advance(lexer, false);
+        }
+      } else if (is_digit(lexer->lookahead)) {
+        while (!lexer->eof(lexer) && is_digit(lexer->lookahead)) {
+          lexer->advance(lexer, false);
+        }
+      } else {
+        return false;
+      }
+
+      if (lexer->lookahead != '.') {
+        return false;
+      }
+      lexer->advance(lexer, false);
+
+      while (!lexer->eof(lexer) && is_digit(lexer->lookahead)) {
+        lexer->advance(lexer, false);
+      }
+
+      if (is_bad_format_follower(lexer->lookahead)) {
+        return false;
+      }
+
+      lexer->mark_end(lexer);
+      lexer->result_symbol = FORMAT_SPECIFIER;
+      return true;
+    }
+
+    if (is_ident_start(lexer->lookahead)) {
+      while (!lexer->eof(lexer) && is_ident_char(lexer->lookahead)) {
+        lexer->advance(lexer, false);
+      }
+
+      if (lexer->lookahead != '.') {
+        return false;
+      }
+      lexer->advance(lexer, false);
+
+      while (!lexer->eof(lexer) && is_digit(lexer->lookahead)) {
+        lexer->advance(lexer, false);
+      }
+
+      if (is_bad_format_follower(lexer->lookahead)) {
+        return false;
+      }
+
+      lexer->mark_end(lexer);
+      lexer->result_symbol = FORMAT_SPECIFIER;
+      return true;
+    }
   }
 
   return false;
